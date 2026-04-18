@@ -101,7 +101,7 @@ flowchart TD
 <summary><b>🧑‍⚕️ Patient Dashboard</b></summary>
 <br/>
 <p align="center">
-  <img src="screenshots/patient_dashboard.jpg" width="90%" />
+  <img src="screenshots/patient_dashboard_update.jpg" width="90%" />
 </p>
   
 | Page | Description |
@@ -961,13 +961,13 @@ curl -X POST http://localhost/MEDISEBA/backend/index.php/api/appointments \
 |--------|------|------|------------|-----------------|
 | 👨‍💻 | **Md. Emon Hossain** | Team Leader | 232-15-818 | Backend Architecture, Frontend Development, Database Design, API Documentation |
 | 👨‍💻 | **Mostafizur Rahman Antu** | Member | 241-15-631 | Backend Development, Frontend Development, Database Design |
-| 👨‍💻 | **Nahid Al Galib** | Member | 241-15-577 | Backend Development, Testing & Data Entry |
-| 👩‍💻 | **Mahjabin Sultana** | Member | 241-15-899 | Backend Development, Testing & Data Entry |
-| 👩‍💻 | **Nadira Tanzim** | Member | 241-15-397 | Backend Development, Testing & Data Entry |
+| 👨‍💻 | **Nahid Al Galib** | Member | 241-15-577 | Testing & Data Entry |
+| 👩‍💻 | **Mahjabin Sultana** | Member | 241-15-899 | Testing & Data Entry |
+| 👩‍💻 | **Nadira Tanzim** | Member | 241-15-397 | Testing & Data Entry |
 
 **Institution:** Daffodil International University
-**Course:** Database Management Systems (DBMS) Project
-**Supervisor:** Course Faculty, Department of Computer Science & Engineering
+**Course:** Database Management Systems (DBMS)- CSE312 
+**Supervisor:** Syed Eftasum Alam (Lecturer) , Department of Computer Science & Engineering
 
 </div>
 
