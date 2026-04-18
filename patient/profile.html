@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - MediSeba</title>
+    <meta name="description" content="Manage your patient profile and personal health details.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link rel="stylesheet" href="../css/auth.css?v=20260404-7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="../patient/dashboard.html"><i class="fas fa-home"></i>Dashboard</a></li>
+                    <li><a href="../patient/appointments.html"><i class="fas fa-calendar-check"></i>My Appointments</a></li>
+                    <li><a href="../patient/prescriptions.html"><i class="fas fa-file-prescription"></i>Prescriptions</a></li>
+                    <li><a href="../patient/payments.html?v=20260403-5"><i class="fas fa-credit-card"></i>Payments</a></li>
+                    <li><a href="../patient/profile.html" class="active"><i class="fas fa-user"></i>My Profile</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Loading...</span>
+                        <span class="user-role">Patient</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-intro">
+                    <h2>My Profile</h2>
+                    <p class="page-intro-text">Keep your patient details up to date so bookings and prescriptions stay accurate.</p>
+                </div>
+                <div class="header-actions action-row">
+                    <button class="nav-toggle" id="navToggle" onclick="toggleSidebar()" aria-label="Toggle Navigation" style="display: none;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="dashboard-content patient-profile-content">
+                <div class="card nested-surface-card patient-profile-hero">
+                    <div class="profile-photo-grid-account">
+                        <div class="profile-account-copy patient-profile-identity">
+                            <div class="patient-profile-identity-copy">
+                                <p class="patient-profile-eyebrow">Patient Profile</p>
+                                <h3 id="patientIdentityName" class="patient-profile-name">Loading...</h3>
+                                <div class="patient-profile-meta">
+                                    <span id="patientIdentityRole" class="patient-profile-role">
+                                        <i class="fas fa-user"></i>
+                                        Patient
+                                    </span>
+                                    <span class="status-badge inactive patient-profile-blood-group" id="patientIdentityBloodGroup">Blood group not added</span>
+                                </div>
+                                <p class="patient-profile-summary" id="profileSummary">Your saved patient details will appear here.</p>
+                            </div>
+                            <div class="patient-profile-identity-grid">
+                                <div class="nested-surface-card">
+                                    <div class="table-meta-text">Account Email</div>
+                                    <div id="profileEmail" class="patient-profile-meta-value profile-email-value">Loading...</div>
+                                </div>
+                                <div class="nested-surface-card">
+                                    <div class="table-meta-text">Health Snapshot</div>
+                                    <div id="patientHealthMeta" class="patient-profile-meta-value">Add your date of birth, gender, and blood group to complete your profile.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-photo-card patient-profile-photo-card">
+                            <div class="profile-photo-preview" id="profilePhotoPreview">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="profile-photo-copy">
+                                <h4>Profile Photo</h4>
+                                <p id="profilePhotoSummary">Add a friendly profile photo so your patient account feels complete.</p>
+                            </div>
+                            <span class="token-badge patient-profile-photo-badge" id="patientPhotoBadge">Photo recommended</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card patient-profile-info-card">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3>Saved Information</h3>
+                            <p class="card-header-meta">These personal details help keep appointments, prescriptions, and care records accurate across your account.</p>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-sm patient-profile-edit-btn" id="editInfoBtn" onclick="toggleEditMode(true)">
+                            <i class="fas fa-pen-to-square"></i>
+                            Edit Information
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="profileInfoView" class="dashboard-section patient-profile-view">
+                            <div class="stats-grid patient-profile-stat-grid">
+                                <div class="stat-card">
+                                    <p class="stat-card-title">Full Name</p>
+                                    <p class="stat-card-value patient-profile-stat-value" id="displayFullName">-</p>
+                                </div>
+                                <div class="stat-card">
+                                    <p class="stat-card-title">Date of Birth</p>
+                                    <p class="stat-card-value patient-profile-stat-value" id="displayDob">-</p>
+                                </div>
+                                <div class="stat-card">
+                                    <p class="stat-card-title">Gender</p>
+                                    <p class="stat-card-value patient-profile-stat-value" id="displayGender">-</p>
+                                </div>
+                                <div class="stat-card">
+                                    <p class="stat-card-title">Blood Group</p>
+                                    <p class="stat-card-value patient-profile-stat-value" id="displayBloodGroup">-</p>
+                                </div>
+                            </div>
+
+                            <div class="patient-profile-detail-grid">
+                                <div class="card nested-surface-card patient-profile-detail-card">
+                                    <div class="patient-profile-section-heading">
+                                        <h4>Health Snapshot</h4>
+                                        <p>A quick summary of the core personal details tied to your patient account.</p>
+                                    </div>
+                                    <p id="displayPatientSnapshot" class="patient-profile-meta-value">No health details saved yet.</p>
+                                </div>
+
+                                <div class="card nested-surface-card patient-profile-detail-card">
+                                    <div class="patient-profile-section-heading">
+                                        <h4>Address</h4>
+                                        <p>Keep your current address updated so your account and appointment records stay accurate.</p>
+                                    </div>
+                                    <p id="displayAddress">Not provided</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="profileEditCard" hidden>
+                            <div class="action-row action-row-between patient-profile-edit-header">
+                                <div class="page-intro">
+                                    <h4>Edit Personal Details</h4>
+                                    <p id="saveStatus" class="page-intro-text">All changes are saved manually.</p>
+                                </div>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="toggleEditMode(false)">
+                                    <i class="fas fa-xmark"></i>
+                                    Cancel
+                                </button>
+                            </div>
+
+                            <div class="form-section form-section-photo">
+                                <div class="form-section-copy">
+                                    <h4>Profile Photo</h4>
+                                    <p class="form-section-meta" id="patientPhotoFilename">JPG or PNG only, up to 5 MB.</p>
+                                </div>
+                                <div class="profile-photo-upload-container">
+                                    <label for="patientPhotoInput" class="profile-photo-upload-label">
+                                        <div class="profile-photo-preview profile-photo-upload-preview" id="editProfilePhotoPreview">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <span class="btn btn-outline btn-sm">Choose Photo</span>
+                                    </label>
+                                    <input type="file" id="patientPhotoInput" accept="image/jpeg, image/png" hidden>
+                                </div>
+                            </div>
+                            <form id="profileForm" class="auth-form">
+                                <div class="form-section">
+                                    <div class="form-section-copy">
+                                        <h4>Basic Details</h4>
+                                        <p class="form-section-meta">Keep your name and account contact details accurate for appointments and medical records.</p>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="fullName" class="form-label form-label-required">Full Name</label>
+                                            <input type="text" class="form-input" id="fullName" name="full_name" required>
+                                            <span class="form-error hidden" id="fullNameError"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profileEmailInput" class="form-label">Email Address</label>
+                                            <input type="email" class="form-input" id="profileEmailInput" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <div class="form-section-copy">
+                                        <h4>Personal Health Details</h4>
+                                        <p class="form-section-meta">These details help doctors review your account and keep prescriptions more accurate.</p>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="dob" class="form-label">Date of Birth</label>
+                                            <input type="date" class="form-input dob-input" id="dob" name="date_of_birth" min="1900-01-01" autocomplete="bday">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="gender" class="form-label">Gender</label>
+                                            <select id="gender" name="gender" class="form-select">
+                                                <option value="">Select</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                                <option value="other">Other</option>
+                                                <option value="prefer_not_to_say">Prefer not to say</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="bloodGroup" class="form-label">Blood Group</label>
+                                            <select id="bloodGroup" name="blood_group" class="form-select">
+                                                <option value="">Select</option>
+                                                <option value="A+">A+</option>
+                                                <option value="A-">A-</option>
+                                                <option value="B+">B+</option>
+                                                <option value="B-">B-</option>
+                                                <option value="AB+">AB+</option>
+                                                <option value="AB-">AB-</option>
+                                                <option value="O+">O+</option>
+                                                <option value="O-">O-</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profileRole" class="form-label">Role</label>
+                                            <input type="text" class="form-input" id="profileRole" value="Patient" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <div class="form-section-copy">
+                                        <h4>Address</h4>
+                                        <p class="form-section-meta">Use your current address so your account profile stays complete and easier to verify.</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="address" class="form-label">Address</label>
+                                        <textarea class="form-textarea" id="address" name="address" rows="4" placeholder="Enter your current address"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        Save Changes
+                                    </button>
+                                    <button type="button" class="btn btn-outline" onclick="toggleEditMode(false)">Close Editor</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260403-9"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        if (!Auth.requireRole('patient')) {
+            throw new Error('Patient access required');
+        }
+
+        const MAX_PROFILE_PHOTO_SIZE = 5 * 1024 * 1024;
+        let selectedPatientPhoto = null;
+
+        function normalizeDateValue(dateValue) {
+            if (!dateValue) {
+                return '';
+            }
+
+            return String(dateValue).slice(0, 10);
+        }
+
+        function formatDisplayValue(value, fallback = 'Not provided') {
+            return value ? value : fallback;
+        }
+
+        function formatDisplayDate(dateValue) {
+            if (!dateValue) {
+                return 'Not provided';
+            }
+
+            try {
+                return formatDate(normalizeDateValue(dateValue), {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                return normalizeDateValue(dateValue);
+            }
+        }
+
+        function formatDisplayLabel(value) {
+            if (!value) {
+                return 'Not provided';
+            }
+
+            return String(value)
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+        }
+
+        function buildPatientHealthMeta(profile = {}) {
+            const parts = [];
+
+            if (profile.blood_group) {
+                parts.push(`Blood Group ${profile.blood_group}`);
+            }
+
+            if (profile.gender) {
+                parts.push(formatDisplayLabel(profile.gender));
+            }
+
+            if (profile.date_of_birth) {
+                parts.push(formatDisplayDate(profile.date_of_birth));
+            }
+
+            return parts.length
+                ? parts.join(' • ')
+                : 'Add your date of birth, gender, and blood group to complete your profile.';
+        }
+
+        function buildPatientSummary(profile = {}) {
+            const parts = [];
+
+            if (profile.gender) {
+                parts.push(formatDisplayLabel(profile.gender));
+            }
+
+            if (profile.blood_group) {
+                parts.push(`Blood Group ${profile.blood_group}`);
+            }
+
+            if (profile.date_of_birth) {
+                parts.push(`Born ${formatDisplayDate(profile.date_of_birth)}`);
+            }
+
+            if (!parts.length) {
+                return 'Add your date of birth, blood group, and address to complete your patient profile.';
+            }
+
+            return `${parts.join(' • ')}${profile.address ? ' • Address saved for appointments.' : ''}`;
+        }
+
+        function buildPatientSnapshot(profile = {}) {
+            const parts = [];
+
+            if (profile.date_of_birth) {
+                parts.push(`Date of birth: ${formatDisplayDate(profile.date_of_birth)}`);
+            }
+
+            if (profile.gender) {
+                parts.push(`Gender: ${formatDisplayLabel(profile.gender)}`);
+            }
+
+            if (profile.blood_group) {
+                parts.push(`Blood group: ${profile.blood_group}`);
+            }
+
+            if (profile.address) {
+                parts.push('Address on file');
+            }
+
+            return parts.length
+                ? parts.join(' • ')
+                : 'No personal health details saved yet.';
+        }
+
+        function setDobLimit() {
+            const today = new Date();
+            const localToday = new Date(today.getTime() - (today.getTimezoneOffset() * 60000))
+                .toISOString()
+                .split('T')[0];
+            document.getElementById('dob').max = localToday;
+        }
+
+        function toggleEditMode(isEditing) {
+            document.getElementById('profileInfoView').hidden = isEditing;
+            document.getElementById('profileEditCard').hidden = !isEditing;
+            document.getElementById('editInfoBtn').hidden = isEditing;
+
+            if (isEditing) {
+                document.getElementById('fullName').focus();
+            }
+        }
+
+        function fillProfileForm(user, profile = {}) {
+            document.getElementById('fullName').value = profile.full_name || user?.full_name || '';
+            document.getElementById('dob').value = normalizeDateValue(profile.date_of_birth);
+            document.getElementById('gender').value = profile.gender || '';
+            document.getElementById('bloodGroup').value = profile.blood_group || '';
+            document.getElementById('address').value = profile.address || '';
+        }
+
+        function getDraftPatientProfile() {
+            return {
+                full_name: document.getElementById('fullName').value.trim() || (Auth.getUser() || {}).full_name || '',
+                date_of_birth: document.getElementById('dob').value || null,
+                gender: document.getElementById('gender').value || null,
+                blood_group: document.getElementById('bloodGroup').value || null,
+                address: document.getElementById('address').value.trim() || null,
+                profile_photo: (Auth.getUser() || {}).profile_photo || null
+            };
+        }
+
+        function updatePhotoNotes(photoPath) {
+            document.getElementById('profilePhotoSummary').textContent = photoPath
+                ? 'This photo now appears across your patient account pages.'
+                : 'Add a friendly profile photo so your patient account feels complete.';
+
+            document.getElementById('patientPhotoBadge').textContent = photoPath
+                ? 'Photo added'
+                : 'Photo recommended';
+
+            if (!selectedPatientPhoto) {
+                document.getElementById('patientPhotoFilename').textContent = photoPath
+                    ? 'Current photo saved. Choose another JPG or PNG to replace it.'
+                    : 'JPG or PNG only, up to 5 MB.';
+            }
+        }
+
+        function updatePatientIdentity(user, profile = {}) {
+            const identity = updateSidebarIdentity({
+                user,
+                profile,
+                fallbackName: 'Patient',
+                fallbackIcon: 'fa-user'
+            });
+            const email = identity.user?.email || user?.email || 'Not available';
+            const displayName = profile?.full_name || identity.displayName;
+            const healthMeta = buildPatientHealthMeta(profile);
+
+            document.getElementById('patientIdentityName').textContent = displayName;
+            document.getElementById('patientIdentityRole').innerHTML = `
+                <i class="fas fa-user"></i>
+                Patient Account
+            `;
+            document.getElementById('patientIdentityBloodGroup').textContent = profile?.blood_group
+                ? `Blood Group ${profile.blood_group}`
+                : 'Blood group not added';
+            document.getElementById('patientIdentityBloodGroup').className = `status-badge ${profile?.blood_group ? 'active' : 'inactive'} patient-profile-blood-group`;
+            document.getElementById('profileEmail').textContent = email;
+            document.getElementById('profileEmailInput').value = email;
+            document.getElementById('patientHealthMeta').textContent = healthMeta;
+            document.getElementById('profileSummary').textContent = buildPatientSummary(profile);
+
+            renderUserAvatar('profilePhotoPreview', {
+                name: displayName,
+                photoPath: identity.photoPath,
+                fallbackIcon: 'fa-user'
+            });
+
+            if (!selectedPatientPhoto) {
+                renderUserAvatar('editProfilePhotoPreview', {
+                    name: displayName,
+                    photoPath: identity.photoPath,
+                    fallbackIcon: 'fa-user'
+                });
+            }
+
+            updatePhotoNotes(identity.photoPath);
+        }
+
+        function renderProfileInformation(user, profile = {}) {
+            document.getElementById('displayFullName').textContent = formatDisplayValue(profile.full_name || user?.full_name);
+            document.getElementById('displayDob').textContent = formatDisplayDate(profile.date_of_birth);
+            document.getElementById('displayGender').textContent = formatDisplayLabel(profile.gender);
+            document.getElementById('displayBloodGroup').textContent = formatDisplayValue(profile.blood_group);
+            document.getElementById('displayPatientSnapshot').textContent = buildPatientSnapshot(profile);
+            document.getElementById('displayAddress').textContent = formatDisplayValue(profile.address);
+        }
+
+        async function loadProfile() {
+            const localUser = Auth.getUser() || {};
+            updatePatientIdentity(localUser);
+            renderProfileInformation(localUser, {});
+            fillProfileForm(localUser, {});
+
+            try {
+                const result = await API.auth.me();
+                const user = result.user || localUser;
+                const profile = result.profile || {};
+
+                updatePatientIdentity(user, profile);
+                renderProfileInformation(user, profile);
+                fillProfileForm(user, profile);
+
+                syncStoredUserProfile({
+                    email: user.email || localUser.email,
+                    role: user.role || localUser.role
+                }, {
+                    full_name: profile.full_name || localUser.full_name,
+                    profile_photo: profile.profile_photo || null
+                });
+            } catch (error) {
+                console.error('Failed to load profile:', error);
+                showToast('Unable to load your profile right now.', 'error');
+            }
+        }
+
+        document.getElementById('patientPhotoInput')?.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > MAX_PROFILE_PHOTO_SIZE) {
+                showToast('Image size exceeds 5 MB limit. Please choose a smaller file.', 'error');
+                e.target.value = '';
+                return;
+            }
+
+            selectedPatientPhoto = file;
+            const objectUrl = URL.createObjectURL(file);
+            const previewElements = ['editProfilePhotoPreview', 'profilePhotoPreview', 'userAvatar'];
+            
+            previewElements.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerHTML = `<img src="${objectUrl}" alt="Photo upload preview">`;
+                }
+            });
+
+            document.getElementById('patientPhotoFilename').textContent = file.name;
+
+            try {
+                showLoading();
+                const formData = new FormData();
+                formData.append('photo', file);
+
+                const result = await API.uploads.profilePhoto(formData);
+                const remotePhotoPath = result.profile_photo;
+                const localUser = Auth.getUser() || {};
+                
+                if (typeof syncStoredUserProfile === 'function') {
+                    syncStoredUserProfile(localUser, {
+                        full_name: document.getElementById('fullName').value.trim() || localUser.full_name,
+                        profile_photo: remotePhotoPath
+                    });
+                }
+
+                updatePhotoNotes(remotePhotoPath);
+                showToast('Profile photo updated successfully', 'success');
+
+            } catch (error) {
+                showToast(error.message || 'Failed to upload photo.', 'error');
+                const profilePhotoMeta = (Auth.getUser() || {}).profile_photo || null;
+                updatePatientIdentity(Auth.getUser(), { profile_photo: profilePhotoMeta });
+                selectedPatientPhoto = null;
+                e.target.value = '';
+            } finally {
+                hideLoading();
+            }
+        });        async function updateProfile(event) {
+            event.preventDefault();
+
+            const payload = {
+                full_name: document.getElementById('fullName').value.trim(),
+                date_of_birth: document.getElementById('dob').value || null,
+                gender: document.getElementById('gender').value || null,
+                blood_group: document.getElementById('bloodGroup').value || null,
+                address: document.getElementById('address').value.trim() || null
+            };
+
+            if (!payload.full_name || payload.full_name.length < 3) {
+                showError('fullNameError', 'Full name must be at least 3 characters.');
+                return;
+            }
+
+            hideError('fullNameError');
+
+            try {
+                showLoading();
+                document.getElementById('saveStatus').textContent = 'Saving changes...';
+
+                await API.auth.updateProfile(payload);
+
+                syncStoredUserProfile({}, {
+                    full_name: payload.full_name,
+                    profile_photo: (Auth.getUser() || {}).profile_photo || null
+                });
+
+                updatePatientIdentity(Auth.getUser(), payload);
+                renderProfileInformation(Auth.getUser(), payload);
+                fillProfileForm(Auth.getUser(), payload);
+                document.getElementById('saveStatus').textContent = 'Profile updated successfully.';
+                toggleEditMode(false);
+                showToast('Profile updated successfully.', 'success');
+            } catch (error) {
+                document.getElementById('saveStatus').textContent = 'Unable to save profile.';
+                showToast(error.message || 'Failed to update profile.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initDashboardNavToggle();
+
+            setDobLimit();
+            document.getElementById('profileForm').addEventListener('submit', updateProfile);
+            await loadProfile();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

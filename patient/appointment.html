@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Appointment Details - MediSeba</title>
+    <meta name="description" content="View appointment details and payment status in MediSeba.">
+    <script>
+        (function ensureFreshDetailPage() {
+            const currentVersion = '20260403-2';
+            const url = new URL(window.location.href);
+
+            if (url.searchParams.get('v') === currentVersion) {
+                return;
+            }
+
+            url.searchParams.set('v', currentVersion);
+            window.location.replace(url.toString());
+        }());
+    </script>
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link rel="stylesheet" href="../css/auth.css?v=20260404-7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .detail-shell {
+            min-height: 100vh;
+            background: var(--gray-50);
+        }
+
+        .detail-shell-content {
+            width: 100%;
+            max-width: 1280px;
+            box-sizing: border-box;
+            margin: 0 auto;
+            padding: var(--space-6);
+        }
+
+        .detail-shell-card {
+            padding: var(--space-6);
+        }
+
+        .detail-shell-subtitle {
+            color: var(--gray-500);
+            margin-top: var(--space-1);
+        }
+
+        .detail-content-stack {
+            display: grid;
+            gap: var(--space-6);
+        }
+
+        .detail-top-row {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .detail-top-row > * {
+            min-width: 0;
+        }
+
+        .detail-side-meta {
+            text-align: right;
+        }
+
+        .detail-stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        .detail-info-card {
+            padding: var(--space-5);
+        }
+
+        .detail-info-card.is-muted {
+            background: var(--gray-50);
+        }
+
+        .detail-split-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .detail-shell-content {
+                padding: var(--space-4);
+            }
+
+            .detail-shell-card {
+                padding: var(--space-4);
+            }
+
+            .detail-top-row,
+            .detail-side-meta {
+                text-align: left;
+            }
+
+            .detail-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .detail-shell-content {
+                padding: var(--space-3);
+            }
+
+            .detail-shell-card,
+            .detail-info-card {
+                padding: var(--space-4);
+            }
+
+            .detail-split-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="detail-shell detail-page" style="margin: 0;">
+    <div class="detail-shell-content">
+        <main>
+            <div class="page-header" style="margin-bottom: var(--space-6);">
+                <div>
+                    <h1>Appointment Details</h1>
+                    <p class="detail-shell-subtitle">Review your booking information and current status.</p>
+                </div>
+                <a href="../patient/dashboard.html" class="btn btn-outline" id="backLink">Back</a>
+            </div>
+
+            <div class="card detail-shell-card" id="appointmentDetails">
+                <div class="empty-state">
+                    <div class="spinner"></div>
+                    <p>Loading appointment...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ── Video Call Modal ─────────────────────────────────── -->
+    <div id="videoCallModal" style="display:none; position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; flex-direction:column;">
+        <div style="width:90%; max-width:960px; background:var(--surface,#fff); border-radius:16px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.4);">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--primary,#2563eb);">
+                <div style="display:flex; align-items:center; gap:10px; color:#fff;">
+                    <i class="fas fa-video"></i>
+                    <span style="font-weight:600; font-size:1rem;">Video Consultation</span>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <a id="videoOpenNewTab" href="#" target="_blank" style="color:#fff; background:rgba(255,255,255,0.2); padding:6px 14px; border-radius:6px; font-size:0.85rem; text-decoration:none;">
+                        <i class="fas fa-external-link-alt"></i> Open in new tab
+                    </a>
+                    <button onclick="closeVideoCall()" style="color:#fff; background:rgba(255,255,255,0.15); border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem;">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+            <iframe id="videoFrame"
+                allow="camera; microphone; fullscreen; display-capture; autoplay"
+                style="width:100%; height:520px; border:none; display:block;"
+                src=""></iframe>
+            <div style="padding:12px 20px; background:var(--gray-50,#f9fafb); font-size:0.8rem; color:var(--gray-500,#6b7280); display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-info-circle" style="color:var(--primary,#2563eb);"></i>
+                Powered by Jitsi Meet &mdash; free &amp; encrypted. Allow camera &amp; microphone when prompted.
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260402-4"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        if (!Auth.requireAuth()) {
+            throw new Error('Authentication required');
+        }
+
+        function getBackLink() {
+            return Auth.hasRole('doctor') ? 'doctor-appointments.html' : 'appointments.html';
+        }
+
+        async function downloadReceipt(paymentId) {
+            try {
+                showLoading();
+                await API.payments.downloadReceipt(paymentId);
+                showToast('Receipt PDF downloaded.', 'success');
+            } catch (error) {
+                showToast(error.message || 'Failed to download receipt PDF.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadAppointment() {
+            const appointmentId = new URLSearchParams(window.location.search).get('id');
+            const container = document.getElementById('appointmentDetails');
+            const isDoctor = Auth.hasRole('doctor');
+
+            document.getElementById('backLink').href = getBackLink();
+            document.getElementById('backLink').textContent = isDoctor ? 'Back to Queue' : 'Back to Appointments';
+
+            if (!appointmentId) {
+                container.innerHTML = '<p>Missing appointment ID.</p>';
+                return;
+            }
+
+            try {
+                const appointment = await API.appointments.get(appointmentId);
+                const paymentStatus = appointment.payment_status || 'pending';
+                const prescriptionNumber = appointment.prescription_number || 'Not issued yet';
+                const actionButtons = [];
+                if (appointment.prescription_id) {
+                    actionButtons.push(`<a href="../patient/prescription.html?id=${encodeURIComponent(appointment.prescription_id)}&v=20260403-1" class="btn btn-primary">View Prescription</a>`);
+                } else if (isDoctor && appointment.status === 'completed') {
+                    actionButtons.push(`<a href="../doctor/doctor-prescriptions.html?appointment=${encodeURIComponent(appointment.id)}" class="btn btn-primary">Write Prescription</a>`);
+                }
+
+                // Video call button
+                if (appointment.video_call_enabled && appointment.video_room_url &&
+                    (appointment.status === 'confirmed' || appointment.status === 'in_progress')) {
+                    actionButtons.push(`<button type="button" class="btn btn-success" onclick="openVideoCall(${appointment.id}, '${escapeHtml(appointment.video_room_url)}')"><i class="fas fa-video"></i> Join Video Call</button>`);
+                }
+
+                if (!isDoctor && paymentStatus !== 'success') {
+                    actionButtons.push('<a href="../patient/payments.html?v=20260403-4" class="btn btn-outline">Open Payments</a>');
+                }
+
+                if (appointment.payment_id && ['success', 'refunded', 'partially_refunded'].includes(paymentStatus)) {
+                    actionButtons.push(`<button type="button" class="btn btn-outline" onclick="downloadReceipt(${Number(appointment.payment_id)})">Download Receipt</button>`);
+                }
+
+                container.innerHTML = `
+                    <div class="detail-content-stack">
+                        <div class="detail-top-row">
+                            <div>
+                                <p style="color: var(--gray-500); font-size: var(--font-size-sm);">Appointment Number</p>
+                                <h2>${escapeHtml(appointment.appointment_number || '')}</h2>
+                                <p style="margin-top: var(--space-2); color: var(--gray-600);">${escapeHtml(appointment.doctor_name || '')} • ${escapeHtml(appointment.specialty || '')}</p>
+                            </div>
+                            <div class="detail-side-meta">
+                                <span class="status-badge ${escapeHtml(appointment.status || 'pending')}">${escapeHtml(appointment.status || 'pending')}</span>
+                                <p style="margin-top: var(--space-3); color: var(--gray-600);">Token #${escapeHtml(String(appointment.token_number || '-'))}</p>
+                            </div>
+                        </div>
+
+                        <div class="stats-grid detail-stats-grid">
+                            <div class="stat-card">
+                                <p class="stat-card-title">Date</p>
+                                <p class="stat-card-value" style="font-size: var(--font-size-lg);">${formatDate(appointment.appointment_date)}</p>
+                            </div>
+                            <div class="stat-card">
+                                <p class="stat-card-title">Estimated Time</p>
+                                <p class="stat-card-value" style="font-size: var(--font-size-lg);">${formatTime(appointment.estimated_time || '00:00:00')}</p>
+                            </div>
+                            <div class="stat-card">
+                                <p class="stat-card-title">Payment</p>
+                                <p class="stat-card-value" style="font-size: var(--font-size-lg);">${escapeHtml(paymentStatus)}</p>
+                            </div>
+                            <div class="stat-card">
+                                <p class="stat-card-title">Prescription</p>
+                                <p class="stat-card-value" style="font-size: var(--font-size-lg);">${escapeHtml(prescriptionNumber)}</p>
+                            </div>
+                        </div>
+
+                        <div class="card detail-info-card is-muted">
+                            <h3>Clinic Information</h3>
+                            <p style="margin-top: var(--space-2);">${escapeHtml(appointment.clinic_name || 'Clinic details unavailable')}</p>
+                            <p style="color: var(--gray-600); margin-top: var(--space-1);">${escapeHtml(appointment.clinic_address || '')}</p>
+                            <p style="color: var(--gray-600); margin-top: var(--space-2);">Consultation Fee: ৳${escapeHtml(String(appointment.consultation_fee || '0'))}</p>
+                        </div>
+
+                        <div class="detail-split-grid">
+                            <div class="card detail-info-card">
+                                <h3>Symptoms</h3>
+                                <p style="margin-top: var(--space-2); color: var(--gray-600);">${escapeHtml(appointment.symptoms || 'No symptoms provided')}</p>
+                            </div>
+                            <div class="card detail-info-card">
+                                <h3>Notes</h3>
+                                <p style="margin-top: var(--space-2); color: var(--gray-600);">${escapeHtml(appointment.notes || 'No notes added')}</p>
+                            </div>
+                        </div>
+
+                        ${actionButtons.length ? `
+                            <div class="detail-actions">
+                                ${actionButtons.join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3>Unable to load appointment</h3>
+                        <p>${escapeHtml(error.message || 'Please try again later.')}</p>
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAppointment);
+
+        // ── Video Call ──────────────────────────────────────────
+        function openVideoCall(appointmentId, roomUrl) {
+            const modal  = document.getElementById('videoCallModal');
+            const frame  = document.getElementById('videoFrame');
+            const newTab = document.getElementById('videoOpenNewTab');
+            newTab.href        = roomUrl;
+            frame.src          = roomUrl;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoCall() {
+            const modal = document.getElementById('videoCallModal');
+            const frame = document.getElementById('videoFrame');
+            frame.src   = '';
+            modal.style.display  = 'none';
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('videoCallModal').addEventListener('click', function(e) {
+            if (e.target === this) closeVideoCall();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeVideoCall();
+        });
+    </script>
+</body>
+</html>
+
+
+
+

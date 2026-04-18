@@ -1,0 +1,899 @@
+/* ============================================
+   MediSeba - Responsive Stylesheet
+   Mobile-first responsive design
+   ============================================ */
+
+/* Large Screens (1024px and below) */
+@media (max-width: 1024px) {
+    .hero h1 {
+        font-size: 3rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .specialties-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .doctors-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .dashboard-content,
+    .page-content {
+        padding: var(--space-5) !important;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .hero-image {
+        width: min(100%, 500px);
+        padding-inline: var(--space-4);
+        padding-bottom: var(--space-8);
+    }
+
+    .floating-card {
+        min-width: 192px;
+        max-width: 210px;
+        padding: var(--space-3) var(--space-4);
+    }
+
+    .card-1 {
+        top: 6%;
+        left: 2%;
+        transform: none;
+    }
+
+    .card-2 {
+        right: 0;
+        bottom: 4%;
+        transform: none;
+    }
+
+    .card-header,
+    .card-body,
+    .filter-bar {
+        padding-left: var(--space-5);
+        padding-right: var(--space-5);
+    }
+
+    .profile-photo-grid-account,
+    .profile-photo-grid-editor,
+    .booking-container {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .top-header,
+    .page-header,
+    .card-header,
+    .filter-bar,
+    .patient-dashboard-upcoming-summary,
+    .patient-appointments-toolbar,
+    .patient-prescriptions-toolbar,
+    .patient-payments-toolbar,
+    .doctor-queue-toolbar,
+    .doctor-queue-summary,
+    .doctor-schedule-editor-toolbar,
+    .doctor-schedule-slot-header,
+    .doctor-followup-card-header {
+        align-items: stretch;
+    }
+
+    .top-header .page-intro,
+    .top-header .header-actions,
+    .page-header > *,
+    .card-header > *,
+    .filter-bar > * {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .top-header .header-actions,
+    .page-header .header-actions,
+    .page-header .action-row,
+    .card-header .table-actions,
+    .filter-bar-actions,
+    .dashboard-header-tools {
+        margin-left: 0;
+        justify-content: flex-start;
+    }
+
+    .filter-bar-fields,
+    .doctor-filter-controls,
+    .patient-filter-controls {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .doctor-filter-field,
+    .patient-filter-field {
+        flex: 1 1 220px;
+        min-width: min(100%, 220px);
+    }
+
+    .patient-dashboard-cta {
+        justify-items: start;
+    }
+
+    .patient-dashboard-cta-copy {
+        text-align: left;
+    }
+
+    .patient-dashboard-cta-actions,
+    .doctor-schedule-editor-actions {
+        justify-content: flex-start;
+    }
+
+    .patient-dashboard-upcoming-summary > *,
+    .patient-appointments-toolbar > *,
+    .patient-prescriptions-toolbar > *,
+    .patient-payments-toolbar > *,
+    .doctor-queue-toolbar > *,
+    .doctor-queue-summary > *,
+    .doctor-schedule-editor-toolbar > * {
+        min-width: 0;
+    }
+}
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+    body.sidebar-open {
+        overflow: hidden;
+    }
+
+    /* Navigation */
+    .nav-toggle {
+        display: flex;
+    }
+    
+    .nav-menu {
+        position: fixed;
+        top: 72px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background-color: var(--surface-elevated);
+        padding: var(--space-6);
+        gap: var(--space-4);
+        box-shadow: var(--shadow-lg);
+        border-top: 1px solid var(--border-color);
+        max-height: calc(100vh - 72px);
+        overflow-y: auto;
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--transition-base);
+        z-index: 999;
+    }
+    
+    .nav-menu.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .nav-auth {
+        margin-top: var(--space-4);
+        padding-top: var(--space-4);
+        border-top: 1px solid var(--gray-200);
+    }
+    
+    .nav-auth .btn {
+        width: 100%;
+    }
+    
+    /* Hero Section */
+    .hero {
+        padding: calc(72px + var(--space-12)) 0 var(--space-12);
+    }
+    
+    .hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: var(--space-10);
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-description {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .hero-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .hero-stats {
+        justify-content: center;
+    }
+    
+    .hero-image {
+        order: -1;
+    }
+    
+    .hero-image img {
+        max-width: 300px;
+    }
+    
+    .floating-card {
+        display: none;
+    }
+    
+    /* Features */
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+    
+    /* How It Works */
+    .steps {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .how-it-works-media,
+    .testimonial-showcase {
+        grid-template-columns: 1fr;
+    }
+
+    .step {
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .step-connector {
+        width: 2px;
+        height: 40px;
+        margin: var(--space-4) 0;
+        background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+    }
+    
+    /* Specialties */
+    .specialties-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Doctors */
+    .doctors-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* CTA */
+    .cta-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .cta-text h2 {
+        font-size: var(--font-size-2xl);
+    }
+    
+    /* Footer */
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-8);
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        gap: var(--space-4);
+        text-align: center;
+    }
+    
+    /* Auth Pages */
+    .auth-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .auth-image {
+        order: 2;
+        min-height: auto;
+        padding: var(--space-4) var(--space-4) var(--space-5);
+        align-items: flex-start;
+    }
+
+    .auth-image-shell {
+        width: 100%;
+        max-width: none;
+        gap: var(--space-4);
+    }
+
+    .auth-image-content h2 {
+        font-size: clamp(2rem, 8vw, 2.55rem);
+    }
+
+    .auth-image-content p {
+        font-size: var(--font-size-base);
+        margin-bottom: var(--space-3);
+    }
+
+    .auth-side-tagline {
+        margin-bottom: var(--space-4) !important;
+    }
+
+    .auth-feature-grid {
+        gap: var(--space-3);
+    }
+
+    .auth-side-glance {
+        display: none;
+    }
+
+    .auth-form-container {
+        order: 1;
+        align-items: flex-start;
+        padding: var(--space-4) var(--space-4) var(--space-3);
+    }
+
+    .auth-form-wrapper {
+        max-width: none;
+    }
+    
+    /* Dashboard */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: min(86vw, 320px);
+        max-width: calc(100vw - var(--space-4));
+        z-index: 1001;
+        box-shadow: var(--shadow-xl);
+        transform: translateX(calc(-100% - var(--space-4)));
+        transition: transform var(--transition-base), box-shadow var(--transition-base);
+        will-change: transform;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .top-header {
+        padding: var(--space-4);
+        align-items: stretch;
+    }
+
+    .header-search {
+        order: 3;
+        width: 100%;
+        min-width: 0;
+        flex-basis: 100%;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .page-header,
+    .card-header,
+    .filter-bar,
+    .action-row-between {
+        align-items: stretch;
+    }
+
+    .page-content,
+    .dashboard-content {
+        padding: var(--space-4) !important;
+        gap: var(--space-5);
+    }
+
+    .dashboard-section,
+    .dashboard-section-lg {
+        gap: var(--space-5);
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: var(--space-4);
+        margin-bottom: var(--space-5);
+    }
+
+    .card-header,
+    .stat-card-header {
+        gap: var(--space-3);
+    }
+
+    .card-header,
+    .card-body,
+    .filter-bar {
+        padding-left: var(--space-4);
+        padding-right: var(--space-4);
+    }
+
+    .card-header > *,
+    .filter-bar > *,
+    .page-header > * {
+        width: 100%;
+    }
+
+    .filter-bar-actions,
+    .filter-bar-fields,
+    .action-row,
+    .form-actions,
+    .profile-photo-actions,
+    .header-popover-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .filter-bar-fields > *,
+    .action-row > *,
+    .form-actions > *,
+    .profile-photo-actions > * {
+        flex: 1 1 220px;
+    }
+
+    .sidebar-footer .btn {
+        width: 100%;
+    }
+    
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background-color: var(--overlay-surface);
+        backdrop-filter: blur(2px);
+        z-index: 1000;
+    }
+    
+    .sidebar-overlay.active {
+        display: block;
+    }
+    
+    /* Doctor Profile */
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .profile-avatar {
+        margin: 0 auto;
+    }
+    
+    .profile-info {
+        text-align: center;
+    }
+    
+    .profile-meta {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .profile-actions {
+        justify-content: center;
+    }
+    
+    /* Booking */
+    .booking-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .booking-summary {
+        order: -1;
+    }
+    
+    /* Tables */
+    .table-responsive {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        margin-inline: calc(var(--space-4) * -1);
+        padding-inline: var(--space-4);
+        scrollbar-width: thin;
+    }
+    
+    .table-responsive table {
+        min-width: 640px;
+    }
+
+    th,
+    td {
+        padding-left: var(--space-4);
+        padding-right: var(--space-4);
+    }
+
+    .table-actions {
+        justify-content: flex-start;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+    }
+
+    .form-input,
+    .form-select,
+    .btn,
+    .nav-toggle {
+        min-height: 46px;
+    }
+
+    .form-textarea {
+        min-height: 132px;
+    }
+}
+
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+    :root {
+        --space-20: 3rem;
+        --space-16: 2.5rem;
+        --space-12: 2rem;
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+    }
+    
+    .hero-actions .btn {
+        width: 100%;
+    }
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: var(--space-6);
+    }
+    
+    .specialties-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .cta-actions .btn {
+        width: 100%;
+    }
+
+    .content-actions {
+        flex-direction: column;
+    }
+
+    .content-actions .btn {
+        width: 100%;
+    }
+
+    .auth-form-container {
+        padding: var(--space-3);
+    }
+
+    .auth-form-wrapper {
+        padding: var(--space-5);
+        border-radius: var(--radius-2xl);
+    }
+
+    .auth-image {
+        padding: var(--space-3) var(--space-3) var(--space-4);
+    }
+
+    .auth-side-kicker,
+    .auth-trust-signals span {
+        font-size: 0.76rem;
+    }
+
+    .auth-side-tagline {
+        display: none;
+    }
+
+    .otp-inputs {
+        gap: var(--space-2);
+    }
+
+    .otp-digit {
+        width: 44px;
+        height: 52px;
+    }
+    
+    .section-header h2 {
+        font-size: var(--font-size-2xl);
+    }
+
+    .testimonial-spotlight,
+    .video-card,
+    .transcript-card {
+        padding: var(--space-5);
+    }
+
+    .testimonial-quote {
+        font-size: var(--font-size-lg);
+    }
+
+    .page-main-shell {
+        padding: 120px 0 64px;
+    }
+    
+    /* Forms */
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        font-size: 16px;
+    }
+    
+    /* Cards */
+    .top-header {
+        gap: var(--space-3);
+    }
+
+    .header-actions {
+        justify-content: stretch;
+    }
+
+    .header-actions .btn,
+    .page-header .btn,
+    .filter-bar-actions .btn,
+    .form-actions .btn,
+    .profile-photo-actions .btn,
+    .action-row > .btn {
+        width: 100%;
+    }
+
+    .page-content,
+    .dashboard-content {
+        padding: var(--space-3) !important;
+    }
+
+    .top-header,
+    .page-header {
+        gap: var(--space-3);
+    }
+
+    .top-header .page-intro,
+    .top-header .header-actions,
+    .page-header > *,
+    .dashboard-header-tools,
+    .header-search {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .header-actions,
+    .dashboard-header-tools {
+        margin-left: 0;
+        justify-content: flex-start;
+    }
+
+    .page-header .action-row,
+    .page-header .header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .card-header,
+    .card-body,
+    .filter-bar {
+        padding-left: var(--space-4);
+        padding-right: var(--space-4);
+    }
+
+    .stat-card {
+        padding: var(--space-5);
+    }
+
+    .profile-photo-grid-account,
+    .profile-photo-grid-editor {
+        grid-template-columns: 1fr;
+    }
+
+    .doctor-profile-identity-grid,
+    .patient-profile-identity-grid,
+    .doctor-schedule-slot-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-photo-preview {
+        width: 112px;
+        height: 112px;
+    }
+
+    .profile-photo-grid-account .profile-account-copy,
+    .profile-photo-grid-editor .profile-photo-copy,
+    .profile-photo-grid-account .profile-photo-card,
+    .profile-photo-grid-editor .profile-photo-card {
+        justify-items: center;
+        text-align: center;
+    }
+
+    .doctor-profile-meta,
+    .patient-profile-meta {
+        justify-content: center;
+    }
+
+    .doctor-profile-summary,
+    .patient-profile-summary {
+        text-align: center;
+    }
+
+    .patient-profile-info-card .card-header,
+    .doctor-profile-info-card .card-header {
+        align-items: flex-start;
+    }
+
+    .patient-profile-edit-btn,
+    .doctor-profile-edit-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .patient-dashboard-stats .stat-card,
+    .doctor-profile-stat-grid .stat-card,
+    .patient-profile-stat-grid .stat-card {
+        min-height: auto;
+    }
+
+    .patient-dashboard-upcoming-summary,
+    .patient-appointments-toolbar,
+    .patient-prescriptions-toolbar,
+    .patient-payments-toolbar,
+    .doctor-queue-toolbar,
+    .doctor-queue-summary,
+    .doctor-schedule-editor-toolbar {
+        padding: var(--space-4);
+    }
+
+    .patient-dashboard-upcoming-status .table-meta-text,
+    .doctor-queue-status .table-meta-text,
+    .doctor-appointments-status .table-meta-text,
+    .doctor-person-meta .table-meta-text,
+    .patient-appointments-status .table-meta-text,
+    .patient-appointments-payment .table-meta-text,
+    .patient-payments-status .table-meta-text {
+        max-width: none;
+    }
+
+    .table-responsive {
+        margin-inline: calc(var(--space-4) * -1);
+        padding-inline: var(--space-4);
+    }
+
+    .table-responsive table {
+        min-width: 520px;
+    }
+    
+    /* Toast */
+    .toast-container {
+        left: var(--space-4);
+        right: var(--space-4);
+    }
+    
+    .toast {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .top-header,
+    .page-header,
+    .card-header,
+    .filter-bar {
+        gap: var(--space-3);
+    }
+
+    .header-actions .btn,
+    .page-header .btn,
+    .patient-dashboard-cta-actions .btn,
+    .doctor-schedule-editor-actions .btn,
+    .doctor-filter-actions .btn,
+    .patient-filter-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .patient-dashboard-cta-actions,
+    .doctor-schedule-editor-actions,
+    .doctor-filter-actions,
+    .patient-filter-actions {
+        width: 100%;
+    }
+
+    .card-header,
+    .card-body,
+    .filter-bar {
+        padding-left: var(--space-3);
+        padding-right: var(--space-3);
+    }
+
+    .table-responsive table {
+        min-width: 460px;
+    }
+}
+
+/* Small Mobile (360px and below) */
+@media (max-width: 360px) {
+    .hero h1 {
+        font-size: 1.75rem;
+    }
+    
+    .stat-number {
+        font-size: var(--font-size-2xl);
+    }
+
+    .sidebar {
+        width: calc(100vw - var(--space-3));
+        max-width: calc(100vw - var(--space-3));
+    }
+
+    .card-header,
+    .card-body,
+    .filter-bar,
+    .page-content,
+    .dashboard-content {
+        padding-left: var(--space-3) !important;
+        padding-right: var(--space-3) !important;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .footer,
+    .hero-actions,
+    .btn,
+    .loading-overlay,
+    .toast-container {
+        display: none !important;
+    }
+    
+    .hero {
+        padding: var(--space-8) 0;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+    
+    a {
+        text-decoration: underline;
+    }
+}

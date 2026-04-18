@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile - MediSeba</title>
+    <meta name="description" content="Manage your doctor profile, clinic information, and consultation details.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link rel="stylesheet" href="../css/auth.css?v=20260404-7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="../doctor/doctor-dashboard.html"><i class="fas fa-home"></i>Dashboard</a></li>
+                    <li><a href="../doctor/doctor-appointments.html"><i class="fas fa-calendar-check"></i>Appointments</a></li>
+                    <li><a href="../doctor/doctor-prescriptions.html"><i class="fas fa-file-prescription"></i>Prescriptions</a></li>
+                    <li><a href="../doctor/doctor-schedule.html"><i class="fas fa-clock"></i>My Schedule</a></li>
+                    <li><a href="../doctor/doctor-my-profile.html" class="active"><i class="fas fa-user-md"></i>My Profile</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Doctor</span>
+                        <span class="user-role">Doctor</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-intro">
+                    <h2>My Profile</h2>
+                    <p class="page-intro-text">Review your public doctor details and update the information patients see before booking.</p>
+                </div>
+                <div class="header-actions action-row">
+                    <button class="nav-toggle" id="navToggle" onclick="toggleSidebar()" aria-label="Toggle Navigation" style="display: none;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="../doctor/doctor-dashboard.html" class="btn btn-outline btn-sm">
+                        <i class="fas fa-table-columns"></i>
+                        Dashboard
+                    </a>
+                </div>
+            </header>
+
+            <div class="dashboard-content doctor-profile-content">
+                <div class="card nested-surface-card doctor-profile-hero">
+                    <div class="profile-photo-grid-account">
+                        <div class="profile-account-copy doctor-profile-identity">
+                            <div class="doctor-profile-identity-copy">
+                                <p class="doctor-profile-eyebrow">Doctor Profile</p>
+                                <h3 id="doctorIdentityName" class="doctor-profile-name">Loading...</h3>
+                                <div class="doctor-profile-meta">
+                                    <span id="doctorIdentityRole" class="doctor-profile-role">
+                                        <i class="fas fa-user-doctor"></i>
+                                        Doctor
+                                    </span>
+                                    <span class="status-badge inactive doctor-profile-specialty" id="doctorIdentitySpecialty">Specialty not added</span>
+                                    <span class="status-badge pending" id="verificationBadge">Pending Approval</span>
+                                </div>
+                                <p class="doctor-profile-summary" id="profileSummary">Your doctor profile details will appear here.</p>
+                            </div>
+
+                            <div class="doctor-profile-identity-grid">
+                                <div class="nested-surface-card">
+                                    <div class="table-meta-text">Account Email</div>
+                                    <div id="profileEmail" class="doctor-profile-meta-value profile-email-value">Loading...</div>
+                                </div>
+                                <div class="nested-surface-card">
+                                    <div class="table-meta-text">Clinic Overview</div>
+                                    <div id="doctorClinicMeta" class="doctor-profile-meta-value">Add clinic details to complete your public profile.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-photo-card doctor-profile-photo-card">
+                            <div class="profile-photo-preview" id="profilePhotoPreview">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div class="profile-photo-copy">
+                                <h4>Doctor Photo</h4>
+                                <p id="doctorPhotoSummary">Add a professional photo so patients recognize you before booking.</p>
+                            </div>
+                            <span class="token-badge doctor-profile-photo-badge" id="doctorPhotoBadge">Photo recommended</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card doctor-profile-info-card">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3>Saved Information</h3>
+                            <p class="card-header-meta">This is the information shown across your doctor profile, listing, and booking context.</p>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-sm doctor-profile-edit-btn" id="editInfoBtn" onclick="toggleEditMode(true)">
+                            <i class="fas fa-pen-to-square"></i>
+                            Edit Information
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="profileInfoView" class="dashboard-section">
+                            <div class="stats-grid doctor-profile-stat-grid">
+                                <div class="stat-card">
+                                    <p class="stat-card-title">Full Name</p>
+                                    <p class="stat-card-value doctor-profile-stat-value" id="displayFullName">-</p>
+                                </div>
+                                <div class="stat-card">
+                                    <p class="stat-card-title">Specialty</p>
+                                    <p class="stat-card-value doctor-profile-stat-value" id="displaySpecialty">-</p>
+                                </div>
+                                <div class="stat-card">
+                                    <p class="stat-card-title">Experience</p>
+                                    <p class="stat-card-value doctor-profile-stat-value" id="displayExperience">-</p>
+                                </div>
+                                <div class="stat-card">
+                                    <p class="stat-card-title">Consultation Fee</p>
+                                    <p class="stat-card-value doctor-profile-stat-value" id="displayFee">-</p>
+                                </div>
+                            </div>
+
+                            <div class="stats-grid doctor-profile-stat-grid">
+                                <div class="stat-card">
+                                    <p class="stat-card-title">Registration Number</p>
+                                    <p class="stat-card-value doctor-profile-stat-value" id="displayRegistration">-</p>
+                                </div>
+                                <div class="stat-card">
+                                    <p class="stat-card-title">Languages</p>
+                                    <p class="stat-card-value doctor-profile-stat-value" id="displayLanguages">-</p>
+                                </div>
+                            </div>
+
+                            <div class="doctor-profile-detail-grid">
+                                <div class="card nested-surface-card doctor-profile-detail-card">
+                                    <div class="doctor-profile-section-heading">
+                                        <h4>Qualification</h4>
+                                        <p>Professional qualifications and certifications patients can review before booking.</p>
+                                    </div>
+                                    <p id="displayQualification">Not provided</p>
+                                </div>
+
+                                <div class="card nested-surface-card doctor-profile-detail-card">
+                                    <div class="doctor-profile-section-heading">
+                                        <h4>Clinic Details</h4>
+                                        <p>Your clinic or chamber information shown on the profile and booking flow.</p>
+                                    </div>
+                                    <p id="displayClinicName" class="doctor-profile-meta-value">Not provided</p>
+                                    <p id="displayClinicAddress">Not provided</p>
+                                </div>
+
+                                <div class="card nested-surface-card doctor-profile-detail-card is-wide">
+                                    <div class="doctor-profile-section-heading">
+                                        <h4>Bio</h4>
+                                        <p>A short introduction that helps patients understand your practice and background.</p>
+                                    </div>
+                                    <p id="displayBio">Not provided</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="profileEditCard" hidden>
+                            <div class="action-row action-row-between doctor-profile-edit-header">
+                                <div class="page-intro">
+                                    <h4>Edit Doctor Details</h4>
+                                    <p id="saveStatus" class="page-intro-text">Update your public doctor details, including your registration number.</p>
+                                </div>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="toggleEditMode(false)">
+                                    <i class="fas fa-xmark"></i>
+                                    Cancel
+                                </button>
+                            </div>
+
+                            <div class="profile-photo-uploader doctor-profile-photo-uploader">
+                                <div class="profile-photo-grid-editor">
+                                    <div class="profile-photo-card">
+                                        <div class="profile-photo-preview" id="editDoctorPhotoPreview">
+                                            <i class="fas fa-user-md"></i>
+                                        </div>
+                                        <div class="profile-photo-copy">
+                                            <h4>Update Doctor Photo</h4>
+                                            <p>Shown on your doctor profile, booking page, and doctor listings.</p>
+                                        </div>
+                                    </div>
+                                    <div class="dashboard-section-sm doctor-profile-photo-edit-copy">
+                                        <div class="page-intro">
+                                            <h4>Choose a New Photo</h4>
+                                            <p class="photo-upload-note" id="doctorPhotoFilename">JPG or PNG only, up to 5 MB.</p>
+                                        </div>
+                                        <div class="profile-photo-actions">
+                                            <input type="file" id="doctorPhotoInput" class="profile-photo-input" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+                                            <button type="button" class="btn btn-outline" onclick="document.getElementById('doctorPhotoInput').click()">
+                                                <i class="fas fa-image"></i>
+                                                Choose Photo
+                                            </button>
+                                            <button type="button" class="btn btn-primary" id="doctorPhotoUploadBtn" onclick="uploadDoctorPhoto()">
+                                                <i class="fas fa-upload"></i>
+                                                Upload Photo
+                                            </button>
+                                        </div>
+                                        <p class="profile-photo-status" id="doctorPhotoStatus"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <form id="profileForm" class="auth-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="fullName" class="form-label form-label-required">Full Name</label>
+                                        <input type="text" class="form-input" id="fullName" name="full_name" required>
+                                        <span class="form-error hidden" id="fullNameError"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="profileEmailInput" class="form-label">Email Address</label>
+                                        <input type="email" class="form-input" id="profileEmailInput" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="specialty" class="form-label">Specialty</label>
+                                        <input type="text" class="form-input" id="specialty" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="registrationNumber" class="form-label">Registration Number</label>
+                                        <input type="text" class="form-input" id="registrationNumber" maxlength="100" placeholder="Enter your BMDC or professional registration number">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="experienceYears" class="form-label">Experience (Years)</label>
+                                        <input type="number" class="form-input" id="experienceYears" min="0" max="70">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="consultationFee" class="form-label">Consultation Fee (BDT)</label>
+                                        <input type="number" class="form-input" id="consultationFee" min="0" step="0.01">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="qualification" class="form-label">Qualification</label>
+                                    <textarea class="form-textarea" id="qualification" rows="3" placeholder="MBBS, FCPS, MD"></textarea>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="clinicName" class="form-label">Clinic Name</label>
+                                        <input type="text" class="form-input" id="clinicName" maxlength="255" placeholder="Clinic or chamber name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="languages" class="form-label">Languages</label>
+                                        <input type="text" class="form-input" id="languages" placeholder="Bengali, English">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="clinicAddress" class="form-label">Clinic Address</label>
+                                    <textarea class="form-textarea" id="clinicAddress" rows="3" placeholder="Enter your chamber or clinic address"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="bio" class="form-label">Bio</label>
+                                    <textarea class="form-textarea" id="bio" rows="5" placeholder="Write a short doctor bio for patients."></textarea>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        Save Changes
+                                    </button>
+                                    <button type="button" class="btn btn-outline" onclick="toggleEditMode(false)">Close Editor</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260403-9"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        if (!Auth.requireRole('doctor')) {
+            throw new Error('Doctor access required');
+        }
+
+        const MAX_PROFILE_PHOTO_SIZE = 5 * 1024 * 1024;
+        let selectedDoctorPhoto = null;
+
+        function toggleEditMode(isEditing) {
+            document.getElementById('profileInfoView').hidden = isEditing;
+            document.getElementById('profileEditCard').hidden = !isEditing;
+            document.getElementById('editInfoBtn').hidden = isEditing;
+
+            if (isEditing) {
+                document.getElementById('fullName').focus();
+            }
+        }
+
+        function formatDisplayValue(value, fallback = 'Not provided') {
+            if (value === null || value === undefined || value === '') {
+                return fallback;
+            }
+
+            return value;
+        }
+
+        function formatCurrency(value) {
+            const amount = Number(value || 0);
+            return `BDT ${amount.toFixed(0)}`;
+        }
+
+        function formatLanguages(languages) {
+            if (!Array.isArray(languages) || languages.length === 0) {
+                return 'Not provided';
+            }
+
+            return languages.join(', ');
+        }
+
+        function parseLanguages(value) {
+            return value
+                .split(',')
+                .map((item) => item.trim())
+                .filter(Boolean);
+        }
+
+        function getDraftDoctorProfile() {
+            return {
+                full_name: document.getElementById('fullName').value.trim() || (Auth.getUser() || {}).full_name || '',
+                specialty: document.getElementById('specialty').value || null,
+                registration_number: document.getElementById('registrationNumber').value || null,
+                experience_years: Number(document.getElementById('experienceYears').value || 0),
+                consultation_fee: Number(document.getElementById('consultationFee').value || 0),
+                qualification: document.getElementById('qualification').value.trim() || null,
+                clinic_name: document.getElementById('clinicName').value.trim() || null,
+                clinic_address: document.getElementById('clinicAddress').value.trim() || null,
+                bio: document.getElementById('bio').value.trim() || null,
+                languages: parseLanguages(document.getElementById('languages').value),
+                profile_photo: (Auth.getUser() || {}).profile_photo || null,
+                is_verified: document.getElementById('verificationBadge').classList.contains('confirmed')
+            };
+        }
+
+        function updateDoctorPhotoNotes(photoPath) {
+            document.getElementById('doctorPhotoSummary').textContent = photoPath
+                ? 'This photo now appears on your booking profile and doctor listings.'
+                : 'Add a professional photo so patients recognize you before booking.';
+
+            document.getElementById('doctorPhotoBadge').textContent = photoPath
+                ? 'Public photo ready'
+                : 'Photo recommended';
+
+            if (!selectedDoctorPhoto) {
+                document.getElementById('doctorPhotoFilename').textContent = photoPath
+                    ? 'Current photo saved. Choose another JPG or PNG to replace it.'
+                    : 'JPG or PNG only, up to 5 MB.';
+            }
+        }
+
+        function updateDoctorIdentity(user, profile = {}) {
+            const identity = updateSidebarIdentity({
+                user,
+                profile,
+                fallbackName: 'Doctor',
+                fallbackIcon: 'fa-user-md'
+            });
+            const email = identity.user?.email || user?.email || 'Not available';
+            const verified = !!profile?.is_verified;
+            const specialty = profile?.specialty || '';
+            const summaryText = profile?.clinic_name
+                ? `${specialty || 'Doctor'} at ${profile.clinic_name}`
+                : 'Add your clinic details and bio so patients can trust what they see before booking.';
+
+            document.getElementById('doctorIdentityName').textContent = identity.displayName || 'Doctor';
+            document.getElementById('doctorIdentityRole').innerHTML = '<i class="fas fa-user-doctor"></i>Doctor';
+            document.getElementById('profileEmail').textContent = email;
+            document.getElementById('profileEmailInput').value = email;
+            document.getElementById('profileSummary').textContent = summaryText;
+            document.getElementById('doctorClinicMeta').textContent = profile?.clinic_name
+                ? `${profile.clinic_name}${profile?.clinic_address ? `, ${profile.clinic_address}` : ''}`
+                : 'Add clinic details to complete your public profile.';
+
+            const specialtyBadge = document.getElementById('doctorIdentitySpecialty');
+            specialtyBadge.textContent = specialty || 'Specialty not added';
+            specialtyBadge.className = `status-badge ${specialty ? 'active' : 'inactive'} doctor-profile-specialty`;
+
+            renderUserAvatar('profilePhotoPreview', {
+                name: identity.displayName,
+                photoPath: identity.photoPath,
+                fallbackIcon: 'fa-user-md'
+            });
+
+            if (!selectedDoctorPhoto) {
+                renderUserAvatar('editDoctorPhotoPreview', {
+                    name: identity.displayName,
+                    photoPath: identity.photoPath,
+                    fallbackIcon: 'fa-user-md'
+                });
+            }
+
+            const badge = document.getElementById('verificationBadge');
+            badge.textContent = verified ? 'Verified Doctor' : 'Pending Approval';
+            badge.className = `status-badge ${verified ? 'confirmed' : 'pending'}`;
+
+            updateDoctorPhotoNotes(identity.photoPath);
+        }
+
+        function renderDoctorInformation(user, profile = {}) {
+            document.getElementById('displayFullName').textContent = formatDisplayValue(profile.full_name || user?.full_name);
+            document.getElementById('displaySpecialty').textContent = formatDisplayValue(profile.specialty);
+            document.getElementById('displayExperience').textContent = `${Number(profile.experience_years || 0)} years`;
+            document.getElementById('displayFee').textContent = formatCurrency(profile.consultation_fee);
+            document.getElementById('displayRegistration').textContent = formatDisplayValue(profile.registration_number);
+            document.getElementById('displayLanguages').textContent = formatLanguages(profile.languages);
+            document.getElementById('displayQualification').textContent = formatDisplayValue(profile.qualification);
+            document.getElementById('displayClinicName').textContent = formatDisplayValue(profile.clinic_name);
+            document.getElementById('displayClinicAddress').textContent = formatDisplayValue(profile.clinic_address);
+            document.getElementById('displayBio').textContent = formatDisplayValue(profile.bio);
+        }
+
+        function fillDoctorForm(user, profile = {}) {
+            document.getElementById('fullName').value = profile.full_name || user?.full_name || '';
+            document.getElementById('specialty').value = profile.specialty || '';
+            document.getElementById('registrationNumber').value = profile.registration_number || '';
+            document.getElementById('experienceYears').value = profile.experience_years ?? 0;
+            document.getElementById('consultationFee').value = profile.consultation_fee ?? 0;
+            document.getElementById('qualification').value = profile.qualification || '';
+            document.getElementById('clinicName').value = profile.clinic_name || '';
+            document.getElementById('clinicAddress').value = profile.clinic_address || '';
+            document.getElementById('bio').value = profile.bio || '';
+            document.getElementById('languages').value = Array.isArray(profile.languages) ? profile.languages.join(', ') : '';
+        }
+
+        async function loadProfile() {
+            const localUser = Auth.getUser() || {};
+            updateDoctorIdentity(localUser);
+            renderDoctorInformation(localUser, {});
+            fillDoctorForm(localUser, {});
+
+            try {
+                const result = await API.doctors.profile();
+                const user = Auth.getUser() || localUser;
+                const doctor = result.doctor || {};
+
+                updateDoctorIdentity(user, doctor);
+                renderDoctorInformation(user, doctor);
+                fillDoctorForm(user, doctor);
+
+                syncStoredUserProfile({
+                    email: user.email || localUser.email,
+                    role: user.role || localUser.role
+                }, {
+                    full_name: doctor.full_name || user.full_name,
+                    profile_photo: doctor.profile_photo || null
+                });
+            } catch (error) {
+                console.error('Failed to load doctor profile:', error);
+                showToast('Unable to load your doctor profile right now.', 'error');
+            }
+        }
+
+        function previewDoctorPhoto(file) {
+            const draftDoctor = getDraftDoctorProfile();
+            const previewName = draftDoctor.full_name || (Auth.getUser() || {}).email || 'Doctor';
+            const reader = new FileReader();
+
+            reader.onload = () => {
+                renderUserAvatar('editDoctorPhotoPreview', {
+                    name: previewName,
+                    photoPath: reader.result,
+                    fallbackIcon: 'fa-user-md'
+                });
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function handleDoctorPhotoSelection(event) {
+            const [file] = event.target.files || [];
+            const allowedTypes = ['image/jpeg', 'image/png'];
+
+            document.getElementById('doctorPhotoStatus').textContent = '';
+
+            if (!file) {
+                selectedDoctorPhoto = null;
+                updateDoctorIdentity(Auth.getUser() || {}, getDraftDoctorProfile());
+                return;
+            }
+
+            if (!allowedTypes.includes(file.type)) {
+                event.target.value = '';
+                selectedDoctorPhoto = null;
+                showToast('Please choose a JPG or PNG image.', 'error');
+                updateDoctorIdentity(Auth.getUser() || {}, getDraftDoctorProfile());
+                return;
+            }
+
+            if (file.size > MAX_PROFILE_PHOTO_SIZE) {
+                event.target.value = '';
+                selectedDoctorPhoto = null;
+                showToast('Doctor photo must be 5 MB or smaller.', 'error');
+                updateDoctorIdentity(Auth.getUser() || {}, getDraftDoctorProfile());
+                return;
+            }
+
+            selectedDoctorPhoto = file;
+            document.getElementById('doctorPhotoFilename').textContent = `Selected: ${file.name}`;
+            document.getElementById('doctorPhotoStatus').textContent = 'Photo ready to upload.';
+            previewDoctorPhoto(file);
+        }
+
+        async function uploadDoctorPhoto() {
+            if (!selectedDoctorPhoto) {
+                showToast('Choose a doctor photo first.', 'error');
+                return;
+            }
+
+            const uploadButton = document.getElementById('doctorPhotoUploadBtn');
+            const status = document.getElementById('doctorPhotoStatus');
+            const formData = new FormData();
+            formData.append('photo', selectedDoctorPhoto);
+
+            try {
+                showLoading();
+                uploadButton.disabled = true;
+                status.textContent = 'Uploading photo...';
+
+                const result = await API.uploads.profilePhoto(formData);
+                const profile = result.profile || { ...getDraftDoctorProfile(), profile_photo: result.profile_photo || null };
+
+                selectedDoctorPhoto = null;
+                document.getElementById('doctorPhotoInput').value = '';
+                status.textContent = 'Doctor photo uploaded successfully.';
+
+                updateDoctorIdentity(Auth.getUser() || {}, profile);
+                renderDoctorInformation(Auth.getUser() || {}, profile);
+                fillDoctorForm(Auth.getUser() || {}, profile);
+                showToast('Doctor photo updated successfully.', 'success');
+            } catch (error) {
+                status.textContent = 'Unable to upload photo.';
+                showToast(error.message || 'Failed to upload doctor photo.', 'error');
+            } finally {
+                uploadButton.disabled = false;
+                hideLoading();
+            }
+        }
+
+        async function updateProfile(event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            if (!fullName || fullName.length < 3) {
+                showError('fullNameError', 'Full name must be at least 3 characters.');
+                return;
+            }
+
+            hideError('fullNameError');
+
+            const payload = {
+                full_name: fullName,
+                registration_number: document.getElementById('registrationNumber').value.trim() || null,
+                qualification: document.getElementById('qualification').value.trim() || null,
+                experience_years: Number(document.getElementById('experienceYears').value || 0),
+                consultation_fee: Number(document.getElementById('consultationFee').value || 0),
+                clinic_name: document.getElementById('clinicName').value.trim() || null,
+                clinic_address: document.getElementById('clinicAddress').value.trim() || null,
+                bio: document.getElementById('bio').value.trim() || null,
+                languages: parseLanguages(document.getElementById('languages').value)
+            };
+
+            try {
+                showLoading();
+                document.getElementById('saveStatus').textContent = 'Saving changes...';
+
+                const result = await API.doctors.updateProfile(payload);
+                const updatedDoctor = result.doctor || payload;
+                syncStoredUserProfile({}, {
+                    full_name: updatedDoctor.full_name || payload.full_name,
+                    profile_photo: (Auth.getUser() || {}).profile_photo || null
+                });
+
+                updateDoctorIdentity(Auth.getUser(), updatedDoctor);
+                renderDoctorInformation(Auth.getUser(), updatedDoctor);
+                fillDoctorForm(Auth.getUser(), updatedDoctor);
+
+                document.getElementById('saveStatus').textContent = 'Profile updated successfully.';
+                toggleEditMode(false);
+                showToast('Doctor profile updated successfully.', 'success');
+            } catch (error) {
+                document.getElementById('saveStatus').textContent = 'Unable to save profile.';
+                showToast(error.message || 'Failed to update doctor profile.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initDashboardNavToggle();
+
+            document.getElementById('profileForm').addEventListener('submit', updateProfile);
+            document.getElementById('doctorPhotoInput').addEventListener('change', handleDoctorPhotoSelection);
+            await loadProfile();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

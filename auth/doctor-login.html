@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Login - MediSeba</title>
+    <meta name="description" content="Doctor workspace login for MediSeba.">
+    <link rel="stylesheet" href="../css/style.css?v=20260416-2">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260416-2">
+    <link rel="stylesheet" href="../css/auth.css?v=20260416-2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('../images/Background-photos/indexbackground.jpg') center/cover no-repeat fixed !important;
+            position: relative;
+            padding: 2rem;
+        }
+        .auth-image { display: none !important; }
+        .auth-form-container { width: 100%; display: flex; align-items: center; justify-content: center; background: transparent !important; }
+        .auth-form-wrapper { width: 100%; max-width: 440px; background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; border-radius: 24px; padding: 3rem 2.5rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important; }
+        
+        /* Shared form styles similar to login */
+        .auth-logo { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 2rem; text-decoration: none; }
+        .auth-logo img { width: 32px; height: 32px; }
+        .logo-wordmark { font-size: 1.5rem; font-weight: 700; color: #fff; }
+        
+        .auth-step h1 { font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; text-align: center; }
+        .auth-subtitle { color: rgba(255, 255, 255, 0.8); margin-bottom: 2rem; text-align: center; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); }
+        .input-group { position: relative; display: flex; align-items: center; }
+        .input-group-icon { position: absolute; left: 1rem; color: rgba(255, 255, 255, 0.5); pointer-events: none; }
+        .form-input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: var(--radius-md); background-color: rgba(255, 255, 255, 0.05); color: #fff; }
+        .form-input:focus { outline: none; border-color: var(--success); }
+        .form-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+        
+        .form-error { display: none; color: #ff8a8a; font-size: 0.875rem; margin-top: 0.5rem; }
+        
+        .btn-success { background-color: var(--success); color: white; border: none; width: 100%; display: flex; justify-content: center; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; margin-top: 2rem; cursor: pointer;}
+        .btn-success:hover { background-color: rgba(16, 185, 129, 0.9); }
+        
+        .auth-role-banner.doctor { background-color: rgba(16, 185, 129, 0.2); color: #fff; border: 1px solid rgba(16, 185, 129, 0.4); justify-content: center; }
+        
+        .auth-alt { margin-top: 1.5rem; text-align: center; color: rgba(255, 255, 255, 0.7); }
+        .auth-alt a { color: var(--success); font-weight: 600; text-decoration: none; }
+        
+        .auth-divider { position: relative; text-align: center; margin: 2rem 0; }
+        .auth-divider::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background-color: rgba(255, 255, 255, 0.2); z-index: 0; }
+        .auth-divider span { position: relative; background-color: transparent; padding: 0 1rem; color: rgba(255, 255, 255, 0.6); font-size: 0.875rem; z-index: 1; }
+        
+        .auth-image-content { display: none; }
+        .btn-outline { color: #fff; border-color: rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.1); padding: 0.75rem; border-radius: var(--radius-md); text-decoration: none; }
+        .btn-outline:hover { background: rgba(255, 255, 255, 0.2); }
+    </style>
+</head>
+<body class="auth-page auth-page-doctor">
+    <div class="auth-container">
+        <div class="auth-image">
+            <div class="auth-image-content">
+                <h2>Doctor Portal</h2>
+                <p>Welcome back, Doctor. Manage your appointments and consult with patients securely.</p>
+            </div>
+        </div>
+        
+        <div class="auth-form-container">
+            <div class="auth-form-wrapper">
+                <a href="../index.html" class="auth-logo">
+                    <img src="../images/logo-mark.svg" alt="Logo">
+                    <span class="logo-wordmark"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+                </a>
+
+                <div class="auth-role-banner doctor" style="margin-bottom: 2rem; padding: 1rem; border-radius: 8px; display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fas fa-user-md" style="font-size: 1.5rem;"></i>
+                    <strong style="font-size: 1.125rem;">Doctor Workspace</strong>
+                </div>
+                
+                <div class="auth-step">
+                    <h1>Doctor Sign In</h1>
+                    <p class="auth-subtitle">Verify your identity to access the clinical tools and schedules.</p>
+                    
+                    <form id="loginForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="email" class="form-label form-label-required">Professional Email</label>
+                            <div class="input-group">
+                                <span class="input-group-icon"><i class="fas fa-envelope"></i></span>
+                                <input type="email" id="email" name="email" class="form-input" placeholder="doctor@clinic.com" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password" class="form-label form-label-required">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-icon"><i class="fas fa-lock"></i></span>
+                                <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
+                            </div>
+                            <span class="form-error" id="loginError" style="display: none;"></span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success btn-lg" id="loginBtn">
+                            <span>Access Workspace</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <div style="margin-top: 1.5rem; text-align: center;">
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">Not registered? <a href="doctor-register.html" style="color: var(--success); font-weight: 600; text-decoration: none;">Apply as a Doctor</a></p>
+                    </div>
+                    
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+
+                    <a href="login.html" class="btn btn-outline" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <i class="fas fa-user"></i> Go to Patient Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260416-2"></script>
+    <script src="../js/auth.js?v=20260416-2"></script>
+    <script src="../js/app.js?v=20260416-2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (Auth.isLoggedIn()) {
+                window.location.href = Auth.getDashboardUrl();
+                return;
+            }
+
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorElement = document.getElementById('loginError');
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value.trim();
+                
+                errorElement.style.display = 'none';
+                
+                loginBtn.classList.add('is-loading');
+                loginBtn.disabled = true;
+                const originalText = loginBtn.innerHTML;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+                
+                try {
+                    const result = await API.auth.login(email, password, 'doctor');
+                    
+                    Auth.setToken(result.token);
+                    Auth.setUser(result.user);
+                    
+                    showToast('Welcome, Doctor!', 'success');
+                    setTimeout(() => {
+                        window.location.href = resolvePagePath('doctor/doctor-dashboard.html');
+                    }, 500);
+                    
+                } catch (error) {
+                    errorElement.textContent = error.message || 'Invalid credentials';
+                    errorElement.style.display = 'block';
+                } finally {
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = originalText;
+                    loginBtn.classList.remove('is-loading');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

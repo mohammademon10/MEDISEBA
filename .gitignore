@@ -1,0 +1,26 @@
+# Environment variables
+.env
+
+# Uploads directory (user-generated content)
+uploads/
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log
+
+# Node dependencies
+node_modules/
+package-lock.json
+
+# Zip files
+*.zip

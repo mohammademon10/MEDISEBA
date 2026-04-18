@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - MediSeba Admin</title>
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-2">
+    <link rel="stylesheet" href="../css/admin.css?v=20260416-2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-sidebar-header">
+                <a href="../index.html" class="logo"><img src="../images/logo-mark.svg" alt="" class="logo-mark"><span class="logo-wordmark"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span></a>
+                <span class="admin-badge"><i class="fas fa-shield-halved"></i> Admin</span>
+            </div>
+            <nav class="admin-sidebar-nav">
+                <div class="nav-section">Overview</div>
+                <ul><li><a href="admin-dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a></li></ul>
+                <div class="nav-section">Management</div>
+                <ul>
+                    <li><a href="admin-users.html"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="admin-doctors.html"><i class="fas fa-user-md"></i> Doctors</a></li>
+                    <li><a href="admin-patients.html"><i class="fas fa-hospital-user"></i> Patients</a></li>
+                    <li><a href="admin-appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                    <li><a href="admin-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="admin-prescriptions.html"><i class="fas fa-file-prescription"></i> Prescriptions</a></li>
+                </ul>
+                <div class="nav-section">System</div>
+                <ul><li><a href="admin-settings.html" class="active"><i class="fas fa-cog"></i> Settings</a></li></ul>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <div class="admin-user-info"><div class="admin-user-avatar"><i class="fas fa-user-shield"></i></div><div class="admin-user-details"><span class="admin-user-name" id="adminName">Admin</span><span class="admin-user-role">Administrator</span></div></div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()" style="width:100%;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </aside>
+        <div class="admin-sidebar-overlay" id="adminSidebarOverlay" onclick="toggleAdminSidebar()"></div>
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div class="admin-topbar-left"><button class="admin-mobile-toggle" onclick="toggleAdminSidebar()"><i class="fas fa-bars"></i></button><span class="admin-topbar-title">Settings</span></div>
+                <div class="admin-topbar-right"><button class="btn-icon" onclick="toggleTheme()"><i class="fas fa-moon"></i></button></div>
+            </header>
+            <div class="admin-page">
+                <div class="admin-page-header"><h1>System Settings</h1><p>Configure platform-wide settings and preferences.</p></div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3>Configuration</h3>
+                        <button class="btn btn-primary btn-sm" id="saveBtn" onclick="saveSettings()"><i class="fas fa-save"></i> Save Changes</button>
+                    </div>
+                    <div class="admin-card-body" id="settingsBody">
+                        <div class="admin-loading"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260416-2"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script src="../js/admin-api.js?v=20260416-2"></script>
+    <script>
+    if(!Auth.requireRole('admin'))throw new Error('Admin access required');
+    function toggleAdminSidebar(){document.getElementById('adminSidebar').classList.toggle('active');document.getElementById('adminSidebarOverlay').classList.toggle('active');}
+    let settingsData = {};
+
+    async function loadSettings(){
+        const body=document.getElementById('settingsBody');
+        try{
+            const result=await API.admin.settings.list();
+            settingsData=result.grouped||{};
+            const settings=result.settings||[];
+            if(!settings.length){body.innerHTML='<div class="admin-empty-state"><i class="fas fa-cog"></i><h3>No settings configured</h3><p>System settings will appear here once configured in the database.</p></div>';return;}
+            let html='';
+            for(const[group,items]of Object.entries(settingsData)){
+                html+=`<div class="admin-settings-group"><div class="admin-settings-group-title">${escapeHtml(group)}</div>`;
+                items.forEach(s=>{
+                    const isEncrypted=s.is_encrypted==1;
+                    html+=`<div class="admin-setting-row">
+                        <div class="admin-setting-label">${escapeHtml(s.setting_key.replace(/_/g,' '))}<span class="setting-key">${escapeHtml(s.setting_key)}</span></div>
+                        <input class="admin-setting-input" data-key="${escapeHtml(s.setting_key)}" type="${isEncrypted?'password':'text'}" value="${isEncrypted?'••••••••':escapeHtml(s.setting_value||'')}" ${isEncrypted?'placeholder="Enter new value to change"':''}>
+                    </div>`;
+                });
+                html+=`</div>`;
+            }
+            body.innerHTML=html;
+        }catch(e){body.innerHTML='<div class="admin-empty-state"><i class="fas fa-exclamation-circle"></i><h3>Failed to load settings</h3></div>';}
+    }
+
+    async function saveSettings(){
+        const inputs=document.querySelectorAll('.admin-setting-input[data-key]');
+        const settings={};
+        inputs.forEach(input=>{
+            const key=input.dataset.key;
+            const val=input.value;
+            if(val!=='••••••••'){settings[key]=val;}
+        });
+        if(!Object.keys(settings).length){showToast('No changes to save','warning');return;}
+        try{
+            await API.admin.settings.update(settings);
+            showToast('Settings saved successfully','success');
+            loadSettings();
+        }catch(e){showToast(e.message||'Failed to save','error');}
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{const u=Auth.getUser();if(u)document.getElementById('adminName').textContent=u.full_name||u.email||'Admin';loadSettings();});
+    </script>
+</body>
+</html>

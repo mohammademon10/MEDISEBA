@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Appointments - MediSeba</title>
+    <meta name="description" content="View and manage your health appointments.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-9">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link rel="stylesheet" href="../css/auth.css?v=20260404-9">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="../patient/dashboard.html"><i class="fas fa-home"></i>Dashboard</a></li>
+                    <li><a href="../patient/appointments.html" class="active"><i class="fas fa-calendar-check"></i>My Appointments</a></li>
+                    <li><a href="../patient/prescriptions.html"><i class="fas fa-file-prescription"></i>Prescriptions</a></li>
+                    <li><a href="../patient/payments.html?v=20260403-4"><i class="fas fa-credit-card"></i>Payments</a></li>
+                    <li><a href="../patient/profile.html"><i class="fas fa-user"></i>My Profile</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Patient</span>
+                        <span class="user-role">Patient</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-intro">
+                    <h2>My Appointments</h2>
+                    <p class="page-intro-text">Track upcoming, completed, and cancelled visits.</p>
+                </div>
+                <div class="header-actions action-row">
+                    <button class="nav-toggle" id="navToggle" onclick="toggleSidebar()" aria-label="Toggle Navigation" style="display: none;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="../pages/doctors.html" class="btn btn-primary">
+                        <i class="fas fa-calendar-plus"></i>
+                        Book Appointment
+                    </a>
+                </div>
+            </header>
+
+            <div class="dashboard-content patient-appointments-content">
+                <div class="filter-bar patient-filter-bar">
+                    <div class="page-intro">
+                        <h3>Appointment History</h3>
+                        <p class="filter-bar-note">Review your doctor, payment progress, and visit status from one place.</p>
+                    </div>
+                    <div class="filter-bar-actions filter-bar-fields patient-filter-controls">
+                        <div class="patient-filter-field">
+                            <label for="statusFilter" class="form-label">Status</label>
+                            <select id="statusFilter" class="form-select">
+                                <option value="">All statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="no_show">No Show</option>
+                            </select>
+                        </div>
+                        <div class="patient-filter-actions">
+                            <button class="btn btn-outline" onclick="resetFilters()">Reset</button>
+                            <button class="btn btn-primary" onclick="loadAppointments(1)">Apply Filter</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card patient-appointments-card">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3>Appointments</h3>
+                            <p class="card-header-meta">See when you visited, which doctor handled the consultation, and what payment or follow-up action is still open.</p>
+                        </div>
+                        <div class="patient-appointments-card-header-actions">
+                            <span id="appointmentCount" class="token-badge">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="patient-appointments-toolbar">
+                            <div class="patient-appointments-toolbar-copy">
+                                <strong>Your most recent appointments appear with the next useful action.</strong>
+                                <p>Use the status filter to narrow the history, then open details, chat with the doctor, or cancel an upcoming visit when allowed.</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive patient-appointments-table">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Appointment</th>
+                                        <th>Doctor</th>
+                                        <th>Date & Time</th>
+                                        <th>Payment</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="appointmentsList">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <div class="spinner"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="appointmentPagination" class="action-row action-row-end" style="margin-top: var(--space-4);"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="review-modal" id="reviewModal" hidden>
+        <div class="review-modal-backdrop" onclick="closeReviewModal()"></div>
+        <div class="review-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+            <div class="review-modal-header">
+                <div>
+                    <h3 id="reviewModalTitle">Rate your doctor</h3>
+                    <p id="reviewModalSubtitle">Share how the consultation went.</p>
+                </div>
+                <button type="button" class="review-modal-close" onclick="closeReviewModal()" aria-label="Close review dialog">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="review-modal-body">
+                <div class="review-modal-context">
+                    <div class="review-modal-context-item">
+                        <span class="review-modal-label">Doctor</span>
+                        <strong id="reviewDoctorName">Doctor</strong>
+                    </div>
+                    <div class="review-modal-context-item">
+                        <span class="review-modal-label">Appointment</span>
+                        <strong id="reviewAppointmentNumber">#APT</strong>
+                    </div>
+                </div>
+
+                <form id="reviewForm">
+                    <div class="form-group">
+                        <label class="form-label form-label-required">Your rating</label>
+                        <div class="review-rating-picker" id="reviewRatingPicker" role="radiogroup" aria-label="Doctor rating">
+                            <button type="button" class="review-star" data-rating="1" onclick="setSelectedReviewRating(1)" aria-label="Rate 1 star">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="review-star" data-rating="2" onclick="setSelectedReviewRating(2)" aria-label="Rate 2 stars">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="review-star" data-rating="3" onclick="setSelectedReviewRating(3)" aria-label="Rate 3 stars">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="review-star" data-rating="4" onclick="setSelectedReviewRating(4)" aria-label="Rate 4 stars">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="review-star" data-rating="5" onclick="setSelectedReviewRating(5)" aria-label="Rate 5 stars">
+                                <i class="fas fa-star" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <p class="review-modal-note" id="reviewRatingHint">Choose a rating from 1 to 5 stars.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reviewText" class="form-label">Short review</label>
+                        <textarea
+                            id="reviewText"
+                            class="form-textarea"
+                            rows="4"
+                            maxlength="1000"
+                            placeholder="What went well during your consultation? Any feedback for the doctor?"
+                            oninput="syncReviewCharCount()"
+                        ></textarea>
+                        <div class="review-modal-footer-note">
+                            <span class="review-modal-note">Optional, but helpful if you want your feedback to appear as a testimonial later.</span>
+                            <span class="review-char-count" id="reviewCharCount">0 / 1000</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeReviewModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="reviewSubmitButton">Submit review</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ── Video Call Modal ─────────────────────────────────── -->
+    <div id="videoCallModal" style="display:none; position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; flex-direction:column;">
+        <div style="width:90%; max-width:960px; background:var(--surface,#fff); border-radius:16px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.4);">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--primary,#2563eb);">
+                <div style="display:flex; align-items:center; gap:10px; color:#fff;">
+                    <i class="fas fa-video"></i>
+                    <span style="font-weight:600; font-size:1rem;">Video Consultation</span>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <a id="videoOpenNewTab" href="#" target="_blank" style="color:#fff; background:rgba(255,255,255,0.2); padding:6px 14px; border-radius:6px; font-size:0.85rem; text-decoration:none;">
+                        <i class="fas fa-external-link-alt"></i> Open in new tab
+                    </a>
+                    <button onclick="closeVideoCall()" style="color:#fff; background:rgba(255,255,255,0.15); border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem;">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+            <iframe id="videoFrame"
+                allow="camera; microphone; fullscreen; display-capture; autoplay"
+                style="width:100%; height:520px; border:none; display:block;"
+                src=""></iframe>
+            <div style="padding:12px 20px; background:var(--gray-50,#f9fafb); font-size:0.8rem; color:var(--gray-500,#6b7280); display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-info-circle" style="color:var(--primary,#2563eb);"></i>
+                Powered by Jitsi Meet &mdash; free &amp; encrypted. Allow camera &amp; microphone when prompted.
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/api.js?v=20260404-3"></script>
+    <script src="../js/auth.js?v=20260402-4"></script>
+    <script src="../js/app.js?v=20260404-15"></script>
+    <script>
+        if (!Auth.requireRole('patient')) {
+            throw new Error('Patient access required');
+        }
+
+        let currentPage = 1;
+        let currentAppointments = [];
+        let activeReviewAppointment = null;
+        let selectedReviewRating = 0;
+
+
+        function canRateDoctor(appointment) {
+            return String(appointment?.status || '') === 'completed';
+        }
+
+        function getReviewActionLabel(appointment) {
+            return appointment?.review_id ? 'Edit Review' : 'Rate Doctor';
+        }
+
+        function getReviewStatusNote(appointment) {
+            if (!canRateDoctor(appointment)) {
+                return '';
+            }
+
+            if (appointment.review_id) {
+                return `Your rating: ${appointment.review_rating}/5`;
+            }
+
+            return 'You can now rate this doctor.';
+        }
+
+        function openReviewModal(appointmentId) {
+            const appointment = currentAppointments.find((item) => Number(item.id) === Number(appointmentId));
+
+            if (!appointment || !canRateDoctor(appointment)) {
+                showToast('You can rate a doctor only after a completed appointment.', 'warning');
+                return;
+            }
+
+            activeReviewAppointment = appointment;
+            selectedReviewRating = Number(appointment.review_rating) || 0;
+
+            document.getElementById('reviewDoctorName').textContent = appointment.doctor_name || 'Doctor';
+            document.getElementById('reviewAppointmentNumber').textContent = `#${appointment.appointment_number || appointment.id}`;
+            document.getElementById('reviewModalTitle').textContent = appointment.review_id ? 'Update your review' : 'Rate your doctor';
+            document.getElementById('reviewModalSubtitle').textContent = appointment.review_id
+                ? 'You can edit your rating and feedback for this visit.'
+                : 'Share a quick rating after your completed consultation.';
+            document.getElementById('reviewSubmitButton').textContent = appointment.review_id ? 'Update review' : 'Submit review';
+            document.getElementById('reviewText').value = appointment.review_text || '';
+            syncReviewCharCount();
+            updateReviewStarState();
+
+            const modal = document.getElementById('reviewModal');
+            modal.hidden = false;
+            modal.classList.add('active');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeReviewModal() {
+            const modal = document.getElementById('reviewModal');
+            modal.classList.remove('active');
+            modal.hidden = true;
+            document.body.classList.remove('modal-open');
+            activeReviewAppointment = null;
+            selectedReviewRating = 0;
+            document.getElementById('reviewForm').reset();
+            syncReviewCharCount();
+            updateReviewStarState();
+        }
+
+        function setSelectedReviewRating(rating) {
+            selectedReviewRating = Number(rating) || 0;
+            updateReviewStarState();
+        }
+
+        function updateReviewStarState() {
+            const stars = document.querySelectorAll('.review-star');
+            const hint = document.getElementById('reviewRatingHint');
+
+            stars.forEach((button) => {
+                const rating = Number(button.dataset.rating) || 0;
+                const isActive = rating <= selectedReviewRating;
+                button.classList.toggle('active', isActive);
+                button.setAttribute('aria-checked', String(rating === selectedReviewRating));
+            });
+
+            hint.textContent = selectedReviewRating > 0
+                ? `${selectedReviewRating} out of 5 star${selectedReviewRating === 1 ? '' : 's'} selected`
+                : 'Choose a rating from 1 to 5 stars.';
+        }
+
+        function syncReviewCharCount() {
+            const field = document.getElementById('reviewText');
+            const counter = document.getElementById('reviewCharCount');
+
+            if (field && counter) {
+                counter.textContent = `${field.value.length} / 1000`;
+            }
+        }
+
+        function formatStatusLabel(status) {
+            return String(status || 'pending')
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+        }
+
+        function getAppointmentStatusNote(status) {
+            switch (String(status || 'pending')) {
+                case 'pending':
+                    return 'Waiting for confirmation from the doctor.';
+                case 'confirmed':
+                    return 'Confirmed and ready for your scheduled visit.';
+                case 'in_progress':
+                    return 'Consultation is currently in progress.';
+                case 'completed':
+                    return 'Visit completed successfully.';
+                case 'cancelled':
+                    return 'This appointment was cancelled.';
+                case 'no_show':
+                    return 'Marked as not attended.';
+                default:
+                    return 'Review the appointment details for updates.';
+            }
+        }
+
+        function formatPaymentStatusLabel(status) {
+            if (status === 'success' || status === 'paid') {
+                return 'Paid';
+            }
+
+            return String(status || 'pending')
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+        }
+
+        function getPaymentStatusNote(appointment) {
+            const amount = escapeHtml(String(appointment.paid_amount || appointment.consultation_fee || '0'));
+            const status = String(appointment.payment_status || 'pending');
+
+            if (status === 'success' || status === 'paid') {
+                return `Paid amount: ৳${amount}`;
+            }
+
+            if (status === 'failed') {
+                return `Payment needs attention. Amount: ৳${amount}`;
+            }
+
+            return `Consultation fee: ৳${amount}`;
+        }
+
+        async function submitReview(event) {
+            event.preventDefault();
+
+            if (!activeReviewAppointment) {
+                return;
+            }
+
+            if (selectedReviewRating < 1 || selectedReviewRating > 5) {
+                showToast('Please choose a star rating before submitting.', 'warning');
+                return;
+            }
+
+            const submitButton = document.getElementById('reviewSubmitButton');
+            const reviewText = document.getElementById('reviewText').value.trim();
+            submitButton.disabled = true;
+            submitButton.textContent = activeReviewAppointment.review_id ? 'Updating...' : 'Submitting...';
+
+            try {
+                await API.appointments.submitReview(activeReviewAppointment.id, {
+                    rating: selectedReviewRating,
+                    review_text: reviewText
+                });
+
+                showToast(activeReviewAppointment.review_id ? 'Review updated successfully.' : 'Review submitted successfully.', 'success');
+                closeReviewModal();
+                await loadAppointments(currentPage);
+            } catch (error) {
+                showToast(error.message || 'Failed to save your review.', 'error');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = activeReviewAppointment?.review_id ? 'Update review' : 'Submit review';
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('statusFilter').value = '';
+            loadAppointments(1);
+        }
+
+        async function loadAppointments(page = currentPage) {
+            currentPage = page;
+            const appointmentsList = document.getElementById('appointmentsList');
+            const appointmentCount = document.getElementById('appointmentCount');
+            const pagination = document.getElementById('appointmentPagination');
+            const status = document.getElementById('statusFilter').value;
+
+            appointmentsList.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-4">
+                        <div class="spinner"></div>
+                    </td>
+                </tr>
+            `;
+
+            try {
+                const result = await API.appointments.myAppointments({ page, status });
+                const items = result.items || [];
+                const pageInfo = result.pagination || {};
+                currentAppointments = items;
+
+                appointmentCount.textContent = `${pageInfo.total || items.length} appointment(s)`;
+
+                if (items.length === 0) {
+                    appointmentsList.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-gray-500">
+                                <i class="fas fa-calendar-times mb-2" style="font-size: 2rem; color: var(--gray-300);"></i><br>
+                                No appointments match the selected filter.<br>
+                                <span class="table-meta-text">Try another status or book a new consultation.</span>
+                            </td>
+                        </tr>
+                    `;
+                    pagination.innerHTML = '';
+                    return;
+                }
+
+                appointmentsList.innerHTML = items.map((appointment) => `
+                    <tr>
+                        <td>
+                            <div class="table-meta">
+                                <div class="table-meta-strong">#${escapeHtml(appointment.appointment_number || '')}</div>
+                                <div class="table-meta-text">Token #${escapeHtml(String(appointment.token_number || '-'))}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-meta patient-appointments-doctor">
+                                <div class="table-meta-strong">${escapeHtml(appointment.doctor_name || 'Doctor')}</div>
+                                <div class="table-meta-text">${escapeHtml(appointment.specialty || '')}</div>
+                                <div class="table-meta-text">Consultation doctor</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-meta patient-appointments-visit">
+                                <div class="table-meta-strong">${formatDate(appointment.appointment_date)}</div>
+                                <div class="table-meta-text">${formatTime(appointment.estimated_time || '00:00:00')}</div>
+                                <div class="table-meta-text">Scheduled visit</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-meta patient-appointments-payment">
+                                <span class="status-badge ${appointment.payment_status === 'success' || appointment.payment_status === 'paid' ? 'paid' : escapeHtml(appointment.payment_status || 'pending')}">${formatPaymentStatusLabel(appointment.payment_status)}</span>
+                                <div class="table-meta-text">${getPaymentStatusNote(appointment)}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-meta patient-appointments-status">
+                                <span class="status-badge ${escapeHtml(appointment.status || 'pending')}">${formatStatusLabel(appointment.status)}</span>
+                                <div class="table-meta-text">${getAppointmentStatusNote(appointment.status)}</div>
+                                ${getReviewStatusNote(appointment)
+                                    ? `<div class="table-meta-text patient-review-note">${escapeHtml(getReviewStatusNote(appointment))}</div>`
+                                    : ''}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="../patient/appointment.html?id=${encodeURIComponent(appointment.id)}&v=20260403-2" class="btn btn-outline btn-sm">View</a>
+
+                                ${appointment.video_call_enabled && appointment.video_room_url &&
+                                  (appointment.status === 'confirmed' || appointment.status === 'in_progress')
+                                    ? `<button class="btn btn-success btn-sm" onclick="openVideoCall(${appointment.id}, '${escapeHtml(appointment.video_room_url)}')"><i class="fas fa-video"></i> Join Call</button>`
+                                    : ''}
+
+                                ${canRateDoctor(appointment)
+                                    ? `<button type="button" class="btn btn-outline btn-sm" onclick="openReviewModal(${appointment.id})">${getReviewActionLabel(appointment)}</button>`
+                                    : ''}
+                                ${['pending', 'confirmed'].includes(appointment.status)
+                                    ? `<button class="btn btn-danger btn-sm" onclick="cancelAppointment(${appointment.id})">Cancel</button>`
+                                    : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+
+                pagination.innerHTML = `
+                    <button class="btn btn-outline btn-sm" ${pageInfo.has_prev_page ? '' : 'disabled'} onclick="loadAppointments(${Math.max(1, currentPage - 1)})">Previous</button>
+                    <button class="btn btn-outline btn-sm" ${pageInfo.has_next_page ? '' : 'disabled'} onclick="loadAppointments(${currentPage + 1})">Next</button>
+                `;
+            } catch (error) {
+                appointmentCount.textContent = 'Unable to load';
+                appointmentsList.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-red-500">
+                            Failed to load appointments. Please try again later.
+                        </td>
+                    </tr>
+                `;
+                pagination.innerHTML = '';
+            }
+        }
+
+        async function cancelAppointment(appointmentId) {
+            if (!confirm('Cancel this appointment?')) {
+                return;
+            }
+
+            try {
+                showLoading();
+                await API.appointments.cancel(appointmentId, 'Cancelled by patient from appointment list');
+                showToast('Appointment cancelled successfully.', 'success');
+                await loadAppointments(currentPage);
+            } catch (error) {
+                showToast(error.message || 'Failed to cancel appointment.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initDashboardNavToggle();
+
+            document.getElementById('statusFilter').addEventListener('change', () => loadAppointments(1));
+            document.getElementById('reviewForm').addEventListener('submit', submitReview);
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    if (document.getElementById('reviewModal').classList.contains('active')) {
+                        closeReviewModal();
+                    }
+                    closeVideoCall();
+                }
+            });
+            syncReviewCharCount();
+            updateReviewStarState();
+
+            await loadSidebarIdentity('patient');
+            await loadAppointments(1);
+        });
+
+        // ── Video Call ──────────────────────────────────────────
+        function openVideoCall(appointmentId, roomUrl) {
+            const modal  = document.getElementById('videoCallModal');
+            const frame  = document.getElementById('videoFrame');
+            const newTab = document.getElementById('videoOpenNewTab');
+            newTab.href        = roomUrl;
+            frame.src          = roomUrl;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoCall() {
+            const modal = document.getElementById('videoCallModal');
+            if (!modal || modal.style.display === 'none') return;
+            document.getElementById('videoFrame').src = '';
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('videoCallModal').addEventListener('click', function(e) {
+            if (e.target === this) closeVideoCall();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

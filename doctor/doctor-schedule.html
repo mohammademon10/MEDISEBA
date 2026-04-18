@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Schedule - MediSeba</title>
+    <meta name="description" content="Review your consultation schedule in MediSeba.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link rel="stylesheet" href="../css/auth.css?v=20260404-7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="../doctor/doctor-dashboard.html"><i class="fas fa-home"></i>Dashboard</a></li>
+                    <li><a href="../doctor/doctor-appointments.html"><i class="fas fa-calendar-check"></i>Appointments</a></li>
+                    <li><a href="../doctor/doctor-prescriptions.html"><i class="fas fa-file-prescription"></i>Prescriptions</a></li>
+                    <li><a href="../doctor/doctor-schedule.html" class="active"><i class="fas fa-clock"></i>My Schedule</a></li>
+                    <li><a href="../doctor/doctor-my-profile.html"><i class="fas fa-user-md"></i>My Profile</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Doctor</span>
+                        <span class="user-role">Doctor</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-intro">
+                    <h2>My Schedule</h2>
+                    <p class="page-intro-text">Review your active consultation slots and booking capacity.</p>
+                </div>
+                <div class="header-actions action-row">
+                    <button class="nav-toggle" id="navToggle" onclick="toggleSidebar()" aria-label="Toggle Navigation" style="display: none;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="dashboard-content doctor-schedule-content">
+                <div class="card nested-surface-card doctor-schedule-setup-card">
+                    <div class="page-intro">
+                        <h3>Schedule Setup</h3>
+                        <p class="page-intro-text">Patients only see available dates after you save at least one active slot below. Enable the days you want, choose your consultation hours, and publish the weekly plan when it is ready.</p>
+                    </div>
+                </div>
+
+                <div class="card doctor-schedule-editor-card">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3>Edit Weekly Schedule</h3>
+                            <p class="card-header-meta">Set availability day by day, then save once the week looks right.</p>
+                        </div>
+                        <div class="doctor-schedule-editor-actions">
+                            <button class="btn btn-outline btn-sm" type="button" onclick="fillWeekdayTemplate()">
+                                <i class="fas fa-wand-magic-sparkles"></i>
+                                Fill Weekdays
+                            </button>
+                            <button class="btn btn-outline btn-sm" type="button" onclick="clearScheduleForm()">
+                                <i class="fas fa-eraser"></i>
+                                Clear
+                            </button>
+                            <button class="btn btn-primary btn-sm" type="button" onclick="saveSchedule()">
+                                <i class="fas fa-save"></i>
+                                Save Schedule
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="doctor-schedule-editor-toolbar">
+                            <div class="doctor-schedule-editor-toolbar-copy">
+                                <strong>Weekly planner</strong>
+                                <p>Enable the days you consult, set start and end times, then fine-tune slot length and patient capacity.</p>
+                            </div>
+                            <span class="token-badge">7-day editor</span>
+                        </div>
+                        <div class="table-responsive doctor-schedule-editor-table">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Enable</th>
+                                        <th>Day</th>
+                                        <th>Start</th>
+                                        <th>End</th>
+                                        <th>Slot Duration</th>
+                                        <th>Max Patients</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scheduleEditorRows">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <div class="spinner"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p id="scheduleSaveStatus" class="table-meta-text doctor-schedule-save-status">Loading your current schedule...</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3>Active Slots</h3>
+                            <p class="card-header-meta">This is the public availability patients can book against after you save.</p>
+                        </div>
+                        <span id="scheduleCount" class="token-badge">Loading...</span>
+                    </div>
+                    <div class="card-body" id="scheduleList">
+                        <div class="empty-state">
+                            <div class="spinner"></div>
+                            <p>Loading schedule...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260402-4"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        if (!Auth.requireRole('doctor')) {
+            throw new Error('Doctor access required');
+        }
+
+        const WEEKDAYS = [
+            { value: 0, label: 'Sunday' },
+            { value: 1, label: 'Monday' },
+            { value: 2, label: 'Tuesday' },
+            { value: 3, label: 'Wednesday' },
+            { value: 4, label: 'Thursday' },
+            { value: 5, label: 'Friday' },
+            { value: 6, label: 'Saturday' }
+        ];
+
+        function weekdayLabel(weekday) {
+            const labels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return labels[Number(weekday)] || 'Unknown';
+        }
+
+        function getDefaultScheduleRows() {
+            return WEEKDAYS.map((day) => ({
+                weekday: day.value,
+                start_time: '17:00',
+                end_time: '21:00',
+                slot_duration: 15,
+                max_patients: 10,
+                is_available: false
+            }));
+        }
+
+        function normalizeScheduleRows(schedule) {
+            const byWeekday = new Map();
+
+            (schedule || []).forEach((slot) => {
+                const weekday = Number(slot.weekday);
+                if (!byWeekday.has(weekday)) {
+                    byWeekday.set(weekday, {
+                        weekday,
+                        start_time: String(slot.start_time || '17:00').slice(0, 5),
+                        end_time: String(slot.end_time || '21:00').slice(0, 5),
+                        slot_duration: Number(slot.slot_duration || 15),
+                        max_patients: Number(slot.max_patients || 10),
+                        is_available: Boolean(slot.is_available)
+                    });
+                }
+            });
+
+            return getDefaultScheduleRows().map((row) => byWeekday.get(row.weekday) || row);
+        }
+
+        function renderScheduleEditor(schedule) {
+            const rows = normalizeScheduleRows(schedule);
+            const container = document.getElementById('scheduleEditorRows');
+
+            container.innerHTML = rows.map((row) => `
+                <tr class="doctor-schedule-editor-row ${row.is_available ? 'is-enabled' : 'is-disabled'}" data-weekday="${row.weekday}">
+                    <td>
+                        <label class="doctor-schedule-toggle" aria-label="Enable ${escapeHtml(weekdayLabel(row.weekday))} schedule">
+                            <input type="checkbox" class="schedule-enabled" ${row.is_available ? 'checked' : ''}>
+                            <span class="doctor-schedule-toggle-control" aria-hidden="true"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <div class="doctor-schedule-day">
+                            <div class="table-meta-strong">${escapeHtml(weekdayLabel(row.weekday))}</div>
+                            <div class="table-meta-text">${row.weekday >= 1 && row.weekday <= 5 ? 'Common clinic day' : 'Optional weekend slot'}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="doctor-schedule-input-group">
+                            <input type="time" class="form-input doctor-schedule-input schedule-start" value="${escapeHtml(row.start_time)}" aria-label="${escapeHtml(weekdayLabel(row.weekday))} start time">
+                            <span class="table-meta-text">Consultation start</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="doctor-schedule-input-group">
+                            <input type="time" class="form-input doctor-schedule-input schedule-end" value="${escapeHtml(row.end_time)}" aria-label="${escapeHtml(weekdayLabel(row.weekday))} end time">
+                            <span class="table-meta-text">Consultation end</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="doctor-schedule-input-group">
+                            <input type="number" min="5" max="180" step="5" class="form-input doctor-schedule-input schedule-duration" value="${escapeHtml(String(row.slot_duration))}" aria-label="${escapeHtml(weekdayLabel(row.weekday))} slot duration in minutes">
+                            <span class="table-meta-text">Minutes per patient</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="doctor-schedule-input-group">
+                            <input type="number" min="1" max="100" step="1" class="form-input doctor-schedule-input schedule-max-patients" value="${escapeHtml(String(row.max_patients))}" aria-label="${escapeHtml(weekdayLabel(row.weekday))} maximum patients">
+                            <span class="table-meta-text">Patients for the day</span>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            bindScheduleEditorInteractions();
+            document.getElementById('scheduleSaveStatus').textContent = 'Adjust your weekly availability, then save.';
+        }
+
+        function syncScheduleEditorStates() {
+            Array.from(document.querySelectorAll('#scheduleEditorRows tr[data-weekday]')).forEach((row) => {
+                const enabled = row.querySelector('.schedule-enabled')?.checked;
+                row.classList.toggle('is-enabled', Boolean(enabled));
+                row.classList.toggle('is-disabled', !enabled);
+            });
+        }
+
+        function bindScheduleEditorInteractions() {
+            syncScheduleEditorStates();
+
+            Array.from(document.querySelectorAll('#scheduleEditorRows .schedule-enabled')).forEach((checkbox) => {
+                checkbox.addEventListener('change', syncScheduleEditorStates);
+            });
+        }
+
+        function collectScheduleRows() {
+            return Array.from(document.querySelectorAll('#scheduleEditorRows tr[data-weekday]')).map((row) => ({
+                weekday: Number(row.dataset.weekday),
+                enabled: row.querySelector('.schedule-enabled').checked,
+                start_time: row.querySelector('.schedule-start').value,
+                end_time: row.querySelector('.schedule-end').value,
+                slot_duration: Number(row.querySelector('.schedule-duration').value || 15),
+                max_patients: Number(row.querySelector('.schedule-max-patients').value || 10)
+            }));
+        }
+
+        function validateSchedulePayload(rows) {
+            const enabledRows = rows.filter((row) => row.enabled);
+
+            if (!enabledRows.length) {
+                throw new Error('Enable at least one day before saving your schedule.');
+            }
+
+            enabledRows.forEach((row) => {
+                if (!row.start_time || !row.end_time) {
+                    throw new Error(`Please set both start and end time for ${weekdayLabel(row.weekday)}.`);
+                }
+
+                if (row.start_time >= row.end_time) {
+                    throw new Error(`End time must be later than start time for ${weekdayLabel(row.weekday)}.`);
+                }
+
+                if (row.slot_duration < 5 || row.max_patients < 1) {
+                    throw new Error(`Please enter valid slot settings for ${weekdayLabel(row.weekday)}.`);
+                }
+            });
+
+            return enabledRows.map((row) => ({
+                weekday: row.weekday,
+                start_time: row.start_time,
+                end_time: row.end_time,
+                slot_duration: row.slot_duration,
+                max_patients: row.max_patients,
+                is_available: true
+            }));
+        }
+
+        function fillWeekdayTemplate() {
+            Array.from(document.querySelectorAll('#scheduleEditorRows tr[data-weekday]')).forEach((row) => {
+                const weekday = Number(row.dataset.weekday);
+                row.querySelector('.schedule-enabled').checked = weekday >= 1 && weekday <= 5;
+                row.querySelector('.schedule-start').value = '17:00';
+                row.querySelector('.schedule-end').value = '21:00';
+                row.querySelector('.schedule-duration').value = '15';
+                row.querySelector('.schedule-max-patients').value = '10';
+            });
+
+            syncScheduleEditorStates();
+            document.getElementById('scheduleSaveStatus').textContent = 'Weekday template applied. Save to publish these slots.';
+        }
+
+        function clearScheduleForm() {
+            renderScheduleEditor([]);
+            document.getElementById('scheduleSaveStatus').textContent = 'Editor reset. Enable the days you want, then save your schedule.';
+        }
+
+        async function saveSchedule() {
+            try {
+                showLoading();
+                document.getElementById('scheduleSaveStatus').textContent = 'Saving schedule...';
+
+                const rows = collectScheduleRows();
+                const payload = validateSchedulePayload(rows);
+
+                await API.doctors.updateSchedule({ schedule: payload });
+                showToast('Schedule updated successfully.', 'success');
+                await loadDoctorProfile();
+            } catch (error) {
+                document.getElementById('scheduleSaveStatus').textContent = error.message || 'Unable to save schedule.';
+                showToast(error.message || 'Failed to update schedule.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadDoctorProfile() {
+            const user = Auth.getUser() || {};
+            updateSidebarIdentity({
+                user,
+                fallbackName: 'Doctor',
+                fallbackIcon: 'fa-user-md'
+            });
+
+            try {
+                const profile = await API.doctors.profile();
+                updateSidebarIdentity({
+                    user,
+                    profile: profile.doctor || {},
+                    fallbackName: 'Doctor',
+                    fallbackIcon: 'fa-user-md'
+                });
+
+                renderScheduleEditor(profile.schedule || []);
+                renderSchedule(profile.schedule || []);
+            } catch (error) {
+                console.error('Failed to load doctor schedule:', error);
+                document.getElementById('scheduleCount').textContent = 'Unable to load';
+                document.getElementById('scheduleSaveStatus').textContent = 'Unable to load the current schedule.';
+                document.getElementById('scheduleList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3>Unable to load schedule</h3>
+                        <p>${escapeHtml(error.message || 'Please try again later.')}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderSchedule(schedule) {
+            const count = document.getElementById('scheduleCount');
+            const list = document.getElementById('scheduleList');
+
+            count.textContent = `${schedule.length} active slot(s)`;
+
+            if (!schedule.length) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-calendar-xmark"></i>
+                        </div>
+                        <h3>No active schedule configured</h3>
+                        <p>Your public booking availability will appear here once you save at least one active day above.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = `
+                <div class="doctor-schedule-slots-grid">
+                    ${schedule.map((slot) => `
+                        <div class="doctor-schedule-slot-card">
+                            <div class="doctor-schedule-slot-header">
+                                <div class="table-meta">
+                                    <div class="table-meta-strong">${escapeHtml(weekdayLabel(slot.weekday))}</div>
+                                    <div class="table-meta-text">Public booking availability</div>
+                                </div>
+                                <span class="status-badge ${slot.is_available ? 'active' : 'inactive'}">${slot.is_available ? 'Active' : 'Inactive'}</span>
+                            </div>
+                            <div class="doctor-schedule-slot-grid">
+                                <div class="nested-surface-card">
+                                    <div class="table-meta-text">Hours</div>
+                                    <div class="table-meta-strong">${formatTime(slot.start_time)} - ${formatTime(slot.end_time)}</div>
+                                </div>
+                                <div class="nested-surface-card">
+                                    <div class="table-meta-text">Slot duration</div>
+                                    <div class="table-meta-strong">${escapeHtml(String(slot.slot_duration || 15))} min</div>
+                                </div>
+                                <div class="nested-surface-card">
+                                    <div class="table-meta-text">Max patients</div>
+                                    <div class="table-meta-strong">${escapeHtml(String(slot.max_patients || 0))}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initDashboardNavToggle();
+
+            await loadDoctorProfile();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

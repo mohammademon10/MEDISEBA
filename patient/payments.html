@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Payments - MediSeba</title>
+    <meta name="description" content="View your payment history.">
+    <script>
+        (function ensureFreshPaymentsPage() {
+            const currentVersion = '20260403-5';
+            const url = new URL(window.location.href);
+
+            if (url.searchParams.get('v') === currentVersion) {
+                return;
+            }
+
+            url.searchParams.set('v', currentVersion);
+            window.location.replace(url.toString());
+        }());
+    </script>
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link rel="stylesheet" href="../css/auth.css?v=20260404-7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="../patient/dashboard.html">
+                            <i class="fas fa-home"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/appointments.html">
+                            <i class="fas fa-calendar-check"></i>
+                            My Appointments
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/prescriptions.html">
+                            <i class="fas fa-file-prescription"></i>
+                            Prescriptions
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/payments.html?v=20260403-5" class="active">
+                            <i class="fas fa-credit-card"></i>
+                            Payments
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/profile.html">
+                            <i class="fas fa-user"></i>
+                            My Profile
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Loading...</span>
+                        <span class="user-role">Patient</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+        
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-intro">
+                    <h2>Payment History</h2>
+                    <p class="page-intro-text">Review invoices, payment status, and download receipts for completed bookings.</p>
+                </div>
+                <div class="header-actions action-row">
+                    <button class="nav-toggle" id="navToggle" onclick="toggleSidebar()" aria-label="Toggle Navigation" style="display: none;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </header>
+            
+            <div class="dashboard-content patient-payments-content">
+                
+                <div id="paymentAlertContainer" class="patient-payments-alert-container" style="display: none;"></div>
+                
+                <div class="card patient-payments-card">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3><i class="fas fa-credit-card text-primary"></i> Payment History</h3>
+                            <p class="card-header-meta">Review invoice details, doctor information, payment status, and download receipts for completed payments.</p>
+                        </div>
+                        <div class="patient-payments-card-header-actions">
+                            <span id="paymentCount" class="token-badge">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="patient-payments-toolbar">
+                            <div class="patient-payments-toolbar-copy">
+                                <strong>Keep financial records clear and easy to review.</strong>
+                                <p>Each row groups the invoice, doctor, amount, payment method, and next action so you can confirm what has been paid and download the matching receipt quickly.</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive patient-payments-table">
+                            <table class="table" id="paymentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice No</th>
+                                        <th>Date</th>
+                                        <th>Doctor</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentsList">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <div class="spinner"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260402-4"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        function formatPaymentStatusLabel(status) {
+            const normalized = String(status || 'pending');
+
+            if (normalized === 'success') {
+                return 'Paid';
+            }
+
+            return normalized
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+        }
+
+        function getPaymentStatusClass(status) {
+            const normalized = String(status || 'pending');
+
+            if (normalized === 'success') {
+                return 'paid';
+            }
+
+            if (normalized === 'refunded' || normalized === 'partially_refunded') {
+                return 'inactive';
+            }
+
+            return normalized;
+        }
+
+        function getPaymentMethodLabel(method) {
+            return String(method || 'online')
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+        }
+
+        function getPaymentStatusNote(payment) {
+            switch (String(payment.status || 'pending')) {
+                case 'success':
+                    return 'Payment completed successfully.';
+                case 'pending':
+                    return 'Complete this payment to finalize the appointment booking.';
+                case 'failed':
+                    return 'Payment attempt failed. You can try again from this page.';
+                case 'refunded':
+                    return 'This payment was refunded.';
+                case 'partially_refunded':
+                    return 'This payment was partially refunded.';
+                default:
+                    return 'Review this payment record for the latest status.';
+            }
+        }
+
+        async function loadPayments() {
+            try {
+                const response = await API.payments.myPayments();
+                const payments = response.items || [];
+                const paymentsList = document.getElementById('paymentsList');
+                const alertContainer = document.getElementById('paymentAlertContainer');
+                const paymentCount = document.getElementById('paymentCount');
+
+                alertContainer.style.display = 'none';
+                alertContainer.innerHTML = '';
+                const totalPayments = Number(response.total || payments.length || 0);
+                paymentCount.textContent = `${totalPayments} payment${totalPayments === 1 ? '' : 's'}`;
+                
+                // Handle pending payment query param if present
+                const urlParams = new URLSearchParams(window.location.search);
+                const pendingPaymentNum = urlParams.get('payment');
+                
+                if (pendingPaymentNum) {
+                    alertContainer.style.display = 'block';
+                    alertContainer.innerHTML = `
+                        <div class="patient-payments-alert patient-payments-alert-warning">
+                            <div class="patient-payments-alert-copy">
+                                <strong>Pending Payment #${escapeHtml(pendingPaymentNum)}</strong>
+                                <p>Complete the payment inside MediSeba to finalize booking. No external gateway is required.</p>
+                            </div>
+                            <div class="patient-payments-alert-actions">
+                                <button class="btn btn-primary" onclick="initiatePayment('${escapeHtml(pendingPaymentNum)}')">Complete Payment</button>
+                            </div>
+                        </div>
+                    `;
+                    // Clean URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+                
+                if (payments.length === 0) {
+                    paymentsList.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-gray-500">
+                                <i class="fas fa-file-invoice-dollar mb-2" style="font-size: 2rem; color: var(--gray-300);"></i><br>
+                                No payment history found<br>
+                                <span class="table-meta-text">Invoices and receipt downloads will appear here after bookings are created.</span>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                paymentsList.innerHTML = payments.map(pay => {
+                    const paymentDate = pay.paid_at || pay.created_at;
+                    const date = new Date(paymentDate).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'short', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    
+                    const actionButton = pay.status === 'pending' 
+                        ? `<button class="btn btn-primary btn-sm" onclick="initiatePayment('${pay.payment_number}')"><i class="fas fa-credit-card"></i> Complete Payment</button>`
+                        : `<button class="btn btn-outline btn-sm patient-payments-receipt-btn" onclick="downloadReceipt('${pay.id}')"><i class="fas fa-download"></i> Receipt PDF</button>`;
+                    
+                    return `
+                        <tr>
+                            <td>
+                                <div class="table-meta patient-payments-invoice">
+                                    <div class="table-meta-strong">#${escapeHtml(pay.payment_number || 'N/A')}</div>
+                                    <div class="table-meta-text">Appointment #${escapeHtml(pay.appointment_number || 'N/A')}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-meta patient-payments-date">
+                                    <div class="table-meta-strong">${date}</div>
+                                    <div class="table-meta-text">${pay.paid_at ? 'Paid and recorded' : 'Invoice created'}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-meta patient-payments-doctor">
+                                    <div class="table-meta-strong">${escapeHtml(pay.doctor_name || 'Doctor')}</div>
+                                    <div class="table-meta-text">${escapeHtml(pay.specialty || 'Specialty not listed')}</div>
+                                    <div class="table-meta-text">Consultation doctor</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-meta patient-payments-amount">
+                                    <div class="table-meta-strong">${formatCurrency(Number(pay.amount || 0), pay.currency || 'BDT')}</div>
+                                    <div class="table-meta-text">${getPaymentMethodLabel(pay.payment_method)}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-meta patient-payments-status">
+                                    <span class="status-badge ${getPaymentStatusClass(pay.status)}">${formatPaymentStatusLabel(pay.status)}</span>
+                                    <div class="table-meta-text">${getPaymentStatusNote(pay)}</div>
+                                </div>
+                            </td>
+                            <td><div class="table-actions">${actionButton}</div></td>
+                        </tr>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Failed to load payments:', error);
+                document.getElementById('paymentCount').textContent = 'Unable to load';
+                document.getElementById('paymentsList').innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-red-500">
+                            Failed to load payment history. Please try again later.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        async function initiatePayment(paymentNumber) {
+            try {
+                showLoading();
+                const response = await API.payments.initiate({
+                    payment_number: paymentNumber,
+                    payment_method: 'online'
+                });
+                
+                if (response.status === 'success') {
+                    showToast(response.instructions || 'Payment completed successfully.', 'success');
+                } else {
+                    showToast(response.instructions || 'Payment recorded successfully.', 'success');
+                }
+
+                await loadPayments();
+            } catch (error) {
+                showToast(error.message || 'Failed to complete payment', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        async function downloadReceipt(id) {
+            try {
+                showLoading();
+                await API.payments.downloadReceipt(id);
+                showToast('Receipt PDF downloaded.', 'success');
+            } catch (error) {
+                showToast(error.message || 'Failed to download receipt PDF.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Execute on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.requireRole('patient')) {
+                return;
+            }
+
+            initDashboardNavToggle();
+            await loadSidebarIdentity('patient');
+            await loadPayments();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Prescriptions - MediSeba</title>
+    <meta name="description" content="View your digital prescriptions.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link rel="stylesheet" href="../css/auth.css?v=20260404-7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="../patient/dashboard.html">
+                            <i class="fas fa-home"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/appointments.html">
+                            <i class="fas fa-calendar-check"></i>
+                            My Appointments
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/prescriptions.html" class="active">
+                            <i class="fas fa-file-prescription"></i>
+                            Prescriptions
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/payments.html?v=20260403-4">
+                            <i class="fas fa-credit-card"></i>
+                            Payments
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/profile.html">
+                            <i class="fas fa-user"></i>
+                            My Profile
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Loading...</span>
+                        <span class="user-role">Patient</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+        
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-intro">
+                    <h2>My Prescriptions</h2>
+                    <p class="page-intro-text">Review diagnosis details, medicines, and follow-up guidance from your visits.</p>
+                </div>
+                <div class="header-actions action-row">
+                    <button class="nav-toggle" id="navToggle" onclick="toggleSidebar()" aria-label="Toggle Navigation" style="display: none;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </header>
+            
+            <div class="dashboard-content patient-prescriptions-content">
+                <div class="card patient-prescriptions-card">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3><i class="fas fa-file-prescription text-primary"></i> Prescription History</h3>
+                            <p class="card-header-meta">Review when each prescription was issued, who prescribed it, the diagnosis, and a quick medicine summary before opening the full document.</p>
+                        </div>
+                        <div class="patient-prescriptions-card-header-actions">
+                            <span id="prescriptionCount" class="token-badge">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="patient-prescriptions-toolbar">
+                            <div class="patient-prescriptions-toolbar-copy">
+                                <strong>Your latest prescriptions are listed with the most useful medical details first.</strong>
+                                <p>Open the full prescription to review dosage guidance, advice, and follow-up details, or download the PDF directly when needed.</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive patient-prescriptions-table">
+                            <table class="table" id="prescriptionsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Doctor</th>
+                                        <th>Diagnosis</th>
+                                        <th>Medicines</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="prescriptionsList">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4">
+                                            <div class="spinner"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260402-4"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        function parseMedicineList(rawValue) {
+            if (Array.isArray(rawValue)) {
+                return rawValue;
+            }
+
+            if (typeof rawValue === 'string' && rawValue.trim() !== '') {
+                try {
+                    const parsed = JSON.parse(rawValue);
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (error) {
+                    return [];
+                }
+            }
+
+            return [];
+        }
+
+        function getMedicinePreviewName(medicine) {
+            if (typeof medicine === 'string') {
+                return medicine.trim();
+            }
+
+            if (!medicine || typeof medicine !== 'object') {
+                return '';
+            }
+
+            return String(
+                medicine.name ||
+                medicine.medicine_name ||
+                medicine.medicine ||
+                medicine.drug_name ||
+                medicine.drug ||
+                medicine.title ||
+                ''
+            ).trim();
+        }
+
+        function getMedicinePreviewDetail(medicine) {
+            if (!medicine || typeof medicine !== 'object') {
+                return '';
+            }
+
+            return String(
+                medicine.dosage ||
+                medicine.strength ||
+                medicine.instructions ||
+                medicine.note ||
+                medicine.notes ||
+                ''
+            ).trim();
+        }
+
+        function renderMedicinePreview(medicineList) {
+            if (!Array.isArray(medicineList) || medicineList.length === 0) {
+                return `
+                    <div class="patient-prescriptions-medicine-summary">
+                        <span class="token-badge">No entries</span>
+                        <div class="table-meta-text">Medicine details are not available for this record.</div>
+                    </div>
+                `;
+            }
+
+            const previewItems = medicineList.slice(0, 2).map((medicine) => {
+                const name = getMedicinePreviewName(medicine);
+                const detail = getMedicinePreviewDetail(medicine);
+
+                return `
+                    <div class="patient-prescriptions-medicine-item">
+                        <span class="patient-prescriptions-medicine-name">${escapeHtml(name || 'Medicine item')}</span>
+                        ${detail ? `<span class="patient-prescriptions-medicine-detail">${escapeHtml(detail)}</span>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            const remainingCount = medicineList.length - 2;
+
+            return `
+                <div class="patient-prescriptions-medicine-summary">
+                    <span class="token-badge">${medicineList.length} listed</span>
+                    <div class="patient-prescriptions-medicines-list">
+                        ${previewItems}
+                        ${remainingCount > 0 ? `<div class="table-meta-text">+${remainingCount} more in the full prescription</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadPrescriptions() {
+            try {
+                const response = await API.prescriptions.myPrescriptions();
+                const prescriptions = response.items || [];
+                const prescriptionsList = document.getElementById('prescriptionsList');
+                const prescriptionCount = document.getElementById('prescriptionCount');
+
+                prescriptionCount.textContent = `${prescriptions.length} prescription${prescriptions.length === 1 ? '' : 's'}`;
+                
+                if (prescriptions.length === 0) {
+                    prescriptionsList.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-gray-500">
+                                <i class="fas fa-folder-open mb-2" style="font-size: 2rem; color: var(--gray-300);"></i><br>
+                                No prescriptions found<br>
+                                <span class="table-meta-text">Completed visits with prescriptions will appear here.</span>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                prescriptionsList.innerHTML = prescriptions.map(rx => {
+                    const date = new Date(rx.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'short', day: 'numeric'
+                    });
+                    
+                    const medsObject = parseMedicineList(rx.medicine_list);
+                    
+                    return `
+                        <tr>
+                            <td>
+                                <div class="table-meta patient-prescriptions-date">
+                                    <div class="table-meta-strong">${date}</div>
+                                    <div class="table-meta-text">Prescription #${escapeHtml(rx.prescription_number || 'N/A')}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-meta patient-prescriptions-doctor">
+                                    <div class="table-meta-strong">${escapeHtml(rx.doctor_name || 'Doctor')}</div>
+                                    <div class="table-meta-text">${escapeHtml(rx.specialty || 'Specialty not listed')}</div>
+                                    <div class="table-meta-text">Prescribing doctor</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-meta patient-prescriptions-diagnosis">
+                                    <div class="table-meta-strong">${escapeHtml(rx.diagnosis || 'Not specified')}</div>
+                                    <div class="table-meta-text">Diagnosis recorded for this consultation.</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-meta patient-prescriptions-medicines">
+                                    ${renderMedicinePreview(medsObject)}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="btn btn-outline btn-sm" onclick="viewPrescription(${rx.id})">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick="downloadPrescription(${rx.id})">
+                                        <i class="fas fa-download"></i> Download
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Failed to load prescriptions:', error);
+                document.getElementById('prescriptionCount').textContent = 'Unable to load';
+                document.getElementById('prescriptionsList').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-red-500">
+                            Failed to load prescriptions. Please try again later.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        function viewPrescription(id) {
+            window.location.href = resolvePagePath(`patient/prescription.html?id=${encodeURIComponent(id)}&v=20260403-1`);
+        }
+        
+        async function downloadPrescription(id) {
+            try {
+                showLoading();
+                await API.prescriptions.downloadPdf(id);
+                showToast('Prescription PDF downloaded.', 'success');
+            } catch (error) {
+                showToast(error.message || 'Failed to download prescription PDF.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Execute on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.requireRole('patient')) {
+                return;
+            }
+
+            initDashboardNavToggle();
+            await loadSidebarIdentity('patient');
+            await loadPrescriptions();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

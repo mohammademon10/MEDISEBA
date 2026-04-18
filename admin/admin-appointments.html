@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Management - MediSeba Admin</title>
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-2">
+    <link rel="stylesheet" href="../css/admin.css?v=20260416-2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-sidebar-header">
+                <a href="../index.html" class="logo"><img src="../images/logo-mark.svg" alt="" class="logo-mark"><span class="logo-wordmark"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span></a>
+                <span class="admin-badge"><i class="fas fa-shield-halved"></i> Admin</span>
+            </div>
+            <nav class="admin-sidebar-nav">
+                <div class="nav-section">Overview</div>
+                <ul><li><a href="admin-dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a></li></ul>
+                <div class="nav-section">Management</div>
+                <ul>
+                    <li><a href="admin-users.html"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="admin-doctors.html"><i class="fas fa-user-md"></i> Doctors</a></li>
+                    <li><a href="admin-patients.html"><i class="fas fa-hospital-user"></i> Patients</a></li>
+                    <li><a href="admin-appointments.html" class="active"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                    <li><a href="admin-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="admin-prescriptions.html"><i class="fas fa-file-prescription"></i> Prescriptions</a></li>
+                </ul>
+                <div class="nav-section">System</div>
+                <ul><li><a href="admin-settings.html"><i class="fas fa-cog"></i> Settings</a></li></ul>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <div class="admin-user-info"><div class="admin-user-avatar"><i class="fas fa-user-shield"></i></div><div class="admin-user-details"><span class="admin-user-name" id="adminName">Admin</span><span class="admin-user-role">Administrator</span></div></div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()" style="width:100%;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </aside>
+        <div class="admin-sidebar-overlay" id="adminSidebarOverlay" onclick="toggleAdminSidebar()"></div>
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div class="admin-topbar-left"><button class="admin-mobile-toggle" onclick="toggleAdminSidebar()"><i class="fas fa-bars"></i></button><span class="admin-topbar-title">Appointments</span></div>
+                <div class="admin-topbar-right"><button class="btn-icon" onclick="toggleTheme()"><i class="fas fa-moon"></i></button></div>
+            </header>
+            <div class="admin-page">
+                <div class="admin-page-header"><h1>Appointments</h1><p>View all appointments and manage cancellations.</p></div>
+                <div class="admin-card">
+                    <div class="admin-toolbar">
+                        <div class="admin-search"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search..." oninput="debounceSearch()"></div>
+                        <select id="statusFilter" onchange="loadData(1)"><option value="">All Status</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+                    </div>
+                    <div class="admin-table-wrap" id="dataTable"><div class="admin-loading"><div class="spinner"></div></div></div>
+                    <div class="admin-pagination" id="pagination"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div class="admin-modal-overlay" id="confirmModal"><div class="admin-modal"><h3 id="modalTitle">Cancel Appointment</h3><p id="modalMessage"></p><div style="margin-bottom:var(--space-4)"><input type="text" id="cancelReason" class="admin-setting-input" style="width:100%" placeholder="Reason for cancellation"></div><div class="admin-modal-actions"><button class="btn btn-outline btn-sm" onclick="closeModal()">Keep</button><button class="btn btn-primary btn-sm" style="background:var(--error)" onclick="doCancel()">Cancel It</button></div></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260416-2"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script src="../js/admin-api.js?v=20260416-2"></script>
+    <script>
+    if(!Auth.requireRole('admin'))throw new Error('Admin access required');
+    let cp=1,st=null,cancelId=null;
+    function toggleAdminSidebar(){document.getElementById('adminSidebar').classList.toggle('active');document.getElementById('adminSidebarOverlay').classList.toggle('active');}
+    function debounceSearch(){clearTimeout(st);st=setTimeout(()=>loadData(1),400);}
+    function fmtS(s){return{in_progress:'In Progress',no_show:'No Show'}[s]||(s?s[0].toUpperCase()+s.slice(1):'');}
+    async function loadData(p=1){
+        cp=p;const c=document.getElementById('dataTable');c.innerHTML='<div class="admin-loading"><div class="spinner"></div></div>';
+        const sf=document.getElementById('statusFilter');const up=new URLSearchParams(location.search);
+        if(p===1&&up.has('status')&&!sf.dataset.i){sf.value=up.get('status');sf.dataset.i='1';}
+        try{
+            const r=await API.admin.appointments.list({page:p,per_page:15,search:document.getElementById('searchInput').value.trim(),status:sf.value});
+            const items=r.items||[];
+            if(!items.length){c.innerHTML='<div class="admin-empty-state"><i class="fas fa-calendar"></i><h3>No appointments</h3></div>';document.getElementById('pagination').innerHTML='';return;}
+            c.innerHTML=`<table class="admin-table"><thead><tr><th>Appt#</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>${items.map(a=>`<tr><td><div class="admin-cell-name">${escapeHtml(a.appointment_number)}</div><div class="admin-cell-meta">Token #${a.token_number}</div></td><td>${escapeHtml(a.patient_name)}</td><td>${escapeHtml(a.doctor_name)}</td><td>${new Date(a.appointment_date).toLocaleDateString()}</td><td><span class="admin-badge ${a.status}">${fmtS(a.status)}</span></td><td>${!['completed','cancelled'].includes(a.status)?`<button class="admin-action-btn danger" onclick="showCancel(${a.id},'${escapeHtml(a.appointment_number)}')"><i class="fas fa-times"></i></button>`:''}</td></tr>`).join('')}</tbody></table>`;
+            rp(r.total,r.page,r.per_page,r.total_pages);
+        }catch(e){c.innerHTML='<div class="admin-empty-state"><i class="fas fa-exclamation-circle"></i><h3>Failed to load</h3></div>';}
+    }
+    function rp(t,p,pp,tp){const pg=document.getElementById('pagination');if(tp<=1){pg.innerHTML=`<div class="admin-pagination-info">${t} item(s)</div>`;return;}let b=`<button ${p<=1?'disabled':''} onclick="loadData(${p-1})"><i class="fas fa-chevron-left"></i></button>`;for(let i=1;i<=tp;i++){if(tp>7&&Math.abs(i-p)>2&&i!==1&&i!==tp)continue;b+=`<button class="${i===p?'active':''}" onclick="loadData(${i})">${i}</button>`;}b+=`<button ${p>=tp?'disabled':''} onclick="loadData(${p+1})"><i class="fas fa-chevron-right"></i></button>`;pg.innerHTML=`<div class="admin-pagination-info">${(p-1)*pp+1}–${Math.min(p*pp,t)} of ${t}</div><div class="admin-pagination-controls">${b}</div>`;}
+    function showCancel(id,num){cancelId=id;document.getElementById('modalMessage').textContent=`Cancel ${num}?`;document.getElementById('cancelReason').value='';document.getElementById('confirmModal').classList.add('active');}
+    function closeModal(){document.getElementById('confirmModal').classList.remove('active');cancelId=null;}
+    async function doCancel(){if(!cancelId)return;const reason=document.getElementById('cancelReason').value.trim()||'Cancelled by admin';closeModal();try{await API.admin.appointments.cancel(cancelId,reason);showToast('Cancelled','success');loadData(cp);}catch(e){showToast(e.message||'Failed','error');}}
+    document.addEventListener('DOMContentLoaded',()=>{const u=Auth.getUser();if(u)document.getElementById('adminName').textContent=u.full_name||u.email||'Admin';loadData(1);});
+    </script>
+</body>
+</html>

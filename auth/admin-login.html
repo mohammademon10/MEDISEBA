@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Infrastructure Gateway - MediSeba</title>
+    <link rel="stylesheet" href="../css/style.css?v=20260416-2">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260416-2">
+    <link rel="stylesheet" href="../css/auth.css?v=20260416-2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('../images/Background-photos/indexbackground.jpg') center/cover no-repeat fixed !important;
+            position: relative;
+            padding: 2rem;
+        }
+        .auth-form-container { width: 100%; display: flex; align-items: center; justify-content: center; background: transparent !important; }
+        .auth-form-wrapper {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+        }
+        
+        .auth-logo { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 2rem; text-decoration: none; }
+        .auth-logo img { width: 40px; height: 40px; }
+        .logo-wordmark, .logo-wordmark-primary, .logo-wordmark-secondary { font-size: 1.75rem; font-weight: 700; color: #fff !important; }
+
+        .auth-step {
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .auth-step h1 { font-size: 1.5rem; font-weight: 700; color: #fff !important; margin-bottom: 0.5rem; text-align: center;}
+        .auth-subtitle { color: rgba(255, 255, 255, 0.8) !important; margin-bottom: 2rem; text-align: center; font-size: 0.95rem; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: rgba(255, 255, 255, 0.9) !important; }
+        .input-group { position: relative; display: flex; align-items: center; }
+        .input-group-icon { position: absolute; left: 1rem; color: rgba(255, 255, 255, 0.5) !important; pointer-events: none; z-index: 2; }
+        .form-input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 1px solid rgba(255, 255, 255, 0.3) !important; border-radius: var(--radius-md); background-color: rgba(255, 255, 255, 0.05) !important; color: #fff !important; transition: all 0.2s ease; }
+        .form-input:focus { outline: none; border-color: rgba(255, 255, 255, 0.6) !important; box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1) !important; }
+        .form-input::placeholder { color: rgba(255, 255, 255, 0.5) !important; }
+        .form-error { display: none; color: #ff8a8a; font-size: 0.875rem; margin-top: 0.5rem; text-align: center;}
+
+        .btn-primary { background-color: var(--primary) !important; color: #fff !important; border: none; width: 100%; display: flex; justify-content: center; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; margin-top: 1rem; cursor: pointer; transition: all 0.2s;}
+        .btn-primary:hover { opacity: 0.9; }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0 auto 1.5rem auto;
+            width: fit-content;
+        }
+
+        .auth-footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+        }
+
+        .auth-footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+
+        .auth-footer a:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body class="auth-page auth-page-admin">
+    <div class="auth-container">
+        <div class="auth-form-container">
+            <div class="auth-form-wrapper">
+                <a href="../index.html" class="auth-logo">
+                    <img src="../images/logo-mark.svg" alt="Logo">
+                    <span class="logo-wordmark"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+                </a>
+                
+                <div class="auth-step">
+                    <div style="display: flex; justify-content: center;">
+                        <span class="admin-badge"><i class="fas fa-shield-halved"></i> Restricted Access</span>
+                    </div>
+
+                    <h1>Core Infrastructure Gateway</h1>
+                    <p class="auth-subtitle">Sign in to manage users, appointments, and system settings.</p>
+                    
+                    <form id="loginForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="email" class="form-label form-label-required">Admin Email</label>
+                            <div class="input-group">
+                                <span class="input-group-icon"><i class="fas fa-user-shield"></i></span>
+                                <input type="email" id="email" name="email" class="form-input" placeholder="admin@mediseba.com" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password" class="form-label form-label-required">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-icon"><i class="fas fa-key"></i></span>
+                                <input type="password" id="password" name="password" class="form-input" placeholder="Enter administrative password" required>
+                            </div>
+                        </div>
+                        
+                        <span class="form-error" id="loginError" style="display: none;"></span>
+
+                        <button type="submit" class="btn btn-primary" id="loginBtn">
+                            Access Authorized Environment <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="auth-footer">
+                    <p>&copy; 2026 MediSeba System Admin.</p>
+                    <div style="margin-top: 0.5rem;">
+                        <a href="../index.html">← Return to Public Site</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260416-2"></script>
+    <script src="../js/auth.js?v=20260416-2"></script>
+    <script src="../js/app.js?v=20260416-2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (Auth.isLoggedIn() && Auth.getRole() === 'admin') {
+                window.location.href = Auth.getDashboardUrl();
+                return;
+            }
+
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorElement = document.getElementById('loginError');
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value.trim();
+                
+                errorElement.style.display = 'none';
+                
+                loginBtn.classList.add('is-loading');
+                loginBtn.disabled = true;
+                const originalText = loginBtn.innerHTML;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+                
+                try {
+                    const result = await API.auth.login(email, password, 'admin');
+                    
+                    Auth.setToken(result.token);
+                    Auth.setUser(result.user);
+                    
+                    showToast('Admin access granted', 'success');
+                    setTimeout(() => {
+                        window.location.href = resolvePagePath('admin/admin-dashboard.html');
+                    }, 500);
+                    
+                } catch (error) {
+                    errorElement.textContent = error.message || 'Access denied';
+                    errorElement.style.display = 'block';
+                } finally {
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = originalText;
+                    loginBtn.classList.remove('is-loading');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

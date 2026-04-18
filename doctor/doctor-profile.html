@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile - MediSeba</title>
+    <meta name="description" content="View doctor profile and book appointment.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-11">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-page {
+            padding-top: 100px;
+            padding-bottom: var(--space-16);
+        }
+        
+        .profile-header {
+            display: flex;
+            gap: var(--space-8);
+            padding: var(--space-8);
+            background: var(--surface-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-8);
+        }
+        
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-info h1 {
+            font-size: var(--font-size-2xl);
+            margin-bottom: var(--space-2);
+        }
+        
+        .profile-specialty {
+            color: var(--primary);
+            font-weight: 500;
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--space-3);
+        }
+        
+        .profile-meta {
+            display: flex;
+            gap: var(--space-6);
+            margin-bottom: var(--space-4);
+        }
+        
+        .profile-meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            color: var(--text-secondary);
+        }
+        
+        .profile-meta-item i {
+            color: var(--primary);
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: var(--space-3);
+        }
+        
+        .profile-fee {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .profile-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-8);
+        }
+        
+        .profile-section {
+            padding: var(--space-6);
+            background: var(--surface-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--space-6);
+        }
+        
+        .profile-section h3 {
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--space-4);
+            padding-bottom: var(--space-3);
+            border-bottom: 1px solid var(--border-color-soft);
+        }
+        
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-3);
+        }
+        
+        .schedule-item {
+            padding: var(--space-3);
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+        
+        .schedule-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .schedule-day {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+        
+        .schedule-time {
+            font-size: var(--font-size-xs);
+            opacity: 0.8;
+        }
+        
+        .booking-card {
+            position: sticky;
+            top: 100px;
+        }
+        
+        .booking-card h3 {
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--space-4);
+        }
+        
+        .booking-fee {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-4);
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-4);
+        }
+        
+        .booking-fee-label {
+            color: var(--gray-500);
+        }
+        
+        .booking-fee-value {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .date-picker {
+            margin-bottom: var(--space-4);
+        }
+
+        .booking-intro {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-4);
+            line-height: 1.6;
+        }
+
+        .date-chip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+        }
+
+        .date-chip {
+            border: 1px solid var(--border-color);
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+            border-radius: 999px;
+            padding: 0.7rem 1rem;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .date-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .date-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .available-slots {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .slot-card {
+            width: 100%;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            background: var(--surface-elevated);
+            padding: var(--space-4);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-align: left;
+        }
+
+        .slot-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .slot-card.selected {
+            background: rgba(31, 149, 146, 0.08);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .slot-card.disabled {
+            background: var(--gray-50);
+            border-color: var(--gray-100);
+            cursor: not-allowed;
+            opacity: 0.75;
+        }
+
+        .slot-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+
+        .slot-card-title {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .slot-card-meta {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: var(--space-2);
+        }
+
+        .slot-card-meta span {
+            display: block;
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            background: var(--surface-muted);
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .slot-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            border-radius: 999px;
+            padding: 0.35rem 0.75rem;
+            font-size: var(--font-size-xs);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .slot-status.available {
+            background: rgba(31, 149, 146, 0.12);
+            color: var(--primary);
+        }
+
+        .slot-status.full {
+            background: var(--gray-200);
+            color: var(--gray-600);
+        }
+
+        .booking-summary {
+            border: 1px solid var(--gray-100);
+            border-radius: var(--radius-lg);
+            background: linear-gradient(180deg, rgba(31, 149, 146, 0.06) 0%, rgba(31, 149, 146, 0.02) 100%);
+            padding: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+
+        .booking-summary h4 {
+            font-size: var(--font-size-base);
+            margin-bottom: var(--space-3);
+        }
+
+        .booking-summary-grid {
+            display: grid;
+            gap: var(--space-2);
+        }
+
+        .booking-summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--space-3);
+            font-size: var(--font-size-sm);
+        }
+
+        .booking-summary-row span:first-child {
+            color: var(--text-secondary);
+        }
+
+        .booking-summary-row strong {
+            color: var(--text-primary);
+            text-align: right;
+        }
+
+        .booking-empty {
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            background: var(--surface-muted);
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+            line-height: 1.6;
+        }
+
+        .booking-restriction {
+            display: none;
+            margin-bottom: var(--space-4);
+        }
+
+        .booking-hint {
+            display: flex;
+            gap: var(--space-2);
+            align-items: flex-start;
+            padding: var(--space-3);
+            background: var(--primary-light);
+            border-radius: var(--radius-md);
+            color: var(--primary-dark);
+            font-size: var(--font-size-sm);
+            line-height: 1.6;
+            margin-top: var(--space-4);
+        }
+
+        .booking-hint i {
+            margin-top: 3px;
+        }
+
+        .booking-card .form-group textarea.form-input {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .section-subtitle {
+            color: var(--gray-500);
+            font-size: var(--font-size-sm);
+            margin-top: -0.25rem;
+            margin-bottom: var(--space-3);
+        }
+
+        @media (max-width: 1024px) {
+            .profile-page {
+                padding-top: 92px;
+                padding-bottom: var(--space-12);
+            }
+
+            .profile-header {
+                gap: var(--space-6);
+                padding: var(--space-6);
+            }
+
+            .profile-content {
+                grid-template-columns: 1fr;
+                gap: var(--space-6);
+            }
+
+            .booking-card {
+                position: static;
+            }
+
+            .profile-actions {
+                flex-wrap: wrap;
+            }
+
+            .profile-actions .btn {
+                flex: 1 1 180px;
+                justify-content: center;
+            }
+
+            .schedule-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-avatar {
+                margin: 0 auto;
+            }
+            
+            .profile-meta {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .profile-actions {
+                justify-content: center;
+            }
+            
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .booking-card {
+                position: static;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .slot-card-top,
+            .booking-summary-row {
+                flex-direction: column;
+            }
+
+            .slot-card-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .profile-page {
+                padding-top: 84px;
+                padding-bottom: var(--space-10);
+            }
+
+            .profile-header,
+            .profile-section {
+                padding: var(--space-5);
+            }
+
+            .profile-avatar {
+                width: 124px;
+                height: 124px;
+            }
+
+            .profile-info h1 {
+                font-size: clamp(1.75rem, 9vw, 2.25rem);
+            }
+
+            .profile-meta {
+                gap: var(--space-3);
+            }
+
+            .profile-meta-item {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .profile-actions .btn {
+                width: 100%;
+                flex-basis: 100%;
+            }
+
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .date-chip-list {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .date-chip {
+                justify-content: center;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../pages/doctors.html" class="active">Find Doctors</a></li>
+                <li><a href="../pages/how-it-works.html">How It Works</a></li>
+                <li><a href="../pages/about.html">About</a></li>
+                <li class="nav-auth">
+                    <a href="../auth/login.html" class="btn btn-outline">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Profile Page -->
+    <main class="profile-page">
+        <div class="container">
+            <!-- Profile Header -->
+            <div class="profile-header" id="profileHeader">
+                <div class="spinner" style="margin: 0 auto;"></div>
+            </div>
+            
+            <!-- Profile Content -->
+            <div class="profile-content">
+                <div class="profile-main">
+                    <!-- About Section -->
+                    <div class="profile-section" id="aboutSection">
+                        <h3>About</h3>
+                        <p>Loading...</p>
+                    </div>
+                    
+                    <!-- Schedule Section -->
+                    <div class="profile-section">
+                        <h3>Weekly Schedule</h3>
+                        <div class="schedule-grid" id="scheduleGrid">
+                            <div class="spinner" style="margin: 0 auto;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Clinic Info -->
+                    <div class="profile-section" id="clinicSection">
+                        <h3>Clinic Information</h3>
+                        <p>Loading...</p>
+                    </div>
+                </div>
+                
+                <!-- Booking Card -->
+                <div class="profile-section booking-card">
+                    <h3>Book Appointment</h3>
+                    <p class="booking-intro">Choose one of the next available dates below, then pick a shift to reserve your token.</p>
+                    <div id="bookingRestriction" class="alert alert-warning booking-restriction"></div>
+                    
+                    <div class="booking-fee">
+                        <span class="booking-fee-label">Consultation Fee</span>
+                        <span class="booking-fee-value" id="bookingFee">-</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Next Available Dates</label>
+                        <div class="date-chip-list" id="availableDates">
+                            <div class="booking-empty">Checking upcoming availability...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group date-picker">
+                        <label class="form-label">Or Pick Another Date</label>
+                        <input type="date" class="form-input" id="appointmentDate" min="">
+                    </div>
+
+                    <div class="booking-summary" id="bookingSummary">
+                        <h4>Booking Summary</h4>
+                        <div class="booking-summary-grid">
+                            <div class="booking-summary-row">
+                                <span>Date</span>
+                                <strong id="summaryDate">Choose a date</strong>
+                            </div>
+                            <div class="booking-summary-row">
+                                <span>Shift</span>
+                                <strong id="summaryShift">Choose a shift</strong>
+                            </div>
+                            <div class="booking-summary-row">
+                                <span>Expected Token</span>
+                                <strong id="summaryToken">Shown after shift selection</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Available Shifts</label>
+                        <p class="section-subtitle">Each shift shows the remaining token capacity for that day.</p>
+                        <div class="available-slots" id="availableSlots">
+                            <div class="booking-empty">Choose a date to see the doctor's open shifts.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="bookingSymptoms">Reason for Visit (Optional)</label>
+                        <textarea class="form-input" id="bookingSymptoms" placeholder="Briefly describe your symptoms or the reason for your appointment"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="bookingNotes">Notes for Doctor (Optional)</label>
+                        <textarea class="form-input" id="bookingNotes" placeholder="Add any extra note the doctor should see before the appointment"></textarea>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-lg" id="bookBtn" onclick="bookAppointment()" disabled>
+                        Book Appointment
+                    </button>
+                    
+                    <div class="booking-hint">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Your token is reserved instantly after booking. If a payment record is created, you will be redirected there automatically.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 MediSeba. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260402-6"></script>
+    <script src="../js/app.js?v=20260404-16"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const doctorId = urlParams.get('id');
+        
+        let doctor = null;
+        let selectedDate = null;
+        let selectedScheduleId = null;
+        let selectedSchedule = null;
+        let availableDateGroups = [];
+        let bookingRestrictionMessage = '';
+        
+        if (!doctorId) {
+            window.location.href = resolvePagePath('pages/doctors.html');
+        }
+
+        async function resolveBookingRestriction() {
+            bookingRestrictionMessage = '';
+
+            if (!Auth.isLoggedIn() || Auth.getRole() !== 'doctor') {
+                applyBookingRestrictionState();
+                return;
+            }
+
+            try {
+                const result = await API.doctors.profile();
+                const viewerDoctorId = Number(result.doctor?.id || 0);
+
+                if (viewerDoctorId && viewerDoctorId === Number(doctorId)) {
+                    bookingRestrictionMessage = 'You are viewing your own doctor profile. Doctor accounts cannot book their own appointments.';
+                } else {
+                    bookingRestrictionMessage = 'Doctor accounts cannot book appointments. Please switch to a patient account to continue.';
+                }
+            } catch (error) {
+                bookingRestrictionMessage = 'Doctor accounts cannot book appointments. Please switch to a patient account to continue.';
+            }
+
+            applyBookingRestrictionState();
+        }
+
+        function applyBookingRestrictionState() {
+            const restriction = document.getElementById('bookingRestriction');
+            const appointmentDateInput = document.getElementById('appointmentDate');
+            const symptomsInput = document.getElementById('bookingSymptoms');
+            const notesInput = document.getElementById('bookingNotes');
+            const bookButton = document.getElementById('bookBtn');
+
+            if (restriction) {
+                restriction.style.display = bookingRestrictionMessage ? 'block' : 'none';
+                restriction.innerHTML = bookingRestrictionMessage
+                    ? `<i class="fas fa-ban"></i> ${escapeHtml(bookingRestrictionMessage)}`
+                    : '';
+            }
+
+            if (appointmentDateInput) {
+                appointmentDateInput.disabled = Boolean(bookingRestrictionMessage);
+            }
+            if (symptomsInput) {
+                symptomsInput.disabled = Boolean(bookingRestrictionMessage);
+            }
+            if (notesInput) {
+                notesInput.disabled = Boolean(bookingRestrictionMessage);
+            }
+            if (bookButton) {
+                bookButton.disabled = true;
+            }
+        }
+        
+        // Load doctor profile
+        async function loadDoctorProfile() {
+            try {
+                const result = await API.doctors.get(doctorId);
+                doctor = result.doctor;
+                
+                // Update page title
+                document.title = `${doctor.full_name} - MediSeba`;
+                const ratingDisplay = getDoctorRatingDisplay(doctor);
+                
+                // Render profile header
+                document.getElementById('profileHeader').innerHTML = `
+                    <div class="profile-avatar">
+                        <img src="${escapeHtml(resolveAssetPath(doctor.profile_photo, 'images/default-doctor.svg'))}" ${resolveLegacyAssetPath(doctor.profile_photo) ? `data-legacy-src="${escapeHtml(resolveLegacyAssetPath(doctor.profile_photo))}"` : ''} onerror="handleAssetImageError(this, 'images/default-doctor.svg')" alt="${escapeHtml(doctor.full_name || '')}">
+                    </div>
+                    <div class="profile-info">
+                        <h1>${escapeHtml(doctor.full_name || '')}</h1>
+                        <p class="profile-specialty">${escapeHtml(doctor.specialty || '')}</p>
+                        <div class="profile-meta">
+                            <span class="profile-meta-item">
+                                <i class="fas fa-star"></i>
+                                ${escapeHtml(ratingDisplay.hasReviews ? `${ratingDisplay.value} Rating` : 'New')}
+                            </span>
+                            <span class="profile-meta-item">
+                                <i class="fas fa-comments"></i>
+                                ${escapeHtml(ratingDisplay.reviewCountLabel)}
+                            </span>
+                            <span class="profile-meta-item">
+                                <i class="fas fa-briefcase"></i>
+                                ${escapeHtml(String(doctor.experience_years || '0'))} Years Experience
+                            </span>
+                            <span class="profile-meta-item">
+                                <i class="fas fa-users"></i>
+                                ${escapeHtml(String(doctor.total_appointments || '0'))}+ Patients
+                            </span>
+                        </div>
+                        <div class="profile-actions">
+                            <span class="profile-fee">৳${escapeHtml(String(doctor.consultation_fee || '0'))}</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Update booking fee
+                document.getElementById('bookingFee').textContent = `৳${doctor.consultation_fee}`;
+                
+                // Render about section
+                const languages = formatLanguages(doctor.languages);
+                document.getElementById('aboutSection').innerHTML = `
+                    <h3>About</h3>
+                    <p>${escapeHtml(doctor.bio || 'No bio available.')}</p>
+                    <div style="margin-top: var(--space-4);">
+                        <h4 style="font-size: var(--font-size-base); margin-bottom: var(--space-2);">Qualifications</h4>
+                        <p style="color: var(--gray-600);">${escapeHtml(doctor.qualification || '')}</p>
+                    </div>
+                    <div style="margin-top: var(--space-4);">
+                        <h4 style="font-size: var(--font-size-base); margin-bottom: var(--space-2);">Languages</h4>
+                        <p style="color: var(--gray-600);">${escapeHtml(languages)}</p>
+                    </div>
+                `;
+                
+                // Render clinic info
+                document.getElementById('clinicSection').innerHTML = `
+                    <h3>Clinic Information</h3>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                        <div style="display: flex; align-items: center; gap: var(--space-3);">
+                            <i class="fas fa-hospital" style="color: var(--primary); width: 20px;"></i>
+                            <span>${escapeHtml(doctor.clinic_name || 'Not specified')}</span>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                            <i class="fas fa-map-marker-alt" style="color: var(--primary); width: 20px; margin-top: 3px;"></i>
+                            <span>${escapeHtml(doctor.clinic_address || 'Not specified')}</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Render schedule
+                renderSchedule(result.schedule);
+                renderAvailability(result.available_dates || []);
+                
+                // Set min date for appointment
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('appointmentDate').min = today;
+                
+            } catch (error) {
+                console.error('Failed to load doctor profile:', error);
+                showToast('Failed to load doctor profile', 'error');
+            }
+        }
+
+        function formatLanguages(rawValue) {
+            if (!rawValue) {
+                return 'Bengali, English';
+            }
+
+            let parsedValue = rawValue;
+
+            for (let attempt = 0; attempt < 2; attempt++) {
+                if (typeof parsedValue !== 'string') {
+                    break;
+                }
+
+                const trimmedValue = parsedValue.trim();
+                if (!trimmedValue) {
+                    break;
+                }
+
+                const looksJson = trimmedValue.startsWith('[') || trimmedValue.startsWith('"[');
+                if (!looksJson) {
+                    break;
+                }
+
+                try {
+                    parsedValue = JSON.parse(trimmedValue);
+                } catch (error) {
+                    break;
+                }
+            }
+
+            let languages = [];
+
+            if (Array.isArray(parsedValue)) {
+                languages = parsedValue
+                    .flatMap(value => typeof value === 'string' ? value.split(',') : [])
+                    .map(value => value.trim())
+                    .filter(Boolean);
+            } else if (typeof parsedValue === 'string') {
+                languages = parsedValue.split(',').map(value => value.trim()).filter(Boolean);
+            }
+
+            return languages.length > 0 ? languages.join(', ') : 'Bengali, English';
+        }
+
+        function formatDisplayDate(dateString) {
+            const date = new Date(`${dateString}T00:00:00`);
+            return date.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function groupAvailableDates(availableDates) {
+            const groups = new Map();
+
+            availableDates.forEach(schedule => {
+                if (!groups.has(schedule.date)) {
+                    groups.set(schedule.date, []);
+                }
+                groups.get(schedule.date).push(schedule);
+            });
+
+            return Array.from(groups.entries())
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .map(([date, schedules]) => ({
+                    date,
+                    schedules: schedules.sort((a, b) => a.start_time.localeCompare(b.start_time))
+                }));
+        }
+
+        function renderAvailability(availableDates) {
+            availableDateGroups = groupAvailableDates(availableDates || []);
+            const availableDatesContainer = document.getElementById('availableDates');
+            const appointmentDateInput = document.getElementById('appointmentDate');
+
+            if (bookingRestrictionMessage) {
+                availableDatesContainer.innerHTML = `<div class="booking-empty">${escapeHtml(bookingRestrictionMessage)}</div>`;
+                appointmentDateInput.value = '';
+                resetBookingSelection();
+                renderAvailableSlots([]);
+                updateBookingSummary();
+                return;
+            }
+
+            if (availableDateGroups.length === 0) {
+                availableDatesContainer.innerHTML = '<div class="booking-empty">This doctor has not opened any appointment dates yet. Please check back after the schedule is updated.</div>';
+                appointmentDateInput.value = '';
+                resetBookingSelection();
+                renderAvailableSlots([]);
+                updateBookingSummary();
+                return;
+            }
+
+            availableDatesContainer.innerHTML = availableDateGroups.slice(0, 10).map(group => `
+                <button type="button" class="date-chip" data-date="${escapeHtml(group.date)}" onclick="setSelectedDate('${escapeHtml(group.date)}')">
+                    ${escapeHtml(formatDisplayDate(group.date))}
+                </button>
+            `).join('');
+
+            const firstAvailableDate = availableDateGroups[0].date;
+            appointmentDateInput.value = firstAvailableDate;
+            setSelectedDate(firstAvailableDate);
+        }
+
+        function resetBookingSelection() {
+            selectedScheduleId = null;
+            selectedSchedule = null;
+            document.getElementById('bookBtn').disabled = true;
+        }
+
+        function setSelectedDate(date) {
+            selectedDate = date;
+            document.getElementById('appointmentDate').value = date || '';
+
+            document.querySelectorAll('.date-chip').forEach(button => {
+                button.classList.toggle('active', button.dataset.date === date);
+            });
+
+            resetBookingSelection();
+
+            const matchingDate = availableDateGroups.find(group => group.date === date);
+            renderAvailableSlots(matchingDate ? matchingDate.schedules : []);
+            updateBookingSummary();
+        }
+
+        function renderAvailableSlots(daySchedules) {
+            const container = document.getElementById('availableSlots');
+
+            if (bookingRestrictionMessage) {
+                container.innerHTML = `<div class="booking-empty">${escapeHtml(bookingRestrictionMessage)}</div>`;
+                return;
+            }
+
+            if (!selectedDate) {
+                container.innerHTML = '<div class="booking-empty">Choose a date to see the doctor\'s open shifts.</div>';
+                return;
+            }
+
+            if (!daySchedules || daySchedules.length === 0) {
+                container.innerHTML = '<div class="booking-empty">No appointment shifts are available on this date. Try one of the highlighted dates above.</div>';
+                return;
+            }
+
+            container.innerHTML = daySchedules.map(schedule => {
+                const isAvailable = Number(schedule.available_slots) > 0;
+                const nextToken = Number(schedule.max_patients) - Number(schedule.available_slots) + 1;
+
+                return `
+                    <button
+                        type="button"
+                        class="slot-card ${isAvailable ? '' : 'disabled'}"
+                        data-schedule-id="${schedule.schedule_id}"
+                        ${isAvailable ? `onclick="selectSchedule(${schedule.schedule_id})"` : 'disabled'}
+                    >
+                        <div class="slot-card-top">
+                            <div class="slot-card-title">
+                                <i class="far fa-clock"></i>
+                                ${escapeHtml(formatTime(schedule.start_time))} - ${escapeHtml(formatTime(schedule.end_time))}
+                            </div>
+                            <span class="slot-status ${isAvailable ? 'available' : 'full'}">
+                                <i class="fas ${isAvailable ? 'fa-check-circle' : 'fa-ban'}"></i>
+                                ${isAvailable ? 'Available' : 'Full'}
+                            </span>
+                        </div>
+                        <div class="slot-card-meta">
+                            <span><strong>${escapeHtml(String(schedule.available_slots))}</strong> token(s) left</span>
+                            <span>${isAvailable ? `Next token <strong>#${escapeHtml(String(nextToken))}</strong>` : 'No tokens remaining'}</span>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function updateBookingSummary() {
+            document.getElementById('summaryDate').textContent = selectedDate ? formatDisplayDate(selectedDate) : 'Choose a date';
+            document.getElementById('summaryShift').textContent = selectedSchedule
+                ? `${formatTime(selectedSchedule.start_time)} - ${formatTime(selectedSchedule.end_time)}`
+                : 'Choose a shift';
+
+            if (selectedSchedule) {
+                const nextToken = Number(selectedSchedule.max_patients) - Number(selectedSchedule.available_slots) + 1;
+                document.getElementById('summaryToken').textContent = `#${nextToken}`;
+            } else {
+                document.getElementById('summaryToken').textContent = 'Shown after shift selection';
+            }
+        }
+        
+        // Render schedule
+        function renderSchedule(schedule) {
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const container = document.getElementById('scheduleGrid');
+            
+            if (!schedule || schedule.length === 0) {
+                container.innerHTML = '<p style="color: var(--gray-500);">No schedule available</p>';
+                return;
+            }
+            
+            container.innerHTML = schedule.map(s => `
+                <div class="schedule-item ${s.is_available ? 'active' : ''}">
+                    <div class="schedule-day">${days[s.weekday]}</div>
+                    <div class="schedule-time">${formatTime(s.start_time)} - ${formatTime(s.end_time)}</div>
+                </div>
+            `).join('');
+        }
+        
+        document.getElementById('appointmentDate').addEventListener('change', (e) => {
+            setSelectedDate(e.target.value);
+        });
+        
+        // Select schedule
+        function selectSchedule(scheduleId) {
+            selectedScheduleId = scheduleId;
+            const matchingDate = availableDateGroups.find(group => group.date === selectedDate);
+            selectedSchedule = matchingDate
+                ? matchingDate.schedules.find(schedule => Number(schedule.schedule_id) === Number(scheduleId)) || null
+                : null;
+
+            document.querySelectorAll('.slot-card').forEach(card => {
+                card.classList.toggle('selected', Number(card.dataset.scheduleId) === Number(scheduleId));
+            });
+
+            document.getElementById('bookBtn').disabled = false;
+            updateBookingSummary();
+        }
+        
+        // Book appointment
+        async function bookAppointment() {
+            if (!Auth.isLoggedIn()) {
+                showToast('Please login to book an appointment', 'warning');
+                setTimeout(() => {
+                    window.location.href = resolvePagePath(`auth/login.html?redirect=${encodeURIComponent(window.location.href)}`);
+                }, 1500);
+                return;
+            }
+
+            if (bookingRestrictionMessage) {
+                showToast(bookingRestrictionMessage, 'warning');
+                return;
+            }
+            
+            if (!selectedDate || !selectedScheduleId) {
+                showToast('Please select a date and time slot', 'warning');
+                return;
+            }
+            
+            const notesInput = document.getElementById('bookingNotes');
+            const symptomsInput = document.getElementById('bookingSymptoms');
+            
+            const notes = notesInput ? notesInput.value.trim() : '';
+            const symptoms = symptomsInput ? symptomsInput.value.trim() : '';
+            
+            if (notes.length > 500) {
+                showToast('Notes cannot exceed 500 characters', 'warning');
+                return;
+            }
+            if (symptoms.length > 1000) {
+                showToast('Symptoms cannot exceed 1000 characters', 'warning');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const result = await API.appointments.create({
+                    doctor_id: doctorId,
+                    schedule_id: selectedScheduleId,
+                    appointment_date: selectedDate,
+                    notes: notes,
+                    symptoms: symptoms
+                });
+                
+                showToast(`Appointment booked successfully! Token Number: #${result.appointment?.token_number || result.data?.appointment?.token_number || 'N/A'}`, 'success');
+                
+                setTimeout(() => {
+                    const paymentInfo = result.payment || result.data?.payment;
+                    if (paymentInfo && paymentInfo.payment_number) {
+                        // Redirect to payment page with the payment number
+                        window.location.href = resolvePagePath(`patient/payments.html?v=20260403-4&payment=${encodeURIComponent(paymentInfo.payment_number)}`);
+                    } else {
+                        // Fallback redirect
+                        window.location.href = resolvePagePath('patient/dashboard.html');
+                    }
+                }, 1500);
+                
+            } catch (error) {
+                showToast(error.message || 'Failed to book appointment', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            resolveBookingRestriction().finally(() => loadDoctorProfile());
+            Auth.updateNavigation();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

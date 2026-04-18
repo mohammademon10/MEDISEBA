@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - MediSeba</title>
+    <meta name="description" content="Privacy Policy for MediSeba patients and doctors.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../pages/doctors.html">Find Doctors</a></li>
+                <li><a href="../pages/how-it-works.html">How It Works</a></li>
+                <li><a href="../pages/about.html">About</a></li>
+                <li class="nav-auth">
+                    <a href="../auth/login.html" class="btn btn-outline">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="page-main-shell">
+        <div class="container">
+            <div class="section-header">
+                <h2>Privacy <span class="highlight">Policy</span></h2>
+            </div>
+            <div class="page-content-narrow">
+                <div class="card page-card">
+                    <h3>Protecting Your Data</h3>
+                    <p style="margin-top: var(--space-2);">Your privacy is extremely important to us. MediSeba conforms strictly to international medical data compliance architectures. The full, explicit privacy policy outlining all our security guarantees will be available here soon.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom footer-bottom-compact">
+                <p>&copy; 2026 MediSeba. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="../pages/privacy.html" style="color: var(--primary);">Privacy Policy</a>
+                    <a href="../pages/terms.html">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Auth.updateNavigation();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

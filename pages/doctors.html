@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Doctors - MediSeba</title>
+    <meta name="description" content="Find and book appointments with top doctors across various specialties.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-11">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .doctors-page {
+            padding-top: 86px;
+            padding-bottom: var(--space-12);
+            background:
+                linear-gradient(180deg, var(--surface-page-alt) 0%, var(--surface-page) 10rem);
+        }
+        
+        .search-section {
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 28rem),
+                radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 24rem),
+                linear-gradient(180deg, rgba(13, 148, 136, 0.12) 0%, rgba(13, 148, 136, 0.08) 48%, rgba(13, 148, 136, 0.03) 100%),
+                linear-gradient(135deg, #f5fffd 0%, #f8fafc 100%);
+            padding: var(--space-12) 0 var(--space-10);
+            margin-bottom: var(--space-8);
+            border-bottom: 1px solid rgba(13, 148, 136, 0.12);
+        }
+
+        .search-section::after {
+            content: '';
+            position: absolute;
+            inset: auto 0 0;
+            height: 88px;
+            background: linear-gradient(180deg, rgba(249, 250, 251, 0), var(--surface-page) 100%);
+            pointer-events: none;
+        }
+        
+        .search-container {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: var(--space-5);
+            max-width: 920px;
+            margin: 0 auto;
+            padding: var(--space-8);
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.66);
+            border-radius: calc(var(--radius-2xl) + 0.35rem);
+            box-shadow: 0 24px 60px -38px rgba(15, 23, 42, 0.25);
+            backdrop-filter: blur(14px);
+        }
+
+        .search-title {
+            margin: 0;
+            text-align: center;
+            color: var(--text-primary);
+            font-size: clamp(1.9rem, 3vw, 2.4rem);
+            line-height: 1.15;
+        }
+
+        .search-subtitle {
+            max-width: 42rem;
+            margin: calc(var(--space-2) * -1) auto 0;
+            text-align: center;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.98));
+            padding: var(--space-2);
+            border-radius: calc(var(--radius-2xl) + 0.1rem);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(13, 148, 136, 0.14);
+        }
+
+        .search-box > i {
+            color: var(--text-muted);
+            margin-left: var(--space-4);
+            display: flex;
+            align-items: center;
+            font-size: 1.15rem;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            min-width: 0;
+            padding: 1rem var(--space-4);
+            font-size: var(--font-size-base);
+            background: transparent;
+            color: var(--text-primary);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .search-input:focus {
+            outline: none;
+        }
+
+        .search-hint {
+            display: inline-flex;
+            justify-self: center;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-full);
+            background: rgba(13, 148, 136, 0.08);
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+            line-height: 1.45;
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+            align-items: center;
+            padding: var(--space-5);
+            margin-bottom: var(--space-6);
+            background: var(--surface-page-alt);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .filter-select {
+            padding: var(--space-3) var(--space-4);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            font-size: var(--font-size-sm);
+            min-width: 180px;
+            background: var(--surface-muted);
+            color: var(--text-primary);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+        }
+        
+        .doctors-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-5);
+        }
+        
+        .doctor-list-item {
+            display: grid;
+            grid-template-columns: 100px 1fr auto;
+            gap: var(--space-6);
+            padding: var(--space-6);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.96), var(--surface-elevated));
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-base);
+        }
+        
+        .doctor-list-item:hover {
+            box-shadow: 0 26px 52px -36px rgba(15, 23, 42, 0.28);
+            border-color: rgba(13, 148, 136, 0.18);
+            transform: translateY(-3px);
+        }
+        
+        .doctor-list-image {
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.18) 0%, rgba(59, 130, 246, 0.14) 100%);
+        }
+        
+        .doctor-list-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .doctor-list-info h3 {
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--space-1);
+        }
+        
+        .doctor-list-specialty {
+            color: var(--primary);
+            font-weight: 500;
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-2);
+        }
+        
+        .doctor-list-qualification {
+            color: var(--gray-500);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-3);
+        }
+        
+        .doctor-list-meta {
+            display: flex;
+            gap: var(--space-4);
+            font-size: var(--font-size-sm);
+            color: var(--gray-600);
+        }
+        
+        .doctor-list-meta i {
+            color: var(--primary);
+            margin-right: var(--space-1);
+        }
+        
+        .doctor-list-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            gap: var(--space-3);
+        }
+        
+        .doctor-list-fee {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .results-bar {
+            margin-bottom: var(--space-6);
+            padding-inline: var(--space-1);
+        }
+
+        .results-bar p {
+            margin: 0;
+            color: var(--text-muted);
+        }
+
+        :root[data-theme='dark'] .search-section {
+            background:
+                radial-gradient(circle at top left, rgba(20, 184, 166, 0.2), transparent 28rem),
+                radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 24rem),
+                linear-gradient(180deg, rgba(15, 118, 110, 0.18) 0%, rgba(17, 24, 39, 0.88) 62%, rgba(11, 18, 32, 1) 100%);
+            border-bottom-color: rgba(45, 212, 191, 0.14);
+        }
+
+        :root[data-theme='dark'] .search-section::after {
+            background: linear-gradient(180deg, rgba(11, 18, 32, 0), var(--surface-page) 100%);
+        }
+
+        :root[data-theme='dark'] .search-container {
+            background: rgba(15, 23, 42, 0.72);
+            border-color: rgba(51, 65, 85, 0.92);
+        }
+
+        :root[data-theme='dark'] .search-box,
+        :root[data-theme='dark'] .doctor-list-item {
+            background: var(--surface-elevated);
+        }
+
+        :root[data-theme='dark'] .filter-select {
+            box-shadow: none;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--space-3);
+            margin-top: var(--space-10);
+        }
+        
+        .page-numbers {
+            display: flex;
+            gap: var(--space-2);
+        }
+        
+        .page-number {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-lg);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .page-number:hover {
+            background: var(--surface-subtle);
+        }
+        
+        .page-number.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .page-dots {
+            display: flex;
+            align-items: center;
+            padding: 0 var(--space-2);
+            color: var(--gray-400);
+        }
+        
+        .token-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--space-1) var(--space-3);
+            background: var(--primary);
+            color: var(--white);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            border-radius: var(--radius-md);
+        }
+        
+        .table-user {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .table-user-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .table-user-info {
+            font-size: var(--font-size-sm);
+            color: var(--gray-500);
+        }
+        
+        .table-date {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .d-md-none {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .d-md-none {
+                display: block;
+            }
+
+            .search-container {
+                padding: var(--space-5);
+                border-radius: var(--radius-2xl);
+            }
+            
+            .doctor-list-item {
+                grid-template-columns: 80px 1fr;
+            }
+            
+            .doctor-list-actions {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: var(--space-4);
+                border-top: 1px solid var(--border-color);
+            }
+            
+            .search-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box > i {
+                margin-left: var(--space-3);
+                margin-top: var(--space-3);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../pages/doctors.html" class="active">Find Doctors</a></li>
+                <li><a href="../pages/how-it-works.html">How It Works</a></li>
+                <li><a href="../pages/about.html">About</a></li>
+                <li class="nav-auth">
+                    <a href="../auth/login.html" class="btn btn-outline">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
+            <div class="search-container" role="search" aria-label="Doctor search">
+                <h2 class="search-title">Find Your Doctor</h2>
+                <p class="search-subtitle">Search by doctor name, specialty, qualification, or clinic and compare your best options in one calm, easy-to-scan directory.</p>
+                <label class="sr-only" for="searchInput">Search doctors by name, specialty, qualification, or clinic</label>
+                <div class="search-box">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="search" class="search-input" id="searchInput" placeholder="Search by doctor name or specialty..." aria-describedby="doctorSearchHint" autocomplete="off">
+                    <button type="button" class="btn btn-primary" onclick="searchDoctors()" aria-label="Search doctors">
+                        Search
+                    </button>
+                </div>
+                <p id="doctorSearchHint" class="search-hint">Results update as you type while the specialty and fee filters stay active.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="doctors-page">
+        <div class="container">
+            <!-- Filters -->
+            <div class="filter-section">
+                <select class="filter-select" id="specialtyFilter" onchange="applyFilters()">
+                    <option value="">All Specialties</option>
+                </select>
+                
+                <select class="filter-select" id="experienceFilter" onchange="applyFilters()">
+                    <option value="">Any Experience</option>
+                    <option value="5">5+ Years</option>
+                    <option value="10">10+ Years</option>
+                    <option value="15">15+ Years</option>
+                </select>
+                
+                <select class="filter-select" id="feeFilter" onchange="applyFilters()">
+                    <option value="">Any Fee</option>
+                    <option value="500">Up to ৳500</option>
+                    <option value="1000">Up to ৳1000</option>
+                    <option value="1500">Up to ৳1500</option>
+                </select>
+                
+                <select class="filter-select" id="sortFilter" onchange="applyFilters()">
+                    <option value="created_at,DESC">Newest First</option>
+                    <option value="average_rating,DESC">Highest Rated</option>
+                    <option value="consultation_fee,ASC">Lowest Fee</option>
+                    <option value="experience_years,DESC">Most Experienced</option>
+                </select>
+            </div>
+            
+            <!-- Results Count -->
+            <div class="results-bar">
+                <p id="resultsCount" aria-live="polite">Loading doctors...</p>
+            </div>
+            
+            <!-- Doctors List -->
+            <div class="doctors-list" id="doctorsList">
+                <div class="empty-state">
+                    <div class="spinner"></div>
+                    <p>Loading doctors...</p>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+                    <p>Your trusted healthcare partner for booking appointments and managing your health journey.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="../pages/doctors.html">Find Doctors</a></li>
+                        <li><a href="../pages/about.html">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>For Patients</h4>
+                    <ul>
+                        <li><a href="../auth/login.html">Login</a></li>
+                        <li><a href="../patient/dashboard.html">My Dashboard</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> <a href="tel:+8801309462705">+8801309462705</a></li>
+                        <li><i class="fas fa-envelope"></i> <a href="mailto:mediseba@gmail.com">mediseba@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 MediSeba. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260403-11"></script>
+    <script src="../js/app.js?v=20260404-16"></script>
+    <script>
+        const doctorDirectoryState = {
+            perPage: 10,
+            currentPage: 1,
+            currentFilters: {},
+            doctors: [],
+            filteredDoctors: [],
+            searchQuery: ''
+        };
+
+        function setFilterValue(target, key, value) {
+            if (value === undefined || value === null || value === '') {
+                delete target[key];
+                return;
+            }
+
+            target[key] = value;
+        }
+
+        function getServerFilters() {
+            const specialty = document.getElementById('specialtyFilter').value;
+            const experience = document.getElementById('experienceFilter').value;
+            const fee = document.getElementById('feeFilter').value;
+            const sort = document.getElementById('sortFilter').value.split(',');
+            const nextFilters = {};
+
+            setFilterValue(nextFilters, 'specialty', specialty);
+            setFilterValue(nextFilters, 'min_experience', experience);
+            setFilterValue(nextFilters, 'max_fee', fee);
+            setFilterValue(nextFilters, 'sort', sort[0]);
+            setFilterValue(nextFilters, 'order', sort[1]);
+
+            return nextFilters;
+        }
+
+        function getDoctorSearchBlob(doctor) {
+            return [
+                doctor.full_name,
+                doctor.specialty,
+                doctor.qualification,
+                doctor.clinic_name
+            ].join(' ').toLowerCase();
+        }
+
+        function renderDoctorCard(doctor) {
+            const fullName = doctor.full_name || '';
+            const rating = getDoctorRatingDisplay(doctor);
+            return `
+                <div class="doctor-list-item">
+                    <div class="doctor-list-image">
+                        <img src="${escapeHtml(resolveAssetPath(doctor.profile_photo, 'images/default-doctor.svg'))}" 
+                             ${resolveLegacyAssetPath(doctor.profile_photo) ? `data-legacy-src="${escapeHtml(resolveLegacyAssetPath(doctor.profile_photo))}"` : ''}
+                             onerror="handleAssetImageError(this, 'images/default-doctor.svg')"
+                             alt="${escapeHtml(fullName || 'Doctor profile photo')}" 
+                             loading="lazy">
+                    </div>
+                    <div class="doctor-list-info">
+                        <h3>${escapeHtml(fullName)}</h3>
+                        <p class="doctor-list-specialty">${escapeHtml(doctor.specialty || '')}</p>
+                        <p class="doctor-list-qualification">${escapeHtml(doctor.qualification || '')}</p>
+                        <div class="doctor-list-meta">
+                            <span><i class="fas fa-star" aria-hidden="true"></i> ${escapeHtml(rating.value)}${rating.hasReviews ? ` (${escapeHtml(rating.meta)})` : ''}</span>
+                            <span><i class="fas fa-briefcase" aria-hidden="true"></i> ${escapeHtml(String(doctor.experience_years || 0))} years</span>
+                            <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${escapeHtml(doctor.clinic_name || 'Dhaka')}</span>
+                        </div>
+                    </div>
+                    <div class="doctor-list-actions">
+                        <span class="doctor-list-fee">৳${escapeHtml(String(doctor.consultation_fee || 0))}</span>
+                        <a href="../doctor/doctor-profile.html?id=${escapeHtml(String(doctor.id))}" class="btn btn-primary" aria-label="Book appointment with ${escapeHtml(fullName)}">
+                            Book Appointment
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updatePagination() {
+            const pagination = document.getElementById('pagination');
+            const totalPages = Math.ceil(doctorDirectoryState.filteredDoctors.length / doctorDirectoryState.perPage);
+
+            if (!pagination || totalPages <= 1) {
+                if (pagination) {
+                    pagination.innerHTML = '';
+                }
+                return;
+            }
+
+            const currentPage = doctorDirectoryState.currentPage;
+            let html = '';
+
+            if (currentPage > 1) {
+                html += `<button type="button" class="btn btn-outline" onclick="goToPage(${currentPage - 1})">Previous</button>`;
+            }
+
+            html += '<div class="page-numbers">';
+            for (let i = 1; i <= totalPages; i += 1) {
+                if (i === currentPage) {
+                    html += `<span class="page-number active">${i}</span>`;
+                } else if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<button type="button" class="page-number" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += '<span class="page-dots">...</span>';
+                }
+            }
+            html += '</div>';
+
+            if (currentPage < totalPages) {
+                html += `<button type="button" class="btn btn-outline" onclick="goToPage(${currentPage + 1})">Next</button>`;
+            }
+
+            pagination.innerHTML = html;
+        }
+
+        function renderDoctors() {
+            const container = document.getElementById('doctorsList');
+            const countEl = document.getElementById('resultsCount');
+            const totalDoctors = doctorDirectoryState.filteredDoctors.length;
+            const startIndex = (doctorDirectoryState.currentPage - 1) * doctorDirectoryState.perPage;
+            const visibleDoctors = doctorDirectoryState.filteredDoctors.slice(startIndex, startIndex + doctorDirectoryState.perPage);
+
+            if (countEl) {
+                countEl.textContent = totalDoctors > 0
+                    ? `Showing ${visibleDoctors.length} of ${totalDoctors} doctors`
+                    : 'No doctors match your current search';
+            }
+
+            if (!container) {
+                return;
+            }
+
+            if (totalDoctors === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                        </div>
+                        <h3>No doctors found</h3>
+                        <p>Try a different name, specialty, or filter combination.</p>
+                    </div>
+                `;
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = visibleDoctors.map(renderDoctorCard).join('');
+            updatePagination();
+        }
+
+        function applyClientSearch(resetPage = true) {
+            const query = doctorDirectoryState.searchQuery.trim().toLowerCase();
+            doctorDirectoryState.filteredDoctors = doctorDirectoryState.doctors.filter((doctor) => (
+                !query || getDoctorSearchBlob(doctor).includes(query)
+            ));
+
+            if (resetPage) {
+                doctorDirectoryState.currentPage = 1;
+            }
+
+            renderDoctors();
+        }
+
+        async function fetchDoctorsForFilters() {
+            const container = document.getElementById('doctorsList');
+            doctorDirectoryState.currentFilters = getServerFilters();
+
+            showLoading();
+
+            try {
+                const baseParams = {
+                    ...doctorDirectoryState.currentFilters,
+                    page: 1,
+                    per_page: 50
+                };
+                const firstPage = await API.doctors.list(baseParams);
+                const firstItems = Array.isArray(firstPage.items) ? firstPage.items : [];
+                const pagination = firstPage.pagination || {};
+                const totalPages = Math.max(1, Number(pagination.total_pages || 1));
+                const remainingPages = [];
+
+                for (let page = 2; page <= totalPages; page += 1) {
+                    remainingPages.push(API.doctors.list({ ...baseParams, page }));
+                }
+
+                const remainingResults = await Promise.all(remainingPages);
+                doctorDirectoryState.doctors = [
+                    ...firstItems,
+                    ...remainingResults.flatMap((result) => Array.isArray(result.items) ? result.items : [])
+                ];
+
+                applyClientSearch(false);
+            } catch (error) {
+                console.error('Failed to load doctors:', error);
+                if (container) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                            </div>
+                            <h3>Failed to load doctors</h3>
+                            <p>Please try again later</p>
+                        </div>
+                    `;
+                }
+                document.getElementById('pagination').innerHTML = '';
+                const countEl = document.getElementById('resultsCount');
+                if (countEl) {
+                    countEl.textContent = 'Unable to load doctors right now';
+                }
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadSpecialties() {
+            try {
+                const specialties = await API.doctors.specialties();
+                const select = document.getElementById('specialtyFilter');
+                
+                specialties.forEach((specialty) => {
+                    const option = document.createElement('option');
+                    option.value = specialty.specialty;
+                    option.textContent = `${specialty.specialty} (${specialty.doctor_count})`;
+                    select.appendChild(option);
+                });
+
+                if (doctorDirectoryState.currentFilters.specialty) {
+                    select.value = doctorDirectoryState.currentFilters.specialty;
+                }
+            } catch (error) {
+                console.error('Failed to load specialties:', error);
+            }
+        }
+
+        function searchDoctors() {
+            doctorDirectoryState.searchQuery = document.getElementById('searchInput').value.trim();
+            applyClientSearch();
+        }
+
+        function applyFilters() {
+            doctorDirectoryState.currentPage = 1;
+            fetchDoctorsForFilters();
+        }
+
+        function goToPage(page) {
+            doctorDirectoryState.currentPage = page;
+            renderDoctors();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const searchInput = document.getElementById('searchInput');
+
+            doctorDirectoryState.currentFilters = getServerFilters();
+            setFilterValue(doctorDirectoryState.currentFilters, 'specialty', params.get('specialty'));
+            doctorDirectoryState.searchQuery = params.get('search') || '';
+
+            if (doctorDirectoryState.currentFilters.specialty) {
+                document.getElementById('specialtyFilter').value = doctorDirectoryState.currentFilters.specialty;
+            }
+
+            if (doctorDirectoryState.searchQuery) {
+                searchInput.value = doctorDirectoryState.searchQuery;
+            }
+
+            await loadSpecialties();
+            await fetchDoctorsForFilters();
+            Auth.updateNavigation();
+
+            searchInput.addEventListener('input', debounce(() => {
+                doctorDirectoryState.searchQuery = searchInput.value.trim();
+                applyClientSearch();
+            }, 180));
+
+            searchInput.addEventListener('search', searchDoctors);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchDoctors();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

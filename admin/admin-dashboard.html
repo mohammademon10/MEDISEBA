@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MediSeba</title>
+    <meta name="description" content="MediSeba admin dashboard — system overview and management.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-2">
+    <link rel="stylesheet" href="../css/admin.css?v=20260416-2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-sidebar-header">
+                <a href="../index.html" class="logo" aria-label="MediSeba home">
+                    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+                    <span class="logo-wordmark"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+                </a>
+                <span class="admin-badge"><i class="fas fa-shield-halved"></i> Admin</span>
+            </div>
+            <nav class="admin-sidebar-nav">
+                <div class="nav-section">Overview</div>
+                <ul>
+                    <li><a href="admin-dashboard.html" class="active"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+                </ul>
+                <div class="nav-section">Management</div>
+                <ul>
+                    <li><a href="admin-users.html"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="admin-doctors.html"><i class="fas fa-user-md"></i> Doctors</a></li>
+                    <li><a href="admin-patients.html"><i class="fas fa-hospital-user"></i> Patients</a></li>
+                    <li><a href="admin-appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                    <li><a href="admin-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="admin-prescriptions.html"><i class="fas fa-file-prescription"></i> Prescriptions</a></li>
+                </ul>
+                <div class="nav-section">System</div>
+                <ul>
+                    <li><a href="admin-settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <div class="admin-user-info">
+                    <div class="admin-user-avatar" id="adminAvatar"><i class="fas fa-user-shield"></i></div>
+                    <div class="admin-user-details">
+                        <span class="admin-user-name" id="adminName">Admin</span>
+                        <span class="admin-user-role">Administrator</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()" style="width:100%;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay (mobile) -->
+        <div class="admin-sidebar-overlay" id="adminSidebarOverlay" onclick="toggleAdminSidebar()"></div>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div class="admin-topbar-left">
+                    <button class="admin-mobile-toggle" onclick="toggleAdminSidebar()" aria-label="Toggle navigation">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="admin-topbar-title">Dashboard</span>
+                </div>
+                <div class="admin-topbar-right">
+                    <button class="btn-icon" type="button" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="admin-page">
+                <div class="admin-page-header">
+                    <h1>Admin Dashboard</h1>
+                    <p>System overview and key metrics at a glance.</p>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="admin-stats-grid" id="statsGrid">
+                    <div class="admin-stat-card"><div class="admin-loading"><div class="spinner"></div></div></div>
+                    <div class="admin-stat-card"><div class="admin-loading"><div class="spinner"></div></div></div>
+                    <div class="admin-stat-card"><div class="admin-loading"><div class="spinner"></div></div></div>
+                    <div class="admin-stat-card"><div class="admin-loading"><div class="spinner"></div></div></div>
+                    <div class="admin-stat-card"><div class="admin-loading"><div class="spinner"></div></div></div>
+                    <div class="admin-stat-card"><div class="admin-loading"><div class="spinner"></div></div></div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="admin-grid-2">
+                    <!-- Quick Actions -->
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3><i class="fas fa-bolt" style="color: var(--warning); margin-right: var(--space-2);"></i>Quick Actions</h3>
+                        </div>
+                        <div class="admin-card-body">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+                                <a href="admin-doctors.html" class="btn btn-outline btn-sm" style="justify-content: flex-start;">
+                                    <i class="fas fa-user-md"></i> Manage Doctors
+                                </a>
+                                <a href="admin-patients.html" class="btn btn-outline btn-sm" style="justify-content: flex-start;">
+                                    <i class="fas fa-hospital-user"></i> Manage Patients
+                                </a>
+                                <a href="admin-appointments.html" class="btn btn-outline btn-sm" style="justify-content: flex-start;">
+                                    <i class="fas fa-calendar-check"></i> Appointments
+                                </a>
+                                <a href="admin-payments.html" class="btn btn-outline btn-sm" style="justify-content: flex-start;">
+                                    <i class="fas fa-credit-card"></i> Payments
+                                </a>
+                                <a href="admin-prescriptions.html" class="btn btn-outline btn-sm" style="justify-content: flex-start;">
+                                    <i class="fas fa-file-prescription"></i> Prescriptions
+                                </a>
+                                <a href="admin-settings.html" class="btn btn-outline btn-sm" style="justify-content: flex-start;">
+                                    <i class="fas fa-cog"></i> Settings
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3><i class="fas fa-clock-rotate-left" style="color: var(--info); margin-right: var(--space-2);"></i>Recent Activity</h3>
+                        </div>
+                        <div class="admin-card-body" id="activityFeed">
+                            <div class="admin-loading"><div class="spinner"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <div class="admin-card" id="alertsCard" style="display:none;">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-exclamation-triangle" style="color: var(--warning); margin-right: var(--space-2);"></i>Attention Needed</h3>
+                    </div>
+                    <div class="admin-card-body" id="alertsBody"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260416-2"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script src="../js/admin-api.js?v=20260416-2"></script>
+    <script>
+        if (!Auth.requireRole('admin')) {
+            throw new Error('Admin access required');
+        }
+
+        function toggleAdminSidebar() {
+            document.getElementById('adminSidebar').classList.toggle('active');
+            document.getElementById('adminSidebarOverlay').classList.toggle('active');
+        }
+
+        function renderStatCard(label, value, icon, tone) {
+            return `
+                <div class="admin-stat-card">
+                    <div class="admin-stat-card-header">
+                        <div class="admin-stat-card-icon ${tone}">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card-value">${value}</div>
+                    <div class="admin-stat-card-label">${label}</div>
+                </div>
+            `;
+        }
+
+        function getActivityIcon(action) {
+            if (action?.includes('login')) return 'fa-sign-in-alt';
+            if (action?.includes('register') || action?.includes('created')) return 'fa-user-plus';
+            if (action?.includes('block') || action?.includes('suspend')) return 'fa-ban';
+            if (action?.includes('unblock')) return 'fa-check-circle';
+            if (action?.includes('delete')) return 'fa-trash';
+            if (action?.includes('approved') || action?.includes('verify')) return 'fa-circle-check';
+            if (action?.includes('rejected')) return 'fa-circle-xmark';
+            if (action?.includes('cancel')) return 'fa-times-circle';
+            if (action?.includes('payment') || action?.includes('refund')) return 'fa-credit-card';
+            if (action?.includes('settings')) return 'fa-cog';
+            return 'fa-circle-info';
+        }
+
+        function formatTimeAgo(dateStr) {
+            if (!dateStr) return '';
+            const diff = Date.now() - new Date(dateStr).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            const days = Math.floor(hrs / 24);
+            return `${days}d ago`;
+        }
+
+        async function loadDashboard() {
+            try {
+                const stats = await API.admin.dashboard.stats();
+                const grid = document.getElementById('statsGrid');
+
+                grid.innerHTML = [
+                    renderStatCard('Total Users', stats.users?.total_users || 0, 'fa-users', 'primary'),
+                    renderStatCard('Doctors', stats.users?.total_doctors || 0, 'fa-user-md', 'info'),
+                    renderStatCard('Patients', stats.users?.total_patients || 0, 'fa-hospital-user', 'success'),
+                    renderStatCard('Appointments', stats.appointments?.total_appointments || 0, 'fa-calendar-check', 'warning'),
+                    renderStatCard('Revenue', '৳' + Number(stats.revenue?.total_revenue || 0).toLocaleString(), 'fa-bangladeshi-taka-sign', 'purple'),
+                    renderStatCard('Prescriptions', stats.prescriptions?.total_prescriptions || 0, 'fa-file-prescription', 'info'),
+                ].join('');
+
+                // Alerts
+                const alerts = [];
+                if (stats.unverified_doctors > 0) {
+                    alerts.push(`<div style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) 0;"><i class="fas fa-exclamation-circle" style="color:var(--warning);"></i><span>${stats.unverified_doctors} doctor(s) awaiting verification</span><a href="admin-doctors.html?verified=0" class="btn btn-sm btn-outline" style="margin-left:auto;">Review</a></div>`);
+                }
+                if ((stats.appointments?.pending || 0) > 0) {
+                    alerts.push(`<div style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) 0;"><i class="fas fa-clock" style="color:var(--warning);"></i><span>${stats.appointments.pending} pending appointment(s)</span><a href="admin-appointments.html?status=pending" class="btn btn-sm btn-outline" style="margin-left:auto;">View</a></div>`);
+                }
+                if (alerts.length) {
+                    document.getElementById('alertsCard').style.display = '';
+                    document.getElementById('alertsBody').innerHTML = alerts.join('');
+                }
+
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                document.getElementById('statsGrid').innerHTML = '<div class="admin-empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Failed to load stats</h3><p>Please try refreshing the page.</p></div>';
+            }
+        }
+
+        async function loadActivity() {
+            const feed = document.getElementById('activityFeed');
+            try {
+                const result = await API.admin.dashboard.activity({ limit: 10 });
+                const activities = result.activities || [];
+
+                if (!activities.length) {
+                    feed.innerHTML = '<div class="admin-empty-state"><i class="fas fa-clock-rotate-left"></i><h3>No recent activity</h3><p>System activity will appear here.</p></div>';
+                    return;
+                }
+
+                feed.innerHTML = `<ul class="admin-activity-feed">${activities.map(a => `
+                    <li class="admin-activity-item">
+                        <div class="admin-activity-icon"><i class="fas ${getActivityIcon(a.action)}"></i></div>
+                        <div class="admin-activity-content">
+                            <div class="admin-activity-text">${escapeHtml(a.action?.replace(/_/g, ' ') || 'Unknown action')} ${a.user_email ? `by <strong>${escapeHtml(a.user_email)}</strong>` : ''}</div>
+                            <div class="admin-activity-time">${formatTimeAgo(a.created_at)}</div>
+                        </div>
+                    </li>
+                `).join('')}</ul>`;
+            } catch (error) {
+                feed.innerHTML = '<div class="admin-empty-state"><i class="fas fa-exclamation-circle"></i><h3>Unable to load activity</h3></div>';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = Auth.getUser();
+            if (user) {
+                document.getElementById('adminName').textContent = user.full_name || user.email || 'Admin';
+            }
+            await Promise.all([loadDashboard(), loadActivity()]);
+        });
+    </script>
+</body>
+</html>

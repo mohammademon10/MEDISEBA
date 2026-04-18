@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Management - MediSeba Admin</title>
+    <meta name="description" content="Manage patient accounts — view, block, or remove patients.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-2">
+    <link rel="stylesheet" href="../css/admin.css?v=20260416-2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-sidebar-header">
+                <a href="../index.html" class="logo"><img src="../images/logo-mark.svg" alt="" class="logo-mark"><span class="logo-wordmark"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span></a>
+                <span class="admin-badge"><i class="fas fa-shield-halved"></i> Admin</span>
+            </div>
+            <nav class="admin-sidebar-nav">
+                <div class="nav-section">Overview</div>
+                <ul><li><a href="admin-dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a></li></ul>
+                <div class="nav-section">Management</div>
+                <ul>
+                    <li><a href="admin-users.html"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="admin-doctors.html"><i class="fas fa-user-md"></i> Doctors</a></li>
+                    <li><a href="admin-patients.html" class="active"><i class="fas fa-hospital-user"></i> Patients</a></li>
+                    <li><a href="admin-appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                    <li><a href="admin-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="admin-prescriptions.html"><i class="fas fa-file-prescription"></i> Prescriptions</a></li>
+                </ul>
+                <div class="nav-section">System</div>
+                <ul><li><a href="admin-settings.html"><i class="fas fa-cog"></i> Settings</a></li></ul>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <div class="admin-user-info"><div class="admin-user-avatar"><i class="fas fa-user-shield"></i></div><div class="admin-user-details"><span class="admin-user-name" id="adminName">Admin</span><span class="admin-user-role">Administrator</span></div></div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()" style="width:100%;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </aside>
+        <div class="admin-sidebar-overlay" id="adminSidebarOverlay" onclick="toggleAdminSidebar()"></div>
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div class="admin-topbar-left"><button class="admin-mobile-toggle" onclick="toggleAdminSidebar()"><i class="fas fa-bars"></i></button><span class="admin-topbar-title">Patient Management</span></div>
+                <div class="admin-topbar-right"><button class="btn-icon" type="button" onclick="toggleTheme()"><i class="fas fa-moon"></i></button></div>
+            </header>
+            <div class="admin-page">
+                <div class="admin-page-header"><h1>Patients</h1><p>View and manage all patient accounts.</p></div>
+                <div class="admin-card">
+                    <div class="admin-toolbar">
+                        <div class="admin-search"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search by name or email..." oninput="debounceSearch()"></div>
+                    </div>
+                    <div class="admin-table-wrap" id="patientsTable"><div class="admin-loading"><div class="spinner"></div></div></div>
+                    <div class="admin-pagination" id="pagination"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="admin-modal-overlay" id="confirmModal"><div class="admin-modal"><h3 id="modalTitle">Confirm</h3><p id="modalMessage">Are you sure?</p><div class="admin-modal-actions"><button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmAction()">Confirm</button></div></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260416-2"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script src="../js/admin-api.js?v=20260416-2"></script>
+    <script>
+        if (!Auth.requireRole('admin')) throw new Error('Admin access required');
+        let currentPage = 1, searchTimeout = null, pendingAction = null;
+        function toggleAdminSidebar() { document.getElementById('adminSidebar').classList.toggle('active'); document.getElementById('adminSidebarOverlay').classList.toggle('active'); }
+        function debounceSearch() { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => loadPatients(1), 400); }
+
+        async function loadPatients(page = 1) {
+            currentPage = page;
+            const container = document.getElementById('patientsTable');
+            container.innerHTML = '<div class="admin-loading"><div class="spinner"></div></div>';
+            try {
+                const result = await API.admin.patients.list({ page, per_page: 15, search: document.getElementById('searchInput').value.trim() });
+                const items = result.items || [];
+                if (!items.length) { container.innerHTML = '<div class="admin-empty-state"><i class="fas fa-hospital-user"></i><h3>No patients found</h3></div>'; document.getElementById('pagination').innerHTML = ''; return; }
+                container.innerHTML = `<table class="admin-table"><thead><tr><th>Patient</th><th>Gender</th><th>Blood Group</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+                <tbody>${items.map(p => `<tr>
+                    <td><div class="admin-cell-name">${escapeHtml(p.full_name || 'Unnamed')}</div><div class="admin-cell-meta">${escapeHtml(p.email)}</div></td>
+                    <td>${escapeHtml(p.gender || '—')}</td>
+                    <td>${escapeHtml(p.blood_group || '—')}</td>
+                    <td><span class="admin-badge ${p.status}">${p.status}</span></td>
+                    <td><span class="admin-cell-meta">${new Date(p.created_at).toLocaleDateString()}</span></td>
+                    <td><div class="admin-actions">
+                        ${p.status === 'active' ? `<button class="admin-action-btn danger" title="Suspend" onclick="showConfirm(${p.user_id},'suspended','${escapeHtml(p.full_name||p.email)}')"><i class="fas fa-ban"></i></button>` : ''}
+                        ${p.status === 'suspended' ? `<button class="admin-action-btn success" title="Activate" onclick="showConfirm(${p.user_id},'active','${escapeHtml(p.full_name||p.email)}')"><i class="fas fa-check"></i></button>` : ''}
+                        <button class="admin-action-btn danger" title="Delete" onclick="showConfirm(${p.user_id},'deleted','${escapeHtml(p.full_name||p.email)}')"><i class="fas fa-trash"></i></button>
+                    </div></td>
+                </tr>`).join('')}</tbody></table>`;
+                renderPagination(result.total, result.page, result.per_page, result.total_pages);
+            } catch (error) { container.innerHTML = '<div class="admin-empty-state"><i class="fas fa-exclamation-circle"></i><h3>Failed to load patients</h3></div>'; }
+        }
+
+        function renderPagination(total, page, perPage, totalPages) {
+            const pag = document.getElementById('pagination');
+            if (totalPages <= 1) { pag.innerHTML = `<div class="admin-pagination-info">${total} patient(s)</div>`; return; }
+            let b = `<button ${page<=1?'disabled':''} onclick="loadPatients(${page-1})"><i class="fas fa-chevron-left"></i></button>`;
+            for (let i=1;i<=totalPages;i++){if(totalPages>7&&Math.abs(i-page)>2&&i!==1&&i!==totalPages){if(i===2||i===totalPages-1)b+=`<button disabled>...</button>`;continue;}b+=`<button class="${i===page?'active':''}" onclick="loadPatients(${i})">${i}</button>`;}
+            b += `<button ${page>=totalPages?'disabled':''} onclick="loadPatients(${page+1})"><i class="fas fa-chevron-right"></i></button>`;
+            pag.innerHTML = `<div class="admin-pagination-info">Showing ${(page-1)*perPage+1}–${Math.min(page*perPage,total)} of ${total}</div><div class="admin-pagination-controls">${b}</div>`;
+        }
+
+        function showConfirm(id, status, name) { pendingAction = { id, status }; const labels = { suspended:'Suspend', active:'Activate', deleted:'Delete' }; document.getElementById('modalTitle').textContent = `${labels[status]} Patient`; document.getElementById('modalMessage').textContent = `Are you sure you want to ${labels[status].toLowerCase()} ${name}?`; document.getElementById('confirmModal').classList.add('active'); }
+        function closeModal() { document.getElementById('confirmModal').classList.remove('active'); pendingAction = null; }
+        async function confirmAction() { if (!pendingAction) return; closeModal(); try { await API.admin.patients.updateStatus(pendingAction.id, pendingAction.status); showToast('Patient updated', 'success'); loadPatients(currentPage); } catch (e) { showToast(e.message || 'Failed', 'error'); } }
+
+        document.addEventListener('DOMContentLoaded', () => { const u = Auth.getUser(); if (u) document.getElementById('adminName').textContent = u.full_name || u.email || 'Admin'; loadPatients(1); });
+    </script>
+</body>
+</html>

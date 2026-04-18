@@ -1,0 +1,17 @@
+<svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="medisebaLogoGradient" x1="28" y1="30" x2="191" y2="191" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22B8B0"/>
+      <stop offset="1" stop-color="#18A7A4"/>
+    </linearGradient>
+  </defs>
+  <path
+    d="M110 29C66.4 29 31 64.4 31 108v70.6c0 6.8 7.5 10.9 13.2 7.2l20.7-13.4A78.7 78.7 0 0 0 110 187c43.6 0 79-35.4 79-79s-35.4-79-79-79Z"
+    stroke="url(#medisebaLogoGradient)"
+    stroke-width="14"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <rect x="100.5" y="70" width="19" height="77" rx="8" fill="url(#medisebaLogoGradient)"/>
+  <rect x="71.5" y="99" width="77" height="19" rx="8" fill="url(#medisebaLogoGradient)"/>
+</svg>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - MediSeba</title>
+    <meta name="description" content="Manage your clinic schedule and patients.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link rel="stylesheet" href="../css/auth.css?v=20260405-3">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="../doctor/doctor-dashboard.html" class="active"><i class="fas fa-home"></i>Dashboard</a></li>
+                    <li><a href="../doctor/doctor-appointments.html"><i class="fas fa-calendar-check"></i>Appointments</a></li>
+                    <li><a href="../doctor/doctor-prescriptions.html"><i class="fas fa-file-prescription"></i>Prescriptions</a></li>
+                    <li><a href="../doctor/doctor-schedule.html"><i class="fas fa-clock"></i>My Schedule</a></li>
+                    <li><a href="../doctor/doctor-my-profile.html"><i class="fas fa-user-md"></i>My Profile</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Doctor</span>
+                        <span class="user-role">Doctor</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-intro">
+                    <h2>Doctor Dashboard</h2>
+                    <p class="page-intro-text">Monitor appointments, patients, and prescription work from one place.</p>
+                </div>
+                <div class="header-actions action-row">
+                    <button class="nav-toggle" id="navToggle" onclick="toggleSidebar()" aria-label="Toggle Navigation" style="display: none;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="../doctor/doctor-appointments.html" class="btn btn-primary btn-sm">
+                        <i class="fas fa-stethoscope"></i>
+                        Open Queue
+                    </a>
+                </div>
+            </header>
+
+            <div class="dashboard-content doctor-dashboard-content">
+                <div class="stats-grid doctor-dashboard-stats" id="doctorStats">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <p class="stat-card-title">Appointments Today</p>
+                                <p class="stat-card-value">-</p>
+                                <p class="doctor-dashboard-stat-meta">Patients scheduled for consultation today.</p>
+                            </div>
+                            <div class="stat-card-icon primary">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <p class="stat-card-title">This Week</p>
+                                <p class="stat-card-value">-</p>
+                                <p class="doctor-dashboard-stat-meta">Total visits tracked across the current week.</p>
+                            </div>
+                            <div class="stat-card-icon info">
+                                <i class="fas fa-calendar-week"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <p class="stat-card-title">Revenue This Month</p>
+                                <p class="stat-card-value">-</p>
+                                <p class="doctor-dashboard-stat-meta">Confirmed consultation earnings for the month.</p>
+                            </div>
+                            <div class="stat-card-icon success">
+                                <i class="fas fa-sack-dollar"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card doctor-queue-card">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3>Today's Queue</h3>
+                            <p class="card-header-meta">See the next patients waiting for your attention and jump into the full queue when you need to confirm, start, or complete a visit.</p>
+                        </div>
+                        <div class="doctor-queue-actions">
+                            <span class="token-badge" id="todayQueueCount">Loading...</span>
+                            <a href="../doctor/doctor-appointments.html" class="btn btn-sm btn-outline">Manage All</a>
+                        </div>
+                    </div>
+                    <div class="card-body" id="todayQueue">
+                        <div class="empty-state">
+                            <div class="spinner"></div>
+                            <p>Loading appointments...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260402-4"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        if (!Auth.requireRole('doctor')) {
+            throw new Error('Doctor access required');
+        }
+
+        function renderDoctorStatCard(title, value, meta, toneClass, iconClass) {
+            return `
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <p class="stat-card-title">${title}</p>
+                            <p class="stat-card-value">${value}</p>
+                            <p class="doctor-dashboard-stat-meta">${meta}</p>
+                        </div>
+                        <div class="stat-card-icon ${toneClass}">
+                            <i class="fas ${iconClass}"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function formatQueueStatusLabel(status) {
+            const normalized = String(status || 'pending');
+
+            if (normalized === 'in_progress') {
+                return 'In Progress';
+            }
+
+            if (normalized === 'no_show') {
+                return 'No Show';
+            }
+
+            return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+        }
+
+        function getQueueStatusNote(appointment) {
+            const status = String(appointment.status || 'pending');
+
+            if (appointment.prescription_id) {
+                return 'Prescription has been issued. Open the visit to review or follow up.';
+            }
+
+            switch (status) {
+                case 'pending':
+                    return 'Next step: confirm the visit from the full queue.';
+                case 'confirmed':
+                    return 'Next step: start the consultation when the patient arrives.';
+                case 'in_progress':
+                    return 'Next step: complete the consultation and issue a prescription if needed.';
+                case 'completed':
+                    return 'Next step: write the prescription for this completed visit.';
+                case 'cancelled':
+                    return 'This visit has been cancelled and no further action is needed.';
+                case 'no_show':
+                    return 'Patient did not attend. You can review the visit from the queue.';
+                default:
+                    return 'Open the full queue to review this visit.';
+            }
+        }
+
+        function renderPersonAvatar(name, photoPath, sizeClass = '') {
+            const displayName = String(name || 'Patient').trim() || 'Patient';
+            const resolvedPhotoPath = resolveAssetPath(photoPath || '');
+            const legacyPhotoPath = resolveLegacyAssetPath(photoPath || '');
+            const classes = ['user-avatar', 'doctor-person-avatar'];
+
+            if (sizeClass) {
+                classes.push(sizeClass);
+            }
+
+            if (resolvedPhotoPath) {
+                classes.push('has-photo');
+
+                return `
+                    <div class="${classes.join(' ')}" data-name="${escapeHtml(displayName)}" data-fallback-icon="fa-user">
+                        <img src="${escapeHtml(resolvedPhotoPath)}"
+                             ${legacyPhotoPath ? `data-legacy-src="${escapeHtml(legacyPhotoPath)}"` : ''}
+                             data-name="${escapeHtml(displayName)}"
+                             data-fallback-icon="fa-user"
+                             alt="${escapeHtml(displayName)}"
+                             onerror="handleAssetImageError(this)">
+                    </div>
+                `;
+            }
+
+            return `<div class="${classes.join(' ')}" aria-hidden="true">${escapeHtml(buildAvatarInitial(displayName, 'P'))}</div>`;
+        }
+
+        function renderPatientMeta(name, email, photoPath) {
+            return `
+                <div class="doctor-person-meta">
+                    ${renderPersonAvatar(name, photoPath)}
+                    <div class="table-meta">
+                        <div class="table-meta-strong">${escapeHtml(name || 'Patient')}</div>
+                        <div class="table-meta-text">${escapeHtml(email || '')}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTodayQueueActions(appointment) {
+            const actions = [];
+
+            if (appointment.status === 'completed' && !appointment.prescription_id) {
+                actions.push(`<a href="../doctor/doctor-prescriptions.html?appointment=${encodeURIComponent(appointment.id)}" class="btn btn-primary btn-sm">Write Rx</a>`);
+                actions.push(`<a href="../doctor/doctor-appointments.html" class="btn btn-outline btn-sm">Manage Visit</a>`);
+                return actions.join('');
+            }
+
+            if (appointment.prescription_id) {
+                actions.push(`<a href="../patient/prescription.html?id=${encodeURIComponent(appointment.prescription_id)}&v=20260403-1" class="btn btn-outline btn-sm">View Rx</a>`);
+                actions.push(`<a href="../doctor/doctor-appointments.html" class="btn btn-primary btn-sm">Manage Visit</a>`);
+                return actions.join('');
+            }
+
+            return `<a href="../doctor/doctor-appointments.html" class="btn btn-primary btn-sm">Manage Visit</a>`;
+        }
+
+        function sortAppointmentsBySchedule(appointments) {
+            return [...appointments].sort((left, right) => {
+                const leftDate = new Date(`${left.appointment_date || ''}T${String(left.estimated_time || '00:00:00').slice(0, 8)}`);
+                const rightDate = new Date(`${right.appointment_date || ''}T${String(right.estimated_time || '00:00:00').slice(0, 8)}`);
+                const leftTime = Number.isNaN(leftDate.getTime()) ? 0 : leftDate.getTime();
+                const rightTime = Number.isNaN(rightDate.getTime()) ? 0 : rightDate.getTime();
+
+                return leftTime - rightTime;
+            });
+        }
+
+        async function loadDoctorStats() {
+            const container = document.getElementById('doctorStats');
+
+            try {
+                const stats = await API.doctors.statistics();
+                container.innerHTML = `
+                    ${renderDoctorStatCard(
+                        'Appointments Today',
+                        Number(stats.appointments_today || 0),
+                        'Patients scheduled for consultation today.',
+                        'primary',
+                        'fa-calendar-day'
+                    )}
+                    ${renderDoctorStatCard(
+                        'This Week',
+                        Number(stats.appointments_this_week || 0),
+                        'Total visits tracked across the current week.',
+                        'info',
+                        'fa-calendar-week'
+                    )}
+                    ${renderDoctorStatCard(
+                        'Revenue This Month',
+                        `৳${Number(stats.revenue_this_month || 0).toFixed(0)}`,
+                        'Confirmed consultation earnings for the month.',
+                        'success',
+                        'fa-sack-dollar'
+                    )}
+                `;
+            } catch (error) {
+                console.error('Failed to load doctor stats:', error);
+            }
+        }
+
+        async function loadTodayQueue() {
+            const container = document.getElementById('todayQueue');
+            const queueCount = document.getElementById('todayQueueCount');
+
+            try {
+                let appointments = await API.appointments.today();
+                let queueMode = 'today';
+
+                if (!appointments || appointments.length === 0) {
+                    appointments = await API.appointments.doctorAppointments();
+                    queueMode = appointments && appointments.length ? 'upcoming' : 'empty';
+                }
+
+                if (!appointments || appointments.length === 0) {
+                    if (queueCount) {
+                        queueCount.textContent = '0 today';
+                    }
+
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-calendar-xmark"></i>
+                            </div>
+                            <h3>No appointments yet</h3>
+                            <p>Your doctor queue will appear here once patients start booking.</p>
+                            <div class="form-actions action-row-center" style="margin-top: var(--space-4);">
+                                <a href="../doctor/doctor-appointments.html" class="btn btn-primary">Open Appointments</a>
+                                <a href="../doctor/doctor-schedule.html" class="btn btn-outline">Review Schedule</a>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const sortedAppointments = sortAppointmentsBySchedule(appointments);
+                const visibleAppointments = sortedAppointments.slice(0, 5);
+                const queueSummaryTitle = queueMode === 'today'
+                    ? 'Focus on the next patients scheduled for today.'
+                    : 'No patients are booked for today. Showing your next upcoming visits instead.';
+                const queueSummaryText = queueMode === 'today'
+                    ? 'Open the full queue to confirm arrivals, start consultations, or complete a visit.'
+                    : 'Use the full queue to review future bookings or adjust your schedule if you need more availability.';
+
+                if (queueCount) {
+                    queueCount.textContent = queueMode === 'today'
+                        ? `${appointments.length} today`
+                        : `${visibleAppointments.length} shown`;
+                }
+
+                container.innerHTML = `
+                    <div class="doctor-queue-summary">
+                        <div class="doctor-queue-summary-copy">
+                            <strong>${queueSummaryTitle}</strong>
+                            <p>${queueSummaryText}</p>
+                        </div>
+                        <div class="table-actions">
+                            <a href="../doctor/doctor-appointments.html" class="btn btn-outline btn-sm">Open Full Queue</a>
+                        </div>
+                    </div>
+                    <div class="table-responsive doctor-queue-table">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Visit</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${visibleAppointments.map((appointment) => `
+                                    <tr>
+                                        <td>
+                                            ${renderPatientMeta(
+                                                appointment.patient_name || 'Patient',
+                                                appointment.patient_email || '',
+                                                appointment.patient_profile_photo || ''
+                                            )}
+                                            <div class="doctor-queue-token">
+                                                <span class="token-badge">Token #${escapeHtml(String(appointment.token_number || '-'))}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="table-date">
+                                                <span>${formatDate(appointment.appointment_date)}</span>
+                                                <span>${formatTime(appointment.estimated_time || '00:00:00')}</span>
+                                            </div>
+                                            <div class="table-meta-text">Appointment #${escapeHtml(appointment.appointment_number || 'N/A')}</div>
+                                        </td>
+                                        <td>
+                                            <div class="doctor-queue-status">
+                                                <span class="status-badge ${escapeHtml(appointment.status || 'pending')}">${escapeHtml(formatQueueStatusLabel(appointment.status || 'pending'))}</span>
+                                                <span class="table-meta-text">${escapeHtml(getQueueStatusNote(appointment))}</span>
+                                            </div>
+                                        </td>
+                                        <td><div class="table-actions action-row-end">${renderTodayQueueActions(appointment)}</div></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (error) {
+                if (queueCount) {
+                    queueCount.textContent = 'Unavailable';
+                }
+
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3>Unable to load queue</h3>
+                        <p>Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initDashboardNavToggle();
+
+            await loadSidebarIdentity('doctor');
+            await loadDoctorStats();
+            await loadTodayQueue();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

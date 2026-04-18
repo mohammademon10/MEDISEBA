@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management - MediSeba Admin</title>
+    <meta name="description" content="Manage doctor profiles, verify registrations, and edit doctor info.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-2">
+    <link rel="stylesheet" href="../css/admin.css?v=20260416-2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-sidebar-header">
+                <a href="../index.html" class="logo"><img src="../images/logo-mark.svg" alt="" class="logo-mark"><span class="logo-wordmark"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span></a>
+                <span class="admin-badge"><i class="fas fa-shield-halved"></i> Admin</span>
+            </div>
+            <nav class="admin-sidebar-nav">
+                <div class="nav-section">Overview</div>
+                <ul><li><a href="admin-dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a></li></ul>
+                <div class="nav-section">Management</div>
+                <ul>
+                    <li><a href="admin-users.html"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="admin-doctors.html" class="active"><i class="fas fa-user-md"></i> Doctors</a></li>
+                    <li><a href="admin-patients.html"><i class="fas fa-hospital-user"></i> Patients</a></li>
+                    <li><a href="admin-appointments.html"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                    <li><a href="admin-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="admin-prescriptions.html"><i class="fas fa-file-prescription"></i> Prescriptions</a></li>
+                </ul>
+                <div class="nav-section">System</div>
+                <ul><li><a href="admin-settings.html"><i class="fas fa-cog"></i> Settings</a></li></ul>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <div class="admin-user-info"><div class="admin-user-avatar"><i class="fas fa-user-shield"></i></div><div class="admin-user-details"><span class="admin-user-name" id="adminName">Admin</span><span class="admin-user-role">Administrator</span></div></div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()" style="width:100%;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </aside>
+        <div class="admin-sidebar-overlay" id="adminSidebarOverlay" onclick="toggleAdminSidebar()"></div>
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div class="admin-topbar-left"><button class="admin-mobile-toggle" onclick="toggleAdminSidebar()"><i class="fas fa-bars"></i></button><span class="admin-topbar-title">Doctor Management</span></div>
+                <div class="admin-topbar-right"><button class="btn-icon" type="button" onclick="toggleTheme()"><i class="fas fa-moon"></i></button></div>
+            </header>
+
+            <div class="admin-page">
+                <div class="admin-page-header"><h1>Doctors</h1><p>Manage doctor profiles, approve or reject registrations.</p></div>
+                <div class="admin-card">
+                    <div class="admin-toolbar">
+                        <div class="admin-search"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search by name, specialty, or email..." oninput="debounceSearch()"></div>
+                        <select id="verifiedFilter" onchange="loadDoctors(1)">
+                            <option value="">All Doctors</option>
+                            <option value="1">Verified</option>
+                            <option value="0">Unverified</option>
+                        </select>
+                    </div>
+                    <div class="admin-table-wrap" id="doctorsTable"><div class="admin-loading"><div class="spinner"></div></div></div>
+                    <div class="admin-pagination" id="pagination"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="admin-modal-overlay" id="confirmModal">
+        <div class="admin-modal">
+            <h3 id="modalTitle">Confirm</h3>
+            <p id="modalMessage">Are you sure?</p>
+            <div class="admin-modal-actions">
+                <button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary btn-sm" id="modalConfirm" onclick="confirmAction()">Confirm</button>
+            </div>
+        </div>
+    </div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260416-2"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script src="../js/admin-api.js?v=20260416-2"></script>
+    <script>
+        if (!Auth.requireRole('admin')) throw new Error('Admin access required');
+        let currentPage = 1, searchTimeout = null, pendingAction = null;
+
+        function toggleAdminSidebar() { document.getElementById('adminSidebar').classList.toggle('active'); document.getElementById('adminSidebarOverlay').classList.toggle('active'); }
+        function debounceSearch() { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => loadDoctors(1), 400); }
+
+        async function loadDoctors(page = 1) {
+            currentPage = page;
+            const container = document.getElementById('doctorsTable');
+            container.innerHTML = '<div class="admin-loading"><div class="spinner"></div></div>';
+            try {
+                // Read verifiedFilter from URL on initial load
+                const urlParams = new URLSearchParams(window.location.search);
+                const verifiedFilter = document.getElementById('verifiedFilter');
+                if (page === 1 && urlParams.has('verified') && !verifiedFilter.dataset.init) {
+                    verifiedFilter.value = urlParams.get('verified');
+                    verifiedFilter.dataset.init = '1';
+                }
+
+                const result = await API.admin.doctors.list({
+                    page, per_page: 15,
+                    search: document.getElementById('searchInput').value.trim(),
+                    verified: verifiedFilter.value
+                });
+                const items = result.items || [];
+                if (!items.length) { container.innerHTML = '<div class="admin-empty-state"><i class="fas fa-user-md"></i><h3>No doctors found</h3></div>'; document.getElementById('pagination').innerHTML = ''; return; }
+
+                container.innerHTML = `<table class="admin-table"><thead><tr><th>Doctor</th><th>Specialty</th><th>Fee</th><th>Verified</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>${items.map(d => `<tr>
+                    <td><div class="admin-cell-name">${escapeHtml(d.full_name || 'Unnamed')}</div><div class="admin-cell-meta">${escapeHtml(d.email)}</div></td>
+                    <td>${escapeHtml(d.specialty || '—')}</td>
+                    <td>৳${Number(d.consultation_fee || 0).toLocaleString()}</td>
+                    <td>${d.is_verified == 1 ? '<span class="admin-badge approved"><i class="fas fa-check"></i> Verified</span>' : '<span class="admin-badge pending">Unverified</span>'}</td>
+                    <td><span class="admin-badge ${d.user_status}">${d.user_status}</span></td>
+                    <td><div class="admin-actions">
+                        ${d.is_verified == 0 ? `<button class="admin-action-btn success" title="Approve" onclick="showVerify(${d.id}, 'approve', '${escapeHtml(d.full_name || '')}')"><i class="fas fa-check"></i></button>` : ''}
+                        ${d.is_verified == 1 ? `<button class="admin-action-btn danger" title="Revoke" onclick="showVerify(${d.id}, 'reject', '${escapeHtml(d.full_name || '')}')"><i class="fas fa-times"></i></button>` : ''}
+                    </div></td>
+                </tr>`).join('')}</tbody></table>`;
+                renderPagination(result.total, result.page, result.per_page, result.total_pages);
+            } catch (error) { container.innerHTML = '<div class="admin-empty-state"><i class="fas fa-exclamation-circle"></i><h3>Failed to load doctors</h3></div>'; }
+        }
+
+        function renderPagination(total, page, perPage, totalPages) {
+            const pag = document.getElementById('pagination');
+            if (totalPages <= 1) { pag.innerHTML = `<div class="admin-pagination-info">${total} doctor(s)</div>`; return; }
+            let buttons = `<button ${page<=1?'disabled':''} onclick="loadDoctors(${page-1})"><i class="fas fa-chevron-left"></i></button>`;
+            for (let i=1;i<=totalPages;i++) { if (totalPages>7&&Math.abs(i-page)>2&&i!==1&&i!==totalPages){if(i===2||i===totalPages-1)buttons+=`<button disabled>...</button>`;continue;} buttons+=`<button class="${i===page?'active':''}" onclick="loadDoctors(${i})">${i}</button>`; }
+            buttons += `<button ${page>=totalPages?'disabled':''} onclick="loadDoctors(${page+1})"><i class="fas fa-chevron-right"></i></button>`;
+            pag.innerHTML = `<div class="admin-pagination-info">Showing ${(page-1)*perPage+1}–${Math.min(page*perPage,total)} of ${total}</div><div class="admin-pagination-controls">${buttons}</div>`;
+        }
+
+        function showVerify(id, action, name) {
+            pendingAction = { id, action };
+            document.getElementById('modalTitle').textContent = action === 'approve' ? 'Approve Doctor' : 'Revoke Verification';
+            document.getElementById('modalMessage').textContent = `Are you sure you want to ${action} ${name}?`;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+        function closeModal() { document.getElementById('confirmModal').classList.remove('active'); pendingAction = null; }
+        async function confirmAction() {
+            if (!pendingAction) return;
+            closeModal();
+            try {
+                await API.admin.doctors.verify(pendingAction.id, pendingAction.action);
+                showToast(`Doctor ${pendingAction.action === 'approve' ? 'approved' : 'verification revoked'}`, 'success');
+                loadDoctors(currentPage);
+            } catch (error) { showToast(error.message || 'Action failed', 'error'); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = Auth.getUser();
+            if (user) document.getElementById('adminName').textContent = user.full_name || user.email || 'Admin';
+            loadDoctors(1);
+        });
+    </script>
+</body>
+</html>

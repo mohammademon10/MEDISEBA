@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Doctor Prescriptions - MediSeba</title>
+    <meta name="description" content="Write and review digital prescriptions in MediSeba.">
+    <script>
+        (function ensureFreshDoctorPrescriptionsPage() {
+            const currentVersion = '20260403-3';
+            const url = new URL(window.location.href);
+
+            if (url.searchParams.get('v') === currentVersion) {
+                return;
+            }
+
+            url.searchParams.set('v', currentVersion);
+            window.location.replace(url.toString());
+        }());
+    </script>
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link rel="stylesheet" href="../css/auth.css?v=20260404-8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="../doctor/doctor-dashboard.html"><i class="fas fa-home"></i>Dashboard</a></li>
+                    <li><a href="../doctor/doctor-appointments.html"><i class="fas fa-calendar-check"></i>Appointments</a></li>
+                    <li><a href="../doctor/doctor-prescriptions.html?v=20260403-3" class="active"><i class="fas fa-file-prescription"></i>Prescriptions</a></li>
+                    <li><a href="../doctor/doctor-schedule.html"><i class="fas fa-clock"></i>My Schedule</a></li>
+                    <li><a href="../doctor/doctor-my-profile.html"><i class="fas fa-user-md"></i>My Profile</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Doctor</span>
+                        <span class="user-role">Doctor</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-intro">
+                    <h2>Doctor Prescriptions</h2>
+                    <p class="page-intro-text">Issue a prescription after a completed visit and keep track of follow-ups in one place.</p>
+                </div>
+                <div class="header-actions action-row">
+                    <button class="nav-toggle" id="navToggle" onclick="toggleSidebar()" aria-label="Toggle Navigation" style="display: none;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="../doctor/doctor-appointments.html" class="btn btn-outline btn-sm">
+                        <i class="fas fa-calendar-check"></i>
+                        Open Queue
+                    </a>
+                </div>
+            </header>
+
+            <div class="dashboard-content doctor-prescriptions-content">
+                <div class="card doctor-prescription-composer-card" id="composerCard">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3>Prescription Composer</h3>
+                            <p class="card-header-meta">Document the consultation, add medicines, and set the next follow-up without leaving the workflow.</p>
+                        </div>
+                        <div class="table-meta table-meta-end doctor-prescription-header-meta">
+                            <div class="table-meta-text">Current visit</div>
+                            <div id="composerHint" class="table-meta-strong doctor-prescription-composer-hint">Select a completed appointment to write a prescription.</div>
+                        </div>
+                    </div>
+                    <div class="card-body" id="composerBody">
+                        <div class="doctor-prescription-empty-layout">
+                            <div class="empty-state doctor-prescription-empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-file-pen"></i>
+                                </div>
+                                <h3>No appointment selected</h3>
+                                <p>Choose a completed consultation from your queue to start the prescription and keep the workflow tied to the correct visit.</p>
+                                <div class="form-actions action-row-center doctor-prescription-empty-actions">
+                                    <a href="../doctor/doctor-appointments.html" class="btn btn-primary">
+                                        <i class="fas fa-calendar-check"></i>
+                                        Select from Queue
+                                    </a>
+                                    <a href="../doctor/doctor-dashboard.html" class="btn btn-outline">
+                                        <i class="fas fa-stethoscope"></i>
+                                        Back to Dashboard
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="form-section doctor-prescription-guide-card">
+                                <div class="form-section-copy">
+                                    <h4>Clean prescription workflow</h4>
+                                    <p class="form-section-meta">The safest flow is to write prescriptions only after the visit is clearly completed.</p>
+                                </div>
+                                <div class="doctor-prescription-guide-list">
+                                    <div class="doctor-prescription-guide-step">
+                                        <span class="token-badge">1</span>
+                                        <div class="table-meta">
+                                            <div class="table-meta-strong">Finish the consultation</div>
+                                            <div class="table-meta-text">Confirm the visit status from the appointments queue.</div>
+                                        </div>
+                                    </div>
+                                    <div class="doctor-prescription-guide-step">
+                                        <span class="token-badge">2</span>
+                                        <div class="table-meta">
+                                            <div class="table-meta-strong">Record diagnosis and treatment</div>
+                                            <div class="table-meta-text">Capture the clinical summary, medicine instructions, and advice in one place.</div>
+                                        </div>
+                                    </div>
+                                    <div class="doctor-prescription-guide-step">
+                                        <span class="token-badge">3</span>
+                                        <div class="table-meta">
+                                            <div class="table-meta-strong">Plan the follow-up</div>
+                                            <div class="table-meta-text">Add the next review date and notes so reminders stay visible on this page.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3>Follow-up Reminders</h3>
+                            <p class="card-header-meta">Showing follow-ups due in the next 30 days so you can review who needs attention soon.</p>
+                        </div>
+                        <span id="followUpCount" class="token-badge">Loading...</span>
+                    </div>
+                    <div class="card-body" id="followUpsList">
+                        <div class="empty-state">
+                            <div class="spinner"></div>
+                            <p>Loading follow-ups...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3>Prescription History</h3>
+                            <p class="card-header-meta">Review recent prescriptions, open the visit again, or download the generated document.</p>
+                        </div>
+                        <span id="prescriptionCount" class="token-badge">Loading...</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive doctor-prescription-history-table">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Appointment</th>
+                                        <th>Diagnosis</th>
+                                        <th>Follow-up</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="prescriptionsList">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4">
+                                            <div class="spinner"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260402-4"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        if (!Auth.requireRole('doctor')) {
+            throw new Error('Doctor access required');
+        }
+
+        const followUpWindowDays = 30;
+
+        function parseMedicineList(rawValue) {
+            return rawValue
+                .split('\n')
+                .map((line) => line.trim())
+                .filter(Boolean)
+                .map((line) => {
+                    if (line.includes('|')) {
+                        const [name, instructions] = line.split('|');
+                        return {
+                            name: name.trim(),
+                            instructions: (instructions || '').trim()
+                        };
+                    }
+
+                    if (line.includes(' - ')) {
+                        const [name, instructions] = line.split(' - ');
+                        return {
+                            name: name.trim(),
+                            instructions: (instructions || '').trim()
+                        };
+                    }
+
+                    return { name: line };
+                });
+        }
+
+        function formatStatusLabel(status) {
+            const normalized = String(status || 'pending');
+
+            if (normalized === 'in_progress') {
+                return 'In Progress';
+            }
+
+            if (normalized === 'no_show') {
+                return 'No Show';
+            }
+
+            return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+        }
+
+        function getFollowUpDayDifference(dateValue) {
+            if (!dateValue) {
+                return null;
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const target = new Date(dateValue);
+            target.setHours(0, 0, 0, 0);
+
+            return Math.round((target.getTime() - today.getTime()) / 86400000);
+        }
+
+        function getFollowUpBadgeClass(dateValue) {
+            const difference = getFollowUpDayDifference(dateValue);
+
+            if (difference === null) {
+                return 'inactive';
+            }
+
+            if (difference <= 2) {
+                return 'pending';
+            }
+
+            if (difference <= 7) {
+                return 'active';
+            }
+
+            return 'inactive';
+        }
+
+        function getFollowUpBadgeLabel(dateValue) {
+            const difference = getFollowUpDayDifference(dateValue);
+
+            if (difference === null) {
+                return 'Not scheduled';
+            }
+
+            if (difference <= 0) {
+                return 'Due Today';
+            }
+
+            if (difference === 1) {
+                return 'Due Tomorrow';
+            }
+
+            if (difference <= 7) {
+                return `Due in ${difference} days`;
+            }
+
+            return 'Upcoming';
+        }
+
+        function renderPersonAvatar(name, photoPath, sizeClass = '') {
+            const displayName = String(name || 'Patient').trim() || 'Patient';
+            const resolvedPhotoPath = resolveAssetPath(photoPath || '');
+            const legacyPhotoPath = resolveLegacyAssetPath(photoPath || '');
+            const classes = ['user-avatar', 'doctor-person-avatar'];
+
+            if (sizeClass) {
+                classes.push(sizeClass);
+            }
+
+            if (resolvedPhotoPath) {
+                classes.push('has-photo');
+
+                return `
+                    <div class="${classes.join(' ')}" data-name="${escapeHtml(displayName)}" data-fallback-icon="fa-user">
+                        <img src="${escapeHtml(resolvedPhotoPath)}"
+                             ${legacyPhotoPath ? `data-legacy-src="${escapeHtml(legacyPhotoPath)}"` : ''}
+                             data-name="${escapeHtml(displayName)}"
+                             data-fallback-icon="fa-user"
+                             alt="${escapeHtml(displayName)}"
+                             onerror="handleAssetImageError(this)">
+                    </div>
+                `;
+            }
+
+            return `<div class="${classes.join(' ')}" aria-hidden="true">${escapeHtml(buildAvatarInitial(displayName, 'P'))}</div>`;
+        }
+
+        function renderPatientMeta(name, email, photoPath, large = false) {
+            return `
+                <div class="doctor-person-meta${large ? ' doctor-person-meta-lg' : ''}">
+                    ${renderPersonAvatar(name, photoPath, large ? 'doctor-person-avatar-lg' : '')}
+                    <div class="table-meta">
+                        <div class="table-meta-strong">${escapeHtml(name || 'Patient')}</div>
+                        <div class="table-meta-text">${escapeHtml(email || '')}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadAppointmentComposer() {
+            const appointmentId = new URLSearchParams(window.location.search).get('appointment');
+            const hint = document.getElementById('composerHint');
+            const body = document.getElementById('composerBody');
+
+            if (!appointmentId) {
+                hint.textContent = 'Select a completed appointment to write a prescription.';
+                return;
+            }
+
+            try {
+                const appointment = await API.appointments.get(appointmentId);
+
+                if (appointment.prescription_id) {
+                    hint.textContent = `Prescription already exists for ${appointment.appointment_number}`;
+                    body.innerHTML = `
+                        <div class="doctor-prescription-empty-layout">
+                            <div class="empty-state doctor-prescription-empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-circle-check"></i>
+                                </div>
+                                <h3>Prescription already issued</h3>
+                                <p>${escapeHtml(appointment.patient_name || 'This patient')} already has prescription ${escapeHtml(appointment.prescription_number || '')} linked to this appointment.</p>
+                                <div class="form-actions action-row-center doctor-prescription-empty-actions">
+                                    <a href="../patient/prescription.html?id=${encodeURIComponent(appointment.prescription_id)}&v=20260403-1" class="btn btn-primary">View Prescription</a>
+                                    <button type="button" class="btn btn-outline" onclick="downloadPrescription(${Number(appointment.prescription_id)})">Download PDF</button>
+                                    <a href="../doctor/doctor-appointments.html" class="btn btn-outline">Back to Queue</a>
+                                </div>
+                            </div>
+                            <div class="form-section doctor-prescription-guide-card">
+                                <div class="form-section-copy">
+                                    <h4>Existing prescription record</h4>
+                                    <p class="form-section-meta">This visit already has a completed prescription record, so the safest next step is review rather than creating a duplicate.</p>
+                                </div>
+                                <div class="doctor-prescription-guide-list">
+                                    <div class="doctor-prescription-guide-step">
+                                        <span class="token-badge">Rx</span>
+                                        <div class="table-meta">
+                                            <div class="table-meta-strong">${escapeHtml(appointment.prescription_number || 'Prescription record')}</div>
+                                            <div class="table-meta-text">Linked to appointment ${escapeHtml(appointment.appointment_number || '')}</div>
+                                        </div>
+                                    </div>
+                                    <div class="doctor-prescription-guide-step">
+                                        <span class="status-badge completed">Completed</span>
+                                        <div class="table-meta">
+                                            <div class="table-meta-strong">Patient visit documented</div>
+                                            <div class="table-meta-text">Review the PDF or reopen the visit if you need context from the queue.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                if (appointment.status !== 'completed') {
+                    hint.textContent = `Appointment ${appointment.appointment_number} is not completed yet`;
+                    body.innerHTML = `
+                        <div class="doctor-prescription-empty-layout">
+                            <div class="empty-state doctor-prescription-empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-hourglass-half"></i>
+                                </div>
+                                <h3>Finish the appointment first</h3>
+                                <p>Prescriptions can only be created after the consultation is marked completed from the doctor queue.</p>
+                                <div class="form-actions action-row-center doctor-prescription-empty-actions">
+                                    <a href="../doctor/doctor-appointments.html" class="btn btn-primary">Return to Queue</a>
+                                </div>
+                            </div>
+                            <div class="form-section doctor-prescription-guide-card">
+                                <div class="form-section-copy">
+                                    <h4>Current visit status</h4>
+                                    <p class="form-section-meta">Open the visit in your appointments page to move it through the consultation flow first.</p>
+                                </div>
+                                <div class="doctor-prescription-guide-list">
+                                    <div class="doctor-prescription-guide-step">
+                                        <span class="status-badge ${escapeHtml(String(appointment.status || 'pending'))}">${escapeHtml(formatStatusLabel(appointment.status))}</span>
+                                        <div class="table-meta">
+                                            <div class="table-meta-strong">${escapeHtml(appointment.patient_name || 'Patient')}</div>
+                                            <div class="table-meta-text">${escapeHtml(appointment.appointment_number || '')} on ${appointment.appointment_date ? formatDate(appointment.appointment_date) : 'Unknown date'}</div>
+                                        </div>
+                                    </div>
+                                    <div class="doctor-prescription-guide-step">
+                                        <span class="token-badge">Next</span>
+                                        <div class="table-meta">
+                                            <div class="table-meta-strong">Complete the consultation</div>
+                                            <div class="table-meta-text">Once the visit is completed, this composer will become available for prescription writing.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                hint.textContent = `Writing for ${appointment.patient_name || 'patient'} on ${formatDate(appointment.appointment_date)}`;
+                body.innerHTML = `
+                    <form id="prescriptionForm" class="auth-form doctor-prescription-form">
+                        <div class="form-section doctor-prescription-visit-card">
+                            <div class="form-section-header">
+                                <div class="doctor-prescription-visit-summary">
+                                    <div class="doctor-person-meta doctor-person-meta-lg">
+                                        ${renderPersonAvatar(appointment.patient_name || 'Patient', appointment.patient_profile_photo || '', 'doctor-person-avatar-lg')}
+                                        <div class="form-section-copy">
+                                            <h4>${escapeHtml(appointment.patient_name || 'Patient')}</h4>
+                                            <p class="form-section-meta">${escapeHtml(appointment.patient_email || '')}</p>
+                                            <p class="form-section-meta">This prescription will be attached to the completed consultation record for this visit.</p>
+                                        </div>
+                                    </div>
+                                    <div class="table-meta table-meta-end">
+                                        <div class="table-meta-text">Visit ready for prescription</div>
+                                        <div class="table-meta-strong">${escapeHtml(appointment.appointment_number || '')}</div>
+                                        <div class="doctor-prescription-summary-badges">
+                                            <span class="status-badge completed">Completed</span>
+                                            <span class="token-badge">Token #${escapeHtml(String(appointment.token_number || '-'))}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="doctor-prescription-visit-meta">
+                                <div class="nested-surface-card">
+                                    <div class="table-meta-text">Visit date</div>
+                                    <div class="table-meta-strong">${appointment.appointment_date ? formatDate(appointment.appointment_date) : 'Unknown date'}</div>
+                                </div>
+                                <div class="nested-surface-card">
+                                    <div class="table-meta-text">Appointment number</div>
+                                    <div class="table-meta-strong">${escapeHtml(appointment.appointment_number || 'Not assigned')}</div>
+                                </div>
+                                <div class="nested-surface-card">
+                                    <div class="table-meta-text">Next step</div>
+                                    <div class="table-meta-strong">Record treatment and follow-up</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-copy">
+                                <h4>Clinical Notes</h4>
+                                <p class="form-section-meta">Capture the key symptoms and the working diagnosis from this consultation before prescribing treatment.</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="symptoms" class="form-label form-label-required">Symptoms</label>
+                                <textarea id="symptoms" class="form-textarea" rows="3" placeholder="Enter the symptoms discussed or observed during the visit" required>${escapeHtml(appointment.symptoms || '')}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="diagnosis" class="form-label form-label-required">Diagnosis</label>
+                                <textarea id="diagnosis" class="form-textarea" rows="3" placeholder="Write the diagnosis and relevant clinical notes" required></textarea>
+                                <div style="margin-top:8px;">
+                                    <button type="button" class="btn btn-outline btn-sm" id="aiSummaryBtn" onclick="getAiClinicalSummary()">
+                                        <i class="fas fa-robot"></i> Generate AI Clinical Summary
+                                    </button>
+                                    <span style="margin-left:8px; font-size:0.8em; color:var(--gray-500);">Uses symptoms above to draft a diagnosis hint</span>
+                                </div>
+                                <div id="aiSummaryResult" style="display:none; margin-top:10px; padding:12px 14px; background:var(--blue-50,#eff6ff); border:1px solid var(--blue-200,#bfdbfe); border-radius:6px; font-size:0.875em; line-height:1.6; white-space:pre-wrap;"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-copy">
+                                <h4>Treatment Plan</h4>
+                                <p class="form-section-meta">List medicines clearly and add any overall dosage guidance or patient advice for home care.</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="medicines" class="form-label form-label-required">Medicines</label>
+                                <textarea id="medicines" class="form-textarea" rows="5" placeholder="One medicine per line. Example: Paracetamol 500mg | 1 tablet after meals, twice daily" required></textarea>
+                                <span class="form-hint">Use one line per medicine. Add dosage after a vertical bar or a hyphen.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dosageInstructions" class="form-label">Dosage Instructions</label>
+                                <textarea id="dosageInstructions" class="form-textarea" rows="3" placeholder="General timing, duration, or cautions"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="advice" class="form-label">Advice</label>
+                                <textarea id="advice" class="form-textarea" rows="3" placeholder="Lifestyle guidance, tests, hydration, rest, or warning signs"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-copy">
+                                <h4>Follow-up Plan</h4>
+                                <p class="form-section-meta">Set the next review date and add a short reminder so it appears in your follow-up list automatically.</p>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="followUpDate" class="form-label">Follow-up Date</label>
+                                    <input type="date" id="followUpDate" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="followUpNotes" class="form-label">Follow-up Notes</label>
+                                    <input type="text" id="followUpNotes" class="form-input" placeholder="Optional reminder for the next visit">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-file-circle-plus"></i>
+                                Create Prescription
+                            </button>
+                            <a href="../doctor/doctor-appointments.html" class="btn btn-outline">Back to Queue</a>
+                        </div>
+                    </form>
+                `;
+
+                document.getElementById('prescriptionForm').addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const symptomsValue = document.getElementById('symptoms').value.trim();
+                    const diagnosisValue = document.getElementById('diagnosis').value.trim();
+
+                    if (!symptomsValue) {
+                        showToast('Symptoms are required before saving the prescription.', 'error');
+                        document.getElementById('symptoms').focus();
+                        return;
+                    }
+
+                    if (!diagnosisValue) {
+                        showToast('Diagnosis is required before saving the prescription.', 'error');
+                        document.getElementById('diagnosis').focus();
+                        return;
+                    }
+
+                    const medicineList = parseMedicineList(document.getElementById('medicines').value);
+                    if (!medicineList.length) {
+                        showToast('Add at least one medicine before saving.', 'error');
+                        return;
+                    }
+
+                    const followUpDate = document.getElementById('followUpDate').value;
+
+                    try {
+                        showLoading();
+                        const result = await API.prescriptions.create({
+                            appointment_id: Number(appointmentId),
+                            symptoms: symptomsValue,
+                            diagnosis: diagnosisValue,
+                            medicine_list: medicineList,
+                            dosage_instructions: document.getElementById('dosageInstructions').value.trim(),
+                            advice: document.getElementById('advice').value.trim(),
+                            follow_up_date: followUpDate || null,
+                            follow_up_notes: document.getElementById('followUpNotes').value.trim()
+                        });
+
+                        showToast(`Prescription ${result.prescription_number || ''} created successfully.`, 'success');
+                        await loadPrescriptionHistory();
+                        await loadFollowUps();
+                        await loadAppointmentComposer();
+                    } catch (error) {
+                        showToast(error.message || 'Failed to create prescription.', 'error');
+                    } finally {
+                        hideLoading();
+                    }
+                });
+            } catch (error) {
+                hint.textContent = 'Unable to load the selected appointment';
+                body.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3>Unable to load appointment</h3>
+                        <p>${escapeHtml(error.message || 'Please try again later.')}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadFollowUps() {
+            const list = document.getElementById('followUpsList');
+            const count = document.getElementById('followUpCount');
+
+            try {
+                const followUps = await API.prescriptions.followUps(followUpWindowDays);
+                count.textContent = `${followUps.length} reminder(s)`;
+
+                if (!followUps.length) {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <h3>No follow-ups due</h3>
+                            <p>No follow-up appointments are due in the next ${followUpWindowDays} days.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                list.innerHTML = `
+                    <div class="doctor-followups-grid">
+                        ${followUps.map((item) => `
+                            <div class="doctor-followup-card">
+                                <div class="doctor-followup-card-header">
+                                    ${renderPatientMeta(item.patient_name || 'Patient', item.patient_email || '', item.patient_profile_photo || '')}
+                                    <div class="action-row doctor-followup-urgency">
+                                        <span class="status-badge ${getFollowUpBadgeClass(item.follow_up_date)}">${getFollowUpBadgeLabel(item.follow_up_date)}</span>
+                                        <span class="token-badge">${escapeHtml(item.prescription_number || 'Rx record')}</span>
+                                    </div>
+                                </div>
+                                <div class="doctor-followup-card-summary">
+                                    <div class="nested-surface-card">
+                                        <div class="table-meta-text">Follow-up date</div>
+                                        <div class="table-meta-strong">${item.follow_up_date ? formatDate(item.follow_up_date) : 'Not scheduled'}</div>
+                                    </div>
+                                    <div class="nested-surface-card">
+                                        <div class="table-meta-text">Linked visit</div>
+                                        <div class="table-meta-strong">Appointment #${escapeHtml(String(item.appointment_id || '-'))}</div>
+                                    </div>
+                                    <div class="nested-surface-card">
+                                        <div class="table-meta-text">Reminder note</div>
+                                        <div class="table-meta-strong">${escapeHtml(item.follow_up_notes || 'No note added')}</div>
+                                    </div>
+                                </div>
+                                <div class="table-actions doctor-followup-card-actions">
+                                    <a href="../patient/prescription.html?id=${encodeURIComponent(item.id)}&v=20260403-1" class="btn btn-outline btn-sm">Prescription</a>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                count.textContent = 'Unable to load';
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3>Unable to load follow-ups</h3>
+                        <p>Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadPrescriptionHistory() {
+            const list = document.getElementById('prescriptionsList');
+            const count = document.getElementById('prescriptionCount');
+
+            try {
+                const result = await API.prescriptions.doctorPrescriptions({ per_page: 20 });
+                const prescriptions = result.items || [];
+                count.textContent = `${result.pagination?.total || prescriptions.length} prescription(s)`;
+
+                if (!prescriptions.length) {
+                    list.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-gray-500">
+                                <i class="fas fa-file-medical mb-2" style="font-size: 2rem; color: var(--gray-300);"></i><br>
+                                No prescriptions have been created yet.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                list.innerHTML = prescriptions.map((prescription) => `
+                    <tr>
+                        <td>
+                            ${renderPatientMeta(prescription.patient_name || 'Patient', prescription.patient_email || '', prescription.patient_profile_photo || '')}
+                        </td>
+                        <td>
+                            <div class="table-meta">
+                                <div class="table-meta-strong">#${escapeHtml(prescription.appointment_number || '')}</div>
+                                <div class="table-meta-text">${prescription.appointment_date ? formatDate(prescription.appointment_date) : 'Unknown date'}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-meta">
+                                <div class="table-meta-strong">${escapeHtml(prescription.diagnosis || 'Not recorded')}</div>
+                                <div class="table-meta-text">${escapeHtml(prescription.prescription_number || '')}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-meta">
+                                <span class="status-badge ${prescription.follow_up_date ? getFollowUpBadgeClass(prescription.follow_up_date) : 'inactive'}">${prescription.follow_up_date ? getFollowUpBadgeLabel(prescription.follow_up_date) : 'Not scheduled'}</span>
+                                <div class="table-meta-text">${prescription.follow_up_date ? formatDate(prescription.follow_up_date) : 'No follow-up date selected'}</div>
+                                <div class="table-meta-text">${escapeHtml(prescription.follow_up_notes || 'No note added')}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="../patient/prescription.html?id=${encodeURIComponent(prescription.id)}&v=20260403-1" class="btn btn-outline btn-sm">View</a>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="downloadPrescription(${Number(prescription.id)})">PDF</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                count.textContent = 'Unable to load';
+                list.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-red-500">
+                            Failed to load prescription history. Please try again later.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        async function getAiClinicalSummary() {
+            const symptomsField = document.getElementById('symptoms');
+            const diagnosisField = document.getElementById('diagnosis');
+            const btn = document.getElementById('aiSummaryBtn');
+            const resultBox = document.getElementById('aiSummaryResult');
+
+            const symptoms = symptomsField ? symptomsField.value.trim() : '';
+            if (!symptoms) {
+                showToast('Please enter symptoms first before generating an AI summary.', 'warning');
+                symptomsField && symptomsField.focus();
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            resultBox.style.display = 'none';
+
+            try {
+                const notes = document.getElementById('dosageInstructions') ? document.getElementById('dosageInstructions').value : '';
+                const result = await API.gemini.clinicalSummary(symptoms, notes);
+                const text = (result && result.response) ? result.response : (typeof result === 'string' ? result : 'No summary returned.');
+                resultBox.style.display = 'block';
+                resultBox.innerHTML = '<strong style="display:block;margin-bottom:6px;color:var(--blue-700,#1d4ed8);"><i class="fas fa-robot"></i> AI Clinical Summary</strong>' + escapeHtml(text);
+                // Autofill diagnosis field if empty
+                if (diagnosisField && !diagnosisField.value.trim()) {
+                    diagnosisField.value = text;
+                    showToast('AI summary generated and copied to Diagnosis field.', 'success');
+                } else {
+                    showToast('AI summary generated. Review below the diagnosis field.', 'success');
+                }
+            } catch (error) {
+                showToast(error.message || 'AI service unavailable. Please fill diagnosis manually.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-robot"></i> Generate AI Clinical Summary';
+            }
+        }
+
+        async function downloadPrescription(id) {
+            try {
+                showLoading();
+                await API.prescriptions.downloadPdf(id);
+                showToast('Prescription PDF downloaded.', 'success');
+            } catch (error) {
+                showToast(error.message || 'Failed to download prescription PDF.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initDashboardNavToggle();
+
+            await loadSidebarIdentity('doctor');
+            await loadAppointmentComposer();
+            await loadFollowUps();
+            await loadPrescriptionHistory();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

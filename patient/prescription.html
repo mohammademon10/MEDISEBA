@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Prescription Details - MediSeba</title>
+    <meta name="description" content="View a digital prescription in MediSeba.">
+    <script>
+        (function ensureFreshDetailPage() {
+            const currentVersion = '20260403-1';
+            const url = new URL(window.location.href);
+
+            if (url.searchParams.get('v') === currentVersion) {
+                return;
+            }
+
+            url.searchParams.set('v', currentVersion);
+            window.location.replace(url.toString());
+        }());
+    </script>
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link rel="stylesheet" href="../css/auth.css?v=20260404-7">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .detail-shell {
+            min-height: 100vh;
+            background: var(--gray-50);
+        }
+
+        .detail-shell-content {
+            width: 100%;
+            max-width: 1280px;
+            box-sizing: border-box;
+            margin: 0 auto;
+            padding: var(--space-6);
+        }
+
+        .detail-shell-card {
+            padding: var(--space-6);
+        }
+
+        .detail-shell-subtitle {
+            color: var(--gray-500);
+            margin-top: var(--space-1);
+        }
+
+        .detail-shell-actions {
+            display: flex;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+        }
+
+        .detail-content-stack {
+            display: grid;
+            gap: var(--space-6);
+        }
+
+        .detail-top-row {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .detail-top-row > * {
+            min-width: 0;
+        }
+
+        .detail-side-meta {
+            text-align: right;
+        }
+
+        .detail-split-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .detail-info-card {
+            padding: var(--space-5);
+        }
+
+        .detail-info-card.is-muted {
+            background: var(--gray-50);
+        }
+
+        .detail-medicine-list {
+            display: grid;
+            gap: var(--space-3);
+        }
+
+        @media (max-width: 768px) {
+            .detail-shell-content {
+                padding: var(--space-4);
+            }
+
+            .detail-shell-card {
+                padding: var(--space-4);
+            }
+
+            .detail-shell-actions,
+            .detail-top-row,
+            .detail-side-meta {
+                text-align: left;
+            }
+
+            .detail-shell-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .detail-shell-content {
+                padding: var(--space-3);
+            }
+
+            .detail-shell-card,
+            .detail-info-card {
+                padding: var(--space-4);
+            }
+
+            .detail-split-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="detail-shell detail-page" style="margin: 0;">
+    <div class="detail-shell-content">
+        <main>
+            <div class="page-header" style="margin-bottom: var(--space-6);">
+                <div>
+                    <h1>Prescription Details</h1>
+                    <p class="detail-shell-subtitle">Review medicines, diagnosis, and follow-up guidance.</p>
+                </div>
+                <div class="detail-shell-actions">
+                    <button type="button" class="btn btn-primary" id="downloadPdfButton" disabled>
+                        <i class="fas fa-file-pdf"></i>
+                        Download PDF
+                    </button>
+                    <a href="../patient/prescriptions.html" class="btn btn-outline" id="backLink">Back</a>
+                </div>
+            </div>
+
+            <div class="card detail-shell-card" id="prescriptionDetails">
+                <div class="empty-state">
+                    <div class="spinner"></div>
+                    <p>Loading prescription...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260402-4"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        if (!Auth.requireAuth()) {
+            throw new Error('Authentication required');
+        }
+
+        function getBackLink() {
+            return Auth.hasRole('doctor') ? 'doctor-prescriptions.html' : 'prescriptions.html';
+        }
+
+        function renderMedicines(medicineList) {
+            if (!Array.isArray(medicineList) || medicineList.length === 0) {
+                return '<p style="color: var(--gray-600);">No medicine list recorded.</p>';
+            }
+
+            return `
+                <div class="detail-medicine-list">
+                    ${medicineList.map((medicine, index) => {
+                        const item = typeof medicine === 'string' ? { name: medicine } : medicine;
+                        return `
+                            <div class="card detail-info-card is-muted">
+                                <strong>${index + 1}. ${escapeHtml(item.name || 'Medicine')}</strong>
+                                <p style="margin-top: var(--space-1); color: var(--gray-600);">${escapeHtml(item.dosage || item.strength || item.instructions || 'Dosage details not provided')}</p>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        async function downloadCurrentPrescription() {
+            const prescriptionId = new URLSearchParams(window.location.search).get('id');
+
+            if (!prescriptionId) {
+                showToast('Missing prescription ID.', 'error');
+                return;
+            }
+
+            try {
+                showLoading();
+                await API.prescriptions.downloadPdf(prescriptionId);
+                showToast('Prescription PDF downloaded.', 'success');
+            } catch (error) {
+                showToast(error.message || 'Failed to download prescription PDF.', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadPrescription() {
+            const prescriptionId = new URLSearchParams(window.location.search).get('id');
+            const container = document.getElementById('prescriptionDetails');
+            const isDoctor = Auth.hasRole('doctor');
+            const downloadButton = document.getElementById('downloadPdfButton');
+
+            document.getElementById('backLink').href = getBackLink();
+            document.getElementById('backLink').textContent = isDoctor ? 'Back to Doctor Prescriptions' : 'Back to Prescriptions';
+            downloadButton.addEventListener('click', downloadCurrentPrescription);
+
+            if (!prescriptionId) {
+                container.innerHTML = '<p>Missing prescription ID.</p>';
+                return;
+            }
+
+            try {
+                const prescription = await API.prescriptions.get(prescriptionId);
+                downloadButton.disabled = false;
+
+                container.innerHTML = `
+                    <div class="detail-content-stack">
+                        <div class="detail-top-row">
+                            <div>
+                                <p style="color: var(--gray-500); font-size: var(--font-size-sm);">Prescription Number</p>
+                                <h2>${escapeHtml(prescription.prescription_number || '')}</h2>
+                                <p style="margin-top: var(--space-2); color: var(--gray-600);">${escapeHtml(prescription.doctor_name || '')} • ${escapeHtml(prescription.specialty || '')}</p>
+                            </div>
+                            <div class="detail-side-meta">
+                                <p style="color: var(--gray-500); font-size: var(--font-size-sm);">Issued On</p>
+                                <strong>${formatDate(prescription.created_at)}</strong>
+                            </div>
+                        </div>
+
+                        <div class="detail-split-grid">
+                            <div class="card detail-info-card">
+                                <h3>Symptoms</h3>
+                                <p style="margin-top: var(--space-2); color: var(--gray-600);">${escapeHtml(prescription.symptoms || 'Not recorded')}</p>
+                            </div>
+                            <div class="card detail-info-card">
+                                <h3>Diagnosis</h3>
+                                <p style="margin-top: var(--space-2); color: var(--gray-600);">${escapeHtml(prescription.diagnosis || 'Not recorded')}</p>
+                            </div>
+                        </div>
+
+                        <div class="card detail-info-card">
+                            <h3>Medicines</h3>
+                            <div style="margin-top: var(--space-4);">
+                                ${renderMedicines(prescription.medicine_list)}
+                            </div>
+                        </div>
+
+                        <div class="detail-split-grid">
+                            <div class="card detail-info-card">
+                                <h3>Dosage Instructions</h3>
+                                <p style="margin-top: var(--space-2); color: var(--gray-600);">${escapeHtml(prescription.dosage_instructions || 'No additional instructions')}</p>
+                            </div>
+                            <div class="card detail-info-card">
+                                <h3>Advice</h3>
+                                <p style="margin-top: var(--space-2); color: var(--gray-600);">${escapeHtml(prescription.advice || 'No extra advice')}</p>
+                            </div>
+                        </div>
+
+                        <div class="card detail-info-card is-muted">
+                            <h3>Follow-up</h3>
+                            <p style="margin-top: var(--space-2); color: var(--gray-600);">${prescription.follow_up_date ? formatDate(prescription.follow_up_date) : 'No follow-up date scheduled'}</p>
+                            <p style="margin-top: var(--space-2); color: var(--gray-600);">${escapeHtml(prescription.follow_up_notes || '')}</p>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3>Unable to load prescription</h3>
+                        <p>${escapeHtml(error.message || 'Please try again later.')}</p>
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPrescription);
+    </script>
+</body>
+</html>
+
+
+
+

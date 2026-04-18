@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works - MediSeba</title>
+    <meta name="description" content="See how MediSeba helps patients find doctors, book appointments, and manage care online.">
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../pages/doctors.html">Find Doctors</a></li>
+                <li><a href="../pages/how-it-works.html" class="active">How It Works</a></li>
+                <li><a href="../pages/about.html">About</a></li>
+                <li class="nav-auth">
+                    <a href="../auth/login.html" class="btn btn-outline">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="page-main-shell is-tall">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Patient Journey</span>
+                <h2>How MediSeba <span class="highlight">Works</span></h2>
+                <p>From first search to follow-up care, the flow is designed to stay simple.</p>
+            </div>
+
+            <div class="steps" style="margin-top: var(--space-10);">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <h3>Create an account</h3>
+                        <p>Sign in with your email, verify the OTP, and complete your basic health profile.</p>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3>Browse doctors</h3>
+                        <p>Filter by specialty, compare experience, and open each doctor profile before you book.</p>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3>Book your slot</h3>
+                        <p>Pick an available date, receive a token number, and review the pending payment record.</p>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <i class="fas fa-notes-medical"></i>
+                        </div>
+                        <h3>Track visits and prescriptions</h3>
+                        <p>Use your dashboard to monitor appointments, payments, and prescriptions in one place.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="how-it-works-media">
+                <div class="video-card">
+                    <span class="section-badge">Quick Intro Video</span>
+                    <h3>Watch the care journey in action</h3>
+                    <p>This short telemedicine explainer pairs well with MediSeba's appointment, chat, and prescription flow.</p>
+                    <div class="video-embed">
+                        <iframe
+                            src="https://www.youtube-nocookie.com/embed/zNHq9gD2uqc?rel=0"
+                            title="Telemedicine overview video"
+                            loading="lazy"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <p class="video-caption">Video reference: Johns Hopkins Medicine telemedicine overview.</p>
+                </div>
+                <div class="transcript-card">
+                    <span class="section-badge">Transcript</span>
+                    <h3>MediSeba step-by-step summary</h3>
+                    <p>The transcript below mirrors the core patient flow so the information stays accessible without audio.</p>
+                    <ol class="transcript-list">
+                        <li>Create an account, verify your email with OTP, and complete your patient details.</li>
+                        <li>Browse doctors, compare specialties, and choose a date that fits your schedule.</li>
+                        <li>Join the consultation journey, then use appointment-based chat for follow-up clarification.</li>
+                        <li>Open your dashboard to check payments, prescriptions, and appointment history later.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card page-card" style="margin-top: var(--space-10);">
+                <h3>Need help getting started?</h3>
+                <p style="margin-top: var(--space-2);">
+                    Patients can begin from the regular login page, while doctors can join through the doctor portal.
+                </p>
+                <div class="content-actions">
+                    <a href="../auth/login.html" class="btn btn-primary">Patient Login</a>
+                    <a href="../auth/doctor-login.html" class="btn btn-outline">Doctor Portal</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom footer-bottom-compact">
+                <p>&copy; 2026 MediSeba. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/api.js?v=20260404-2"></script>
+    <script src="../js/auth.js?v=20260403-11"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Auth.updateNavigation();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

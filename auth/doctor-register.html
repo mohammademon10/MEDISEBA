@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Registration - MediSeba</title>
+    <link rel="stylesheet" href="../css/style.css?v=20260416-2">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260416-2">
+    <link rel="stylesheet" href="../css/auth.css?v=20260416-2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('../images/Background-photos/indexbackground.jpg') center/cover no-repeat fixed !important;
+            position: relative;
+            padding: 2rem;
+        }
+        .auth-image { display: none !important; }
+        .auth-form-container { width: 100%; display: flex; align-items: center; justify-content: center; background: transparent !important; }
+        .auth-form-wrapper { width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; border-radius: 24px; padding: 3rem 2.5rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important; }
+        
+        .auth-logo { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 2rem; text-decoration: none; }
+        .auth-logo img { width: 32px; height: 32px; }
+        .logo-wordmark { font-size: 1.5rem; font-weight: 700; color: #fff; }
+        
+        .auth-step h1 { font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; text-align: center; }
+        .auth-subtitle { color: rgba(255, 255, 255, 0.8); margin-bottom: 2rem; text-align: center; }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); }
+        .input-group { position: relative; display: flex; align-items: center; }
+        .input-group-icon { position: absolute; left: 1rem; color: rgba(255, 255, 255, 0.5); pointer-events: none; }
+        .form-input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.75rem; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: var(--radius-md); background-color: rgba(255, 255, 255, 0.05); color: #fff; }
+        .form-input:focus { outline: none; border-color: var(--success); }
+        .form-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+        
+        .form-error { display: none; color: #ff8a8a; font-size: 0.875rem; margin-top: 0.5rem; }
+        
+        .btn-success { background-color: var(--success); color: white; border: none; width: 100%; display: flex; justify-content: center; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; margin-top: 2rem; cursor: pointer;}
+        .btn-success:hover { background-color: rgba(16, 185, 129, 0.9); }
+        
+        .auth-alt { margin-top: 1.5rem; text-align: center; color: rgba(255, 255, 255, 0.7); }
+        .auth-alt a { color: var(--success); font-weight: 600; text-decoration: none; }
+        
+        .auth-image-content { display: none; }
+        .form-row { display: flex; gap: 1rem; }
+        .form-row .form-group { flex: 1; }
+    </style>
+</head>
+<body class="auth-page auth-page-doctor">
+    <div class="auth-container">
+        <div class="auth-image">
+            <div class="auth-image-content">
+                <h2>Join the Network</h2>
+                <p>Register as a provider to digitize your practice, manage schedules, and expand your reach.</p>
+            </div>
+        </div>
+        
+        <div class="auth-form-container">
+            <div class="auth-form-wrapper">
+                <a href="../index.html" class="auth-logo">
+                    <img src="../images/logo-mark.svg" alt="Logo">
+                    <span class="logo-wordmark"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+                </a>
+                
+                <div class="auth-step">
+                    <h1>Register as a Health Provider</h1>
+                    <p class="auth-subtitle">Submit your professional details to request a doctor account.</p>
+                    
+                    <form id="registerForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="fullName" class="form-label form-label-required">Full Name</label>
+                            <div class="input-group">
+                                <span class="input-group-icon"><i class="fas fa-user-md"></i></span>
+                                <input type="text" id="fullName" class="form-input" placeholder="Dr. John Doe" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="specialty" class="form-label form-label-required">Primary Specialty</label>
+                                <div class="input-group">
+                                    <span class="input-group-icon"><i class="fas fa-stethoscope"></i></span>
+                                    <input type="text" id="specialty" class="form-input" placeholder="Cardiology" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="qualification" class="form-label form-label-required">Qualification</label>
+                                <div class="input-group">
+                                    <span class="input-group-icon"><i class="fas fa-graduation-cap"></i></span>
+                                    <input type="text" id="qualification" class="form-input" placeholder="MBBS, MD" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label form-label-required">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-icon"><i class="fas fa-envelope"></i></span>
+                                <input type="email" id="email" class="form-input" placeholder="doctor@clinic.com" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password" class="form-label form-label-required">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-icon"><i class="fas fa-lock"></i></span>
+                                <input type="password" id="password" class="form-input" placeholder="Min 6 characters" required minlength="6">
+                            </div>
+                            <span class="form-error" id="registerError" style="display: none;"></span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success btn-lg" id="registerBtn">
+                            <span>Submit Registration</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+                    
+                    <div class="auth-alt">
+                        <p>Already a registered provider? <a href="doctor-login.html">Sign in here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/api.js?v=20260416-2"></script>
+    <script src="../js/auth.js?v=20260416-2"></script>
+    <script src="../js/app.js?v=20260416-2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (Auth.isLoggedIn()) {
+                window.location.href = Auth.getDashboardUrl();
+                return;
+            }
+
+            const form = document.getElementById('registerForm');
+            const btn = document.getElementById('registerBtn');
+            const errorElement = document.getElementById('registerError');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const full_name = document.getElementById('fullName').value.trim();
+                const specialty = document.getElementById('specialty').value.trim();
+                const qualification = document.getElementById('qualification').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value.trim();
+                
+                errorElement.style.display = 'none';
+                
+                btn.disabled = true;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                
+                try {
+                    const result = await API.auth.register({
+                        full_name, email, password, role: 'doctor', specialty, qualification
+                    });
+                    
+                    Auth.setToken(result.token);
+                    Auth.setUser(result.user);
+                    
+                    showToast('Registration successful! Profile pending verification.', 'success');
+                    setTimeout(() => {
+                        window.location.href = resolvePagePath('doctor/doctor-dashboard.html');
+                    }, 1500);
+                    
+                } catch (error) {
+                    errorElement.textContent = error.message || 'Registration failed';
+                    errorElement.style.display = 'block';
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

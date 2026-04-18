@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Dashboard - MediSeba</title>
+    <meta name="description" content="Manage your appointments, prescriptions, and health records.">
+    <script>
+        (function ensureFreshDashboardPage() {
+            const currentVersion = '20260403-4';
+            const url = new URL(window.location.href);
+
+            if (url.searchParams.get('v') === currentVersion) {
+                return;
+            }
+
+            url.searchParams.set('v', currentVersion);
+            window.location.replace(url.toString());
+        }());
+    </script>
+    <link rel="stylesheet" href="../css/style.css?v=20260404-8">
+    <link rel="stylesheet" href="../css/responsive.css?v=20260404-1">
+    <link rel="stylesheet" href="../css/auth.css?v=20260405-3">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo" aria-label="MediSeba home">
+    <img src="../images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="../patient/dashboard.html?v=20260403-4" class="active">
+                            <i class="fas fa-home"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/appointments.html">
+                            <i class="fas fa-calendar-check"></i>
+                            My Appointments
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/prescriptions.html">
+                            <i class="fas fa-file-prescription"></i>
+                            Prescriptions
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/payments.html?v=20260403-4">
+                            <i class="fas fa-credit-card"></i>
+                            Payments
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../patient/profile.html">
+                            <i class="fas fa-user"></i>
+                            My Profile
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Loading...</span>
+                        <span class="user-role">Patient</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="Auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <button class="btn-icon d-md-none" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="header-search d-none d-md-block">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search doctors, appointments...">
+                </div>
+                
+                <div class="header-actions dashboard-header-tools" id="dashboardHeaderTools">
+                    <button class="btn-icon" type="button" id="notificationButton" aria-label="Open notifications" aria-expanded="false" onclick="toggleNotificationPanel(event)">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge hidden" id="notificationBadge">0</span>
+                    </button>
+                    <button class="btn-icon" type="button" id="supportButton" aria-label="Open support options" aria-expanded="false" onclick="toggleSupportPanel(event)">
+                        <i class="fas fa-envelope"></i>
+                    </button>
+                    <div class="header-popover hidden" id="notificationPanel">
+                        <div class="header-popover-header">
+                            <div>
+                                <h4>Notifications</h4>
+                                <p>Important updates from your account</p>
+                            </div>
+                            <button type="button" class="btn-icon btn-icon-sm" onclick="closeHeaderPanels()" aria-label="Close notifications">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="header-popover-list" id="notificationList">
+                            <div class="header-popover-empty">
+                                <i class="fas fa-bell-slash"></i>
+                                <p>No notifications yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="header-popover hidden" id="supportPanel">
+                        <div class="header-popover-header">
+                            <div>
+                                <h4>Contact Support</h4>
+                                <p>Need help with booking, payments, or prescriptions?</p>
+                            </div>
+                            <button type="button" class="btn-icon btn-icon-sm" onclick="closeHeaderPanels()" aria-label="Close support panel">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="header-popover-content">
+                            <div class="support-contact-card">
+                                <div class="support-contact-icon">
+                                    <i class="fas fa-envelope-open-text"></i>
+                                </div>
+                                <div>
+                                    <strong>mediseba@gmail.com</strong>
+                                    <p>We will help you with account and booking issues.</p>
+                                </div>
+                            </div>
+                            <div class="header-popover-actions">
+                                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=mediseba@gmail.com&su=MediSeba%20Support%20Request" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Email Support
+                                </a>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="copySupportEmail()">
+                                    <i class="fas fa-copy"></i>
+                                    Copy Email
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Page Content -->
+            <div class="page-content patient-dashboard-content">
+                <div class="page-header patient-dashboard-hero">
+                    <div class="page-intro">
+                        <h1>Dashboard</h1>
+                        <p class="page-intro-text">Welcome back. Review upcoming visits, prescription updates, and payment activity in one clean view before your next consultation.</p>
+                    </div>
+                    <div class="patient-dashboard-cta">
+                        <div class="patient-dashboard-cta-copy">
+                            <strong>Need a new consultation?</strong>
+                            <p>Browse available doctors and reserve your next appointment in a few steps.</p>
+                        </div>
+                        <div class="patient-dashboard-cta-actions">
+                            <a href="../pages/doctors.html" class="btn btn-primary patient-dashboard-book-btn">
+                                <i class="fas fa-stethoscope"></i>
+                                Book Appointment
+                            </a>
+                            <a href="../patient/appointments.html" class="btn btn-outline">
+                                <i class="fas fa-calendar-check"></i>
+                                My Appointments
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Symptom Helper -->
+                <div class="card" style="margin-bottom: var(--space-6);">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h2 class="card-title"><i class="fas fa-robot" style="color:var(--primary,#2563eb);margin-right:6px;"></i>AI Symptom Helper</h2>
+                            <p class="card-header-meta">Describe how you feel in plain words — the AI will convert it into a structured symptom list you can share with your doctor.</p>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: var(--space-4);">
+                        <div class="form-group" style="margin-bottom:var(--space-3);">
+                            <label for="aiSymptomsInput" class="form-label">Describe your symptoms</label>
+                            <textarea id="aiSymptomsInput" class="form-textarea" rows="3" placeholder="E.g. I have had a bad headache since yesterday, feel dizzy when I stand up, and my throat is a bit sore..."></textarea>
+                        </div>
+                        <div style="display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap;">
+                            <button type="button" class="btn btn-primary btn-sm" id="aiSummarizeBtn" onclick="summarizePatientSymptoms()">
+                                <i class="fas fa-magic"></i> Summarize Symptoms
+                            </button>
+                            <button type="button" class="btn btn-outline btn-sm" id="aiExplainTermBtn" onclick="showExplainTermModal()">
+                                <i class="fas fa-book-medical"></i> Explain a Medical Term
+                            </button>
+                        </div>
+                        <div id="aiSymptomsResult" style="display:none; margin-top:12px; padding:12px 14px; background:var(--green-50,#f0fdf4); border:1px solid var(--green-200,#bbf7d0); border-radius:6px; font-size:0.875em; line-height:1.7; white-space:pre-wrap;"></div>
+                    </div>
+                </div>
+
+                <!-- AI Explain Term Modal -->
+                <div id="explainTermModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+                    <div style="background:var(--white,#fff); border-radius:12px; padding:var(--space-6); max-width:520px; width:90%; max-height:80vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+                        <h3 style="margin-bottom:var(--space-4);"><i class="fas fa-book-medical" style="color:var(--primary,#2563eb);margin-right:6px;"></i>Explain a Medical Term</h3>
+                        <div class="form-group">
+                            <label for="medTermInput" class="form-label">Medical term or diagnosis</label>
+                            <input type="text" id="medTermInput" class="form-input" placeholder="E.g. hypertension, GERD, CBC, MRI...">
+                        </div>
+                        <div id="medTermResult" style="display:none; margin-top:10px; padding:12px; background:var(--blue-50,#eff6ff); border:1px solid var(--blue-200,#bfdbfe); border-radius:6px; font-size:0.875em; line-height:1.7; white-space:pre-wrap;"></div>
+                        <div style="display:flex;gap:var(--space-2);margin-top:var(--space-4);">
+                            <button type="button" class="btn btn-primary" id="explainTermSubmitBtn" onclick="explainMedicalTerm()"><i class="fas fa-search"></i> Explain</button>
+                            <button type="button" class="btn btn-outline" onclick="closeExplainTermModal()">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid patient-dashboard-stats" id="dashboardStats">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <p class="stat-card-title">Total Appointments</p>
+                                <p class="stat-card-value">-</p>
+                                <p class="patient-dashboard-stat-meta">All consultations booked through your account.</p>
+                            </div>
+                            <div class="stat-card-icon primary">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <p class="stat-card-title">Completed</p>
+                                <p class="stat-card-value">-</p>
+                                <p class="patient-dashboard-stat-meta">Visits you have already finished with doctors.</p>
+                            </div>
+                            <div class="stat-card-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <p class="stat-card-title">Pending</p>
+                                <p class="stat-card-value">-</p>
+                                <p class="patient-dashboard-stat-meta">Appointments still waiting for confirmation or completion.</p>
+                            </div>
+                            <div class="stat-card-icon warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div>
+                                <p class="stat-card-title">Upcoming</p>
+                                <p class="stat-card-value">-</p>
+                                <p class="patient-dashboard-stat-meta">Your next scheduled visits that still need attention.</p>
+                            </div>
+                            <div class="stat-card-icon info">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Upcoming Appointments -->
+                <div class="card patient-dashboard-upcoming-card">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3>Upcoming Appointments</h3>
+                            <p class="card-header-meta">Keep track of your next consultations, token numbers, and appointment status before you arrive.</p>
+                        </div>
+                        <div class="patient-dashboard-card-header-actions">
+                            <span id="upcomingAppointmentCount" class="token-badge">Loading...</span>
+                            <a href="../patient/appointments.html" class="btn btn-sm btn-outline">View All</a>
+                        </div>
+                    </div>
+                    <div class="card-body" id="upcomingAppointments">
+                        <div class="empty-state">
+                            <div class="spinner"></div>
+                            <p>Loading appointments...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Prescriptions -->
+                <div class="card mt-6">
+                    <div class="card-header">
+                        <div class="card-header-copy">
+                            <h3>Recent Prescriptions</h3>
+                            <p class="card-header-meta">Open your latest prescriptions quickly after a consultation is completed.</p>
+                        </div>
+                        <div class="patient-dashboard-card-header-actions">
+                            <span id="recentPrescriptionCount" class="token-badge">Loading...</span>
+                            <a href="../patient/prescriptions.html" class="btn btn-sm btn-outline">View All</a>
+                        </div>
+                    </div>
+                    <div class="card-body" id="recentPrescriptions">
+                        <div class="empty-state">
+                            <div class="spinner"></div>
+                            <p>Loading prescriptions...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ── Video Call Modal ─────────────────────────────────── -->
+    <div id="videoCallModal" style="display:none; position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; flex-direction:column;">
+        <div style="width:90%; max-width:960px; background:var(--surface,#fff); border-radius:16px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.4);">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--primary,#2563eb);">
+                <div style="display:flex; align-items:center; gap:10px; color:#fff;">
+                    <i class="fas fa-video"></i>
+                    <span style="font-weight:600; font-size:1rem;">Video Consultation</span>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <a id="videoOpenNewTab" href="#" target="_blank" style="color:#fff; background:rgba(255,255,255,0.2); padding:6px 14px; border-radius:6px; font-size:0.85rem; text-decoration:none;">
+                        <i class="fas fa-external-link-alt"></i> Open in new tab
+                    </a>
+                    <button onclick="closeVideoCall()" style="color:#fff; background:rgba(255,255,255,0.15); border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem;">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+            <iframe id="videoFrame"
+                allow="camera; microphone; fullscreen; display-capture; autoplay"
+                style="width:100%; height:520px; border:none; display:block;"
+                src=""></iframe>
+            <div style="padding:12px 20px; background:var(--gray-50,#f9fafb); font-size:0.8rem; color:var(--gray-500,#6b7280); display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-info-circle" style="color:var(--primary,#2563eb);"></i>
+                Powered by Jitsi Meet &mdash; free &amp; encrypted. Allow camera &amp; microphone when prompted.
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/auth.js?v=20260402-4"></script>
+    <script src="../js/app.js?v=20260403-14"></script>
+    <script>
+        // Protect route
+        if (!Auth.requireRole('patient')) {
+            throw new Error('Patient access required');
+        }
+
+        const dashboardState = {
+            upcomingAppointments: [],
+            recentPrescriptions: [],
+            payments: []
+        };
+
+        function closeHeaderPanels() {
+            document.getElementById('notificationPanel')?.classList.add('hidden');
+            document.getElementById('supportPanel')?.classList.add('hidden');
+            document.getElementById('notificationButton')?.setAttribute('aria-expanded', 'false');
+            document.getElementById('supportButton')?.setAttribute('aria-expanded', 'false');
+        }
+
+        function toggleNotificationPanel(event) {
+            event?.stopPropagation();
+
+            const panel = document.getElementById('notificationPanel');
+            const supportPanel = document.getElementById('supportPanel');
+            const button = document.getElementById('notificationButton');
+
+            if (!panel || !button) {
+                return;
+            }
+
+            supportPanel?.classList.add('hidden');
+            document.getElementById('supportButton')?.setAttribute('aria-expanded', 'false');
+
+            const shouldOpen = panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', !shouldOpen);
+            button.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+        }
+
+        function toggleSupportPanel(event) {
+            event?.stopPropagation();
+
+            const panel = document.getElementById('supportPanel');
+            const notificationPanel = document.getElementById('notificationPanel');
+            const button = document.getElementById('supportButton');
+
+            if (!panel || !button) {
+                return;
+            }
+
+            notificationPanel?.classList.add('hidden');
+            document.getElementById('notificationButton')?.setAttribute('aria-expanded', 'false');
+
+            const shouldOpen = panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', !shouldOpen);
+            button.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+        }
+
+        async function copySupportEmail() {
+            try {
+                await navigator.clipboard.writeText('mediseba@gmail.com');
+                showToast('Support email copied to clipboard.', 'success');
+            } catch (error) {
+                showToast('Copy failed. Please email mediseba@gmail.com manually.', 'warning');
+            }
+        }
+
+        function buildDashboardNotifications() {
+            const notifications = [];
+            const pendingPayments = dashboardState.payments.filter((payment) => payment.status === 'pending');
+            const nextAppointment = dashboardState.upcomingAppointments[0];
+            const recentPrescription = dashboardState.recentPrescriptions[0];
+
+            if (pendingPayments.length > 0) {
+                notifications.push({
+                    icon: 'fa-credit-card',
+                    title: `${pendingPayments.length} payment${pendingPayments.length > 1 ? 's are' : ' is'} still pending`,
+                    description: 'Open your payments page to finish any pending invoice.',
+                    href: '../patient/payments.html?v=20260403-4'
+                });
+            }
+
+            if (nextAppointment) {
+                notifications.push({
+                    icon: 'fa-calendar-check',
+                    title: `Next visit with ${nextAppointment.doctor_name || 'your doctor'}`,
+                    description: `${formatDate(nextAppointment.appointment_date)} at ${formatTime(nextAppointment.estimated_time || '00:00:00')}`,
+                    href: `../patient/appointment.html?id=${encodeURIComponent(nextAppointment.id)}&v=20260403-1`
+                });
+            }
+
+            if (recentPrescription) {
+                notifications.push({
+                    icon: 'fa-file-prescription',
+                    title: `Prescription ${recentPrescription.prescription_number || ''} is ready`,
+                    description: 'Review the latest prescription details or download the PDF.',
+                    href: `../patient/prescription.html?id=${encodeURIComponent(recentPrescription.id)}&v=20260403-1`
+                });
+            }
+
+            return notifications;
+        }
+
+        function renderNotificationPanel() {
+            const list = document.getElementById('notificationList');
+            const badge = document.getElementById('notificationBadge');
+
+            if (!list || !badge) {
+                return;
+            }
+
+            const notifications = buildDashboardNotifications();
+            badge.textContent = String(notifications.length);
+            badge.classList.toggle('hidden', notifications.length === 0);
+
+            if (!notifications.length) {
+                list.innerHTML = `
+                    <div class="header-popover-empty">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>No new notifications right now.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = notifications.map((item) => `
+                <a href="${item.href}" class="header-popover-item">
+                    <span class="header-popover-item-icon">
+                        <i class="fas ${item.icon}"></i>
+                    </span>
+                    <span class="header-popover-item-copy">
+                        <strong>${escapeHtml(item.title)}</strong>
+                        <span>${escapeHtml(item.description)}</span>
+                    </span>
+                </a>
+            `).join('');
+        }
+
+        async function loadPaymentNotifications() {
+            try {
+                const result = await API.payments.myPayments({ per_page: 10 });
+                dashboardState.payments = result.items || [];
+            } catch (error) {
+                dashboardState.payments = [];
+            }
+
+            renderNotificationPanel();
+        }
+
+        function renderPatientDashboardStatCard(title, value, meta, toneClass, iconClass) {
+            return `
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <p class="stat-card-title">${title}</p>
+                            <p class="stat-card-value">${value}</p>
+                            <p class="patient-dashboard-stat-meta">${meta}</p>
+                        </div>
+                        <div class="stat-card-icon ${toneClass}">
+                            <i class="fas ${iconClass}"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadDashboardStats() {
+            const container = document.getElementById('dashboardStats');
+            if (!container) {
+                return;
+            }
+
+            try {
+                const stats = await API.appointments.statistics();
+
+                container.innerHTML = [
+                    renderPatientDashboardStatCard(
+                        'Total Appointments',
+                        stats.total_appointments || 0,
+                        'All consultations booked through your account.',
+                        'primary',
+                        'fa-calendar-check'
+                    ),
+                    renderPatientDashboardStatCard(
+                        'Completed',
+                        stats.completed || 0,
+                        'Visits you have already finished with doctors.',
+                        'success',
+                        'fa-check-circle'
+                    ),
+                    renderPatientDashboardStatCard(
+                        'Pending',
+                        stats.pending || 0,
+                        'Appointments still waiting for confirmation or completion.',
+                        'warning',
+                        'fa-clock'
+                    ),
+                    renderPatientDashboardStatCard(
+                        'Today',
+                        stats.today_count || 0,
+                        'Visits scheduled for today that may need your attention.',
+                        'info',
+                        'fa-calendar-day'
+                    )
+                ].join('');
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        function formatDashboardStatusLabel(status) {
+            const normalized = String(status || 'pending');
+
+            if (normalized === 'in_progress') {
+                return 'In Progress';
+            }
+
+            if (normalized === 'no_show') {
+                return 'No Show';
+            }
+
+            return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+        }
+
+        function getPatientAppointmentStatusNote(appointment) {
+            const status = String(appointment.status || 'pending');
+
+            switch (status) {
+                case 'pending':
+                    return 'Your booking request is waiting to be confirmed.';
+                case 'confirmed':
+                    return 'Your visit is scheduled. Keep your date and token ready.';
+                case 'in_progress':
+                    return 'Your visit is currently being handled by the clinic.';
+                case 'completed':
+                    return 'Consultation finished. Check prescriptions for updates.';
+                case 'cancelled':
+                    return 'This visit has been cancelled.';
+                case 'no_show':
+                    return 'The visit was marked as not attended.';
+                default:
+                    return 'Open the appointment to review full details.';
+            }
+        }
+        
+        // Load recent prescriptions
+        async function loadRecentPrescriptions() {
+            const container = document.getElementById('recentPrescriptions');
+            const count = document.getElementById('recentPrescriptionCount');
+            
+            try {
+                const result = await API.prescriptions.myPrescriptions({ per_page: 5 });
+                dashboardState.recentPrescriptions = result.items || [];
+                renderNotificationPanel();
+                count.textContent = `${dashboardState.recentPrescriptions.length} item(s)`;
+                
+                if (!result.items || result.items.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-file-prescription"></i>
+                            </div>
+                            <h3>No prescriptions yet</h3>
+                            <p>Your prescriptions will appear here after your appointments</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Prescription #</th>
+                                    <th>Doctor</th>
+                                    <th>Date</th>
+                                    <th>Diagnosis</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${result.items.map(rx => `
+                                    <tr>
+                                        <td>
+                                            <div class="table-meta">
+                                                <div class="table-meta-strong">${escapeHtml(String(rx.prescription_number))}</div>
+                                                <div class="table-meta-text">Prescription record</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="table-meta">
+                                                <div class="table-meta-strong">${escapeHtml(rx.doctor_name || '')}</div>
+                                                <div class="table-meta-text">${escapeHtml(rx.specialty || 'Doctor')}</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="table-date">
+                                                <span>${formatDate(rx.created_at)}</span>
+                                                <span>Issued prescription</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="table-meta">
+                                                <div class="table-meta-strong">${escapeHtml(rx.diagnosis ? rx.diagnosis.substring(0, 50) : 'Diagnosis not recorded')}${rx.diagnosis && rx.diagnosis.length > 50 ? '...' : ''}</div>
+                                                <div class="table-meta-text">Open to review full medicine details.</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="../patient/prescription.html?id=${rx.id}&v=20260403-1" class="btn btn-sm btn-outline">View</a>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (error) {
+                dashboardState.recentPrescriptions = [];
+                renderNotificationPanel();
+                count.textContent = 'Unable to load';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3>Failed to load prescriptions</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadUpcomingAppointments() {
+            const container = document.getElementById('upcomingAppointments');
+            const count = document.getElementById('upcomingAppointmentCount');
+            if (!container) {
+                return;
+            }
+            
+            try {
+                const appointments = await API.appointments.upcoming();
+                dashboardState.upcomingAppointments = appointments || [];
+                renderNotificationPanel();
+                count.textContent = `${dashboardState.upcomingAppointments.length} visit(s)`;
+                
+                if (!appointments || appointments.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <h3>No upcoming appointments</h3>
+                            <p>Book an appointment with a doctor</p>
+                            <a href="../pages/doctors.html" class="btn btn-primary">Find Doctors</a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <div class="patient-dashboard-upcoming-summary">
+                        <div class="patient-dashboard-upcoming-summary-copy">
+                            <strong>Your next visits</strong>
+                            <p>Review the doctor, date, token, and booking status before you arrive for consultation.</p>
+                        </div>
+                        <div class="action-row">
+                            <span class="token-badge">${appointments.length} scheduled</span>
+                        </div>
+                    </div>
+                    <div class="table-responsive patient-dashboard-upcoming-table">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Doctor</th>
+                                    <th>Visit</th>
+                                    <th>Token</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${appointments.map((apt) => `
+                                    <tr>
+                                        <td>
+                                            <div class="patient-dashboard-upcoming-patient">
+                                                <span class="table-user-name">${escapeHtml(apt.doctor_name)}</span>
+                                                <span class="table-user-info">${escapeHtml(apt.specialty || 'Specialty not listed')}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="patient-dashboard-upcoming-visit">
+                                                <div class="table-date">
+                                                    <span>${formatDate(apt.appointment_date)}</span>
+                                                    <span>${formatTime(apt.estimated_time)}</span>
+                                                </div>
+                                                <span class="table-meta-text">${escapeHtml(apt.appointment_number || 'Appointment details available')}</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="token-badge">#${escapeHtml(apt.token_number)}</span></td>
+                                        <td>
+                                            <div class="patient-dashboard-upcoming-status">
+                                                <span class="status-badge ${escapeHtml(apt.status)}">${escapeHtml(formatDashboardStatusLabel(apt.status))}</span>
+                                                <span class="table-meta-text">${escapeHtml(getPatientAppointmentStatusNote(apt))}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="table-actions">
+                                                <a href="../patient/appointment.html?id=${encodeURIComponent(apt.id)}&v=20260403-1" class="btn btn-sm btn-outline">View</a>
+                                                ${apt.video_call_enabled && apt.video_room_url && (apt.status === 'confirmed' || apt.status === 'in_progress')
+                                                    ? `<button class="btn btn-sm btn-success" onclick="openVideoCall(${apt.id}, '${escapeHtml(apt.video_room_url)}')"><i class="fas fa-video"></i> Join</button>`
+                                                    : ''}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (error) {
+                dashboardState.upcomingAppointments = [];
+                renderNotificationPanel();
+                count.textContent = 'Unable to load';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3>Failed to load appointments</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // ── AI Symptom Helper ──────────────────────────────────────────
+        async function summarizePatientSymptoms() {
+            const input = document.getElementById('aiSymptomsInput');
+            const btn   = document.getElementById('aiSummarizeBtn');
+            const box   = document.getElementById('aiSymptomsResult');
+            const text  = input ? input.value.trim() : '';
+
+            if (!text) {
+                showToast('Please describe your symptoms first.', 'warning');
+                input && input.focus();
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            box.style.display = 'none';
+
+            try {
+                const result = await API.gemini.summarizeSymptoms(text);
+                const summary = (result && result.response) ? result.response : (typeof result === 'string' ? result : 'No summary returned.');
+                box.style.display = 'block';
+                box.innerHTML = '<strong style="display:block;margin-bottom:6px;color:var(--green-700,#15803d);"><i class="fas fa-list-check"></i> Structured Symptom List</strong>' + escapeHtml(summary);
+                showToast('Symptoms summarized successfully.', 'success');
+            } catch (error) {
+                showToast(error.message || 'AI service unavailable. Please try again later.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic"></i> Summarize Symptoms';
+            }
+        }
+
+        function showExplainTermModal() {
+            const modal = document.getElementById('explainTermModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.getElementById('medTermInput') && document.getElementById('medTermInput').focus();
+                document.getElementById('medTermResult') && (document.getElementById('medTermResult').style.display = 'none');
+            }
+        }
+
+        function closeExplainTermModal() {
+            const modal = document.getElementById('explainTermModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function explainMedicalTerm() {
+            const input = document.getElementById('medTermInput');
+            const btn   = document.getElementById('explainTermSubmitBtn');
+            const box   = document.getElementById('medTermResult');
+            const term  = input ? input.value.trim() : '';
+
+            if (!term) {
+                showToast('Please enter a medical term to explain.', 'warning');
+                input && input.focus();
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Explaining...';
+            box.style.display = 'none';
+
+            try {
+                const result = await API.gemini.explain(term);
+                const explanation = (result && result.response) ? result.response : (typeof result === 'string' ? result : 'No explanation returned.');
+                box.style.display = 'block';
+                box.innerHTML = '<strong style="display:block;margin-bottom:6px;color:var(--blue-700,#1d4ed8);"><i class="fas fa-book-medical"></i> ' + escapeHtml(term) + '</strong>' + escapeHtml(explanation);
+            } catch (error) {
+                showToast(error.message || 'AI service unavailable.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-search"></i> Explain';
+            }
+        }
+
+        // Close explain modal on backdrop click
+        document.getElementById('explainTermModal') && document.getElementById('explainTermModal').addEventListener('click', function(e) {
+            if (e.target === this) closeExplainTermModal();
+        });
+
+        // Allow Enter key to trigger explain
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && document.getElementById('explainTermModal') && document.getElementById('explainTermModal').style.display === 'flex') {
+                explainMedicalTerm();
+            }
+        });
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.addEventListener('click', (event) => {
+                const tools = document.getElementById('dashboardHeaderTools');
+                if (tools && !tools.contains(event.target)) {
+                    closeHeaderPanels();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeVideoCall();
+            });
+
+            document.getElementById('videoCallModal').addEventListener('click', function(e) {
+                if (e.target === this) closeVideoCall();
+            });
+
+            await loadSidebarIdentity('patient', { retries: 2, retryDelay: 300 });
+            await loadDashboardStats();
+            await loadUpcomingAppointments();
+            await loadRecentPrescriptions();
+            await loadPaymentNotifications();
+        });
+
+        // ── Video Call ──────────────────────────────────────────
+        function openVideoCall(appointmentId, roomUrl) {
+            const modal  = document.getElementById('videoCallModal');
+            const frame  = document.getElementById('videoFrame');
+            const newTab = document.getElementById('videoOpenNewTab');
+            newTab.href        = roomUrl;
+            frame.src          = roomUrl;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoCall() {
+            const modal = document.getElementById('videoCallModal');
+            if (!modal || modal.style.display === 'none') return;
+            document.getElementById('videoFrame').src = '';
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+

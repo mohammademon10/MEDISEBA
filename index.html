@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediSeba - Healthcare Platform</title>
+    <meta name="description" content="Book doctor appointments online, receive digital prescriptions, and manage your medical visits with MediSeba.">
+    <link rel="stylesheet" href="css/style.css?v=20260404-12">
+    <link rel="stylesheet" href="css/responsive.css?v=20260404-2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo" aria-label="MediSeba home">
+    <img src="images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="pages/doctors.html">Find Doctors</a></li>
+                <li><a href="pages/how-it-works.html">How It Works</a></li>
+                <li><a href="pages/about.html">About</a></li>
+                <li class="nav-auth">
+                    <a href="auth/login.html" class="btn btn-outline">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <span class="badge">
+                        <i class="fas fa-check-circle"></i>
+                        Trusted by <span id="heroPatientCount">--</span> <span id="heroPatientLabel">Patients</span>
+                    </span>
+                    <h1>Your Health, <span class="highlight">Our Priority</span></h1>
+                    <p class="hero-description">
+                        Book appointments with top doctors, receive digital prescriptions, 
+                        and manage your medical history - all in one place.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="pages/doctors.html" class="btn btn-primary btn-lg">
+                            <i class="fas fa-search"></i>
+                            Find a Doctor
+                        </a>
+                        <a href="auth/login.html" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-user"></i>
+                            Patient Login
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="heroVerifiedDoctors">--</span>
+                            <span class="stat-label">Verified Doctors</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="heroAppointments">--</span>
+                            <span class="stat-label">Appointments</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="heroAverageRating">--</span>
+                            <span class="stat-label">Average Rating</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="images/hero-brand.png" alt="MediSeba brand mark and slogan" loading="lazy" width="800" height="800">
+                    <div class="floating-card card-1">
+                        <i class="fas fa-calendar-check"></i>
+                        <div>
+                            <span class="card-title">Easy Booking</span>
+                            <span class="card-text">Book in 2 minutes</span>
+                        </div>
+                    </div>
+                    <div class="floating-card card-2">
+                        <i class="fas fa-prescription"></i>
+                        <div>
+                            <span class="card-title">Digital Prescription</span>
+                            <span class="card-text">Get prescriptions online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Why Choose Us</span>
+                <h2>Healthcare Made <span class="highlight">Simple</span></h2>
+                <p>Experience the future of healthcare with our comprehensive platform</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3>Discover Specialized Practitioners</h3>
+                    <p>Browse through our network of verified doctors across 20+ specialties</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Schedule Consultations</h3>
+                    <p>Book appointments 24/7 with real-time availability and instant confirmation</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h3>Smart Token System</h3>
+                    <p>Get your token number automatically and know your exact appointment time</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-prescription"></i>
+                    </div>
+                    <h3>Digital Prescriptions</h3>
+                    <p>Access your prescriptions anytime, anywhere from your digital health record</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3>Medical History</h3>
+                    <p>Keep track of all your visits, prescriptions, and health records in one place</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure & Private</h3>
+                    <p>Your health data is encrypted and protected with industry-standard security</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Simple Process</span>
+                <h2>How It <span class="highlight">Works</span></h2>
+                <p>Get started with MediSeba in just a few simple steps</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3>Search Doctors</h3>
+                        <p>Find doctors by specialty, location, or name</p>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3>Book Appointment</h3>
+                        <p>Select date & time, get instant token</p>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <i class="fas fa-hospital"></i>
+                        </div>
+                        <h3>Physical/Virtual Consultation</h3>
+                        <p>Visit clinic at your scheduled time</p>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <i class="fas fa-file-medical"></i>
+                        </div>
+                        <h3>Receive Digital Prescription & AI Summary</h3>
+                        <p>Receive digital prescription instantly</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="how-it-works-media">
+                <div class="video-card">
+                    <span class="section-badge">Quick Intro Video</span>
+                    <h3>See the online consultation journey</h3>
+                    <p>This short telemedicine explainer shows the kind of patient journey MediSeba supports, from booking through follow-up care.</p>
+                    <div class="video-embed">
+                        <iframe
+                            src="https://www.youtube-nocookie.com/embed/zNHq9gD2uqc?rel=0"
+                            title="MediSeba overview video"
+                            loading="lazy"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <p class="video-caption">Video reference: Johns Hopkins Medicine telemedicine overview.</p>
+                </div>
+                <div class="transcript-card">
+                    <span class="section-badge">Transcript</span>
+                    <h3>MediSeba walkthrough summary</h3>
+                    <p>This transcript adapts the same patient journey to the MediSeba platform so users can read the steps even without playing the video.</p>
+                    <ol class="transcript-list">
+                        <li>Open MediSeba, search for a doctor by specialty or name, and compare profiles before booking.</li>
+                        <li>Select an available date, confirm the appointment, and receive your token and payment details.</li>
+                        <li>Attend the consultation and use the built-in chat if you need short follow-up clarification afterward.</li>
+                        <li>Review your prescription, appointment history, and payment record from your dashboard whenever needed.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Specialties Section -->
+    <section class="specialties">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Our Specialties</span>
+                <h2>Find Doctors By <span class="highlight">Specialty</span></h2>
+                <p>Choose from a wide range of medical specialties</p>
+            </div>
+            <div class="specialties-grid" id="specialtiesGrid">
+                <!-- Loaded dynamically via JS -->
+            </div>
+            <div class="text-center mt-4">
+                <a href="pages/doctors.html" class="btn btn-primary">
+                    View All Specialties
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Doctors Section -->
+    <section class="featured-doctors">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Top Rated</span>
+                <h2>Featured <span class="highlight">Doctors</span></h2>
+                <p>Highly rated doctors recommended by our community</p>
+            </div>
+            <div class="doctors-grid" id="featuredDoctors">
+                <!-- Loaded dynamically via JS -->
+            </div>
+            <div class="text-center mt-4">
+                <a href="pages/doctors.html" class="btn btn-outline">
+                    View All Doctors
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials" id="testimonialsSection" aria-labelledby="testimonialsHeading" hidden>
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Patient Stories</span>
+                <h2 id="testimonialsHeading">What Patients <span class="highlight">Say</span></h2>
+                <p>Real feedback helps new patients understand the value of smooth booking, follow-up support, and digital prescriptions.</p>
+            </div>
+            <div class="testimonial-showcase">
+                <div class="testimonial-spotlight">
+                    <div id="testimonialSpotlight" aria-live="polite"></div>
+                    <div class="testimonial-controls">
+                        <button type="button" class="testimonial-control" id="testimonialPrev" aria-label="Show previous testimonial">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <button type="button" class="testimonial-control" id="testimonialNext" aria-label="Show next testimonial">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <div class="testimonial-dots" id="testimonialDots" role="group" aria-label="Testimonial navigation"></div>
+                </div>
+                <div class="testimonials-grid" id="testimonialsGrid"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <div class="cta-text">
+                    <h2>Ready to Take Control of Your Health?</h2>
+                    <p>Join thousands of patients who trust MediSeba for their healthcare needs</p>
+                </div>
+                <div class="cta-actions">
+                    <a href="auth/login.html" class="btn btn-white btn-lg">Get Started</a>
+                    <a href="tel:+8801893672505" class="btn btn-outline-white btn-lg">
+                        <i class="fas fa-phone"></i>
+                        Call Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo" aria-label="MediSeba home">
+    <img src="images/logo-mark.svg" alt="" class="logo-mark">
+    <span class="logo-wordmark" aria-hidden="true"><span class="logo-wordmark-primary">Medi</span><span class="logo-wordmark-secondary">Seba</span></span>
+</a>
+                    <p>Your trusted healthcare partner. Book appointments, manage prescriptions, and track your health - all in one place.</p>
+                        <div class="social-links">
+                            <a href="https://www.facebook.com/mohammad.emon.98622733" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://github.com/mohammademon10" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                            <a href="linkedin.com/in/md-emon-hossain-22774b1a6" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="pages/doctors.html">Find Doctors</a></li>
+                        <li><a href="pages/how-it-works.html">How It Works</a></li>
+                        <li><a href="pages/about.html">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>For Patients</h4>
+                    <ul>
+                        <li><a href="auth/login.html">Login</a></li>
+                        <li><a href="auth/login.html">Register</a></li>
+                        <li><a href="patient/dashboard.html">My Dashboard</a></li>
+                        <li><a href="patient/appointments.html">My Appointments</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>For Doctors</h4>
+                    <ul>
+                        <li><a href="auth/doctor-login.html">Doctor Login</a></li>
+                        <li><a href="auth/doctor-login.html">Join as Doctor</a></li>
+                        <li><a href="doctor/doctor-dashboard.html">Doctor Dashboard</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>123 Healthcare Ave, Dhaka, Bangladesh</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <a href="tel:+8801309462705">+8801893672505</a>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <a href="mailto:mediseba@gmail.com">mediseba@gmail.com</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 MediSeba. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="pages/privacy.html">Privacy Policy</a>
+                    <a href="pages/terms.html">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="js/api.js?v=20260404-2"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js?v=20260404-17"></script>
+    <script>
+        // Load specialties and featured doctors on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadSpecialties();
+            await loadFeaturedDoctors();
+            Auth.updateNavigation();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
