@@ -32,6 +32,9 @@
 <details>
 <summary><b>🏠 Landing Page & Public Interface</b></summary>
 <br/>
+<p align="center">
+  <img src="screenshots/image_2026-04-18_13-29-49.png" width="100%" />
+</p>
 
 | Page | Description |
 |------|-------------|
@@ -101,7 +104,7 @@ flowchart TD
 <summary><b>🧑‍⚕️ Patient Dashboard</b></summary>
 <br/>
 <p align="center">
-  <img src="screenshots/patient_dashboard_update.jpg" width="90%" />
+  <img src="screenshots/patient_dashboard_update.jpg" width="100%" />
 </p>
   
 | Page | Description |
@@ -120,7 +123,7 @@ flowchart TD
 <summary><b>👨‍⚕️ Doctor Portal</b></summary>
 <br/>
 <p align="center">
-  <img src="screenshots/Doctor_Dashboard.jpg" width="90%" />
+  <img src="screenshots/Doctor_Dashboard.jpg" width="100%" />
 </p>
   
 | Page | Description |
@@ -138,7 +141,7 @@ flowchart TD
 <summary><b>🛡️ Admin Control Panel</b></summary>
 <br/>
 <p align="center">
-  <img src="screenshots/Admin_Dashboard.jpg" width="90%" />
+  <img src="screenshots/Admin_Dashboard.jpg" width="100%" />
 </p>
 
 | Page | Description |
