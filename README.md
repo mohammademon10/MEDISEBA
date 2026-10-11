@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 <img src="https://raw.githubusercontent.com/mohammademon10/MEDISEBA/main/images/logo-mark.svg" alt="MediSeba Logo" width="90" height="90"/>
 
@@ -22,6 +22,20 @@
 **MediSeba** is a full-stack, multi-role healthcare management platform built for Bangladesh's digital health ecosystem. It connects patients with verified doctors, automates appointment workflows, generates digital prescriptions with PDF export, processes payments, and leverages **Google Gemini 1.5 Pro AI** to summarize symptoms and produce clinical-grade diagnostic summaries — all secured by JWT authentication and a hardened PHP backend.
 
 [🔗 View Repository](https://github.com/mohammademon10/MEDISEBA) · [📋 Report Bug](https://github.com/mohammademon10/MEDISEBA/issues) · [✨ Request Feature](https://github.com/mohammademon10/MEDISEBA/issues)
+
+</div>
+
+---
+
+## 🎬 Project Overview Video
+
+<div align="center">
+
+[![MediSeba Project Overview Video](https://raw.githubusercontent.com/mohammademon10/MEDISEBA/main/images/MediSeba_Thumbnail.png)](https://youtu.be/qWVClCml90E)
+
+**▶️ [Watch the full project overview on YouTube](https://youtu.be/qWVClCml90E)**
+
+*A 4-minute walkthrough: problem, solution, core features, booking flow, architecture, engineering highlights, results, limitations and roadmap.*
 
 </div>
 
